@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "1004201569665",
+    "firebase_url": "https://insta-simulator.firebaseio.com",
+    "project_id": "insta-simulator",
+    "storage_bucket": "insta-simulator.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1004201569665:android:968adf0b2930d9e4088c80",
+        "android_client_info": {
+          "package_name": "com.example.insta"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1004201569665-3i9f3agdkeb8ng35ss67cumc5hqksbse.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQACODJwGDU-48H-UBD1Qpz-OCvT99f1M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1004201569665-3i9f3agdkeb8ng35ss67cumc5hqksbse.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1004201569665:android:7a154fa231504200088c80",
+        "android_client_info": {
+          "package_name": "com.example.newbaghdadcourse"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1004201569665-3i9f3agdkeb8ng35ss67cumc5hqksbse.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQACODJwGDU-48H-UBD1Qpz-OCvT99f1M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1004201569665-3i9f3agdkeb8ng35ss67cumc5hqksbse.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
