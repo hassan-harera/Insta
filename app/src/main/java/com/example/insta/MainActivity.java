@@ -24,12 +24,12 @@ import com.google.firebase.storage.StorageReference;
 
 public class MainActivity extends AppCompatActivity {
 
-    EditText password, username;
+    EditText password, email;
     TextView register;
     Button login;
 
     FirebaseDatabase database;
-    DatabaseReference dbRef;
+    DatabaseReference databaseReference;
     FirebaseAuth auth;
     FirebaseUser user;
     FirebaseStorage storage;
@@ -40,24 +40,20 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        username = findViewById(R.id.username);
+        email = findViewById(R.id.login_email);
         password = findViewById(R.id.password);
         login = findViewById(R.id.login);
         register = findViewById(R.id.register_text);
 
         database = FirebaseDatabase.getInstance();
         storage = FirebaseStorage.getInstance();
-        dbRef = database.getReference();
         reference = storage.getReference();
-
-
+        databaseReference = database.getReference();
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
 
         if (user != null) {
             goFeed();
-        }else {
-            createUserSchema();
         }
     }
 
@@ -67,18 +63,15 @@ public class MainActivity extends AppCompatActivity {
         finish();
     }
 
-    private void createUserSchema() {
-        dbRef.child("User");
-    }
 
     public void loginClicked(View view) {
         String password = this.password.getText().toString(),
-                username = this.username.getText().toString();
+                username = this.email.getText().toString();
 
         if (username.equals("")) {
-            this.username.setError("Username is required");
+            this.email.setError("E-mail is required");
         } else if (password.equals("")) {
-            this.username.setError("Password is required");
+            this.email.setError("Password is required");
         } else {
             auth.signInWithEmailAndPassword(username, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
