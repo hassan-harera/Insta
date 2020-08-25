@@ -1,19 +1,23 @@
 package com.example.insta;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -23,11 +27,19 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.StreamDownloadTask;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.HashMap;
+import java.util.Map;
 
-public class Profile extends AppCompatActivity {
+import javax.xml.transform.Result;
+
+public class EditProfile extends AppCompatActivity {
 
     RecyclerView view;
     FirebaseStorage storage;
@@ -37,14 +49,17 @@ public class Profile extends AppCompatActivity {
     StorageReference reference;
     FirebaseAuth auth;
 
-    ImageView profilePic, edit;
-    TextView name, bio, email;
+    ImageView profilePic;
+    EditText name, bio;
+    TextView email;
+    Button edit;
+    Uri uri;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile);
+        setContentView(R.layout.activity_edit_profile);
 
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference();
@@ -53,17 +68,17 @@ public class Profile extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
 
-
-        profilePic = findViewById(R.id.user_profile_photo);
-        edit = findViewById(R.id.edit);
-        name = findViewById(R.id.user_profile_name);
-        bio = findViewById(R.id.user_profile_short_bio);
+        profilePic = findViewById(R.id.EditProfile_profile_Pic);
+        edit = findViewById(R.id.EditProfile_edit);
+        name = findViewById(R.id.EditProfile_name);
+        bio = findViewById(R.id.EditProfile_bio);
         email = findViewById(R.id.user_profile_email);
 
         getProfilePic();
         getName();
         getBio();
         email.setText(user.getEmail());
+
     }
 
     private void getName() {
@@ -84,9 +99,9 @@ public class Profile extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String b = snapshot.getValue(String.class);
-                if(b.equals("")){
-                    bio.setText("Bio-Here");
-                }else {
+                if (b.equals("")) {
+                    bio.setText("Bio");
+                } else {
                     bio.setText(snapshot.getValue(String.class));
                 }
             }
@@ -109,8 +124,34 @@ public class Profile extends AppCompatActivity {
     }
 
     public void editClicked(View view) {
-        Intent intent = new Intent(this, EditProfile.class);
-        startActivity(intent);
-        finishActivity(0125);
+        Map<String, String> map = new HashMap();
+        map.put("Name", name.getText().toString());
+        map.put("Bio", bio.getText().toString());
+        map.put("Username", email.getText().toString());
+        databaseReference.child("Users").child(user.getUid()).setValue(map);
+
+        if (uri != null) {
+            reference.child("Users").child(user.getUid()).child("Profile Pic").putFile(uri);
+        }
+    }
+
+    public void addImageClicked(View view) {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent, 123);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 123 && resultCode == RESULT_OK && data != null) {
+            uri = data.getData();
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+                profilePic.setImageBitmap(bitmap);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

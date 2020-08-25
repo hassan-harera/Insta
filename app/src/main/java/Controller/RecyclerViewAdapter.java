@@ -46,7 +46,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         auth = FirebaseAuth.getInstance();
         storage = FirebaseStorage.getInstance();
         user = auth.getCurrentUser();
-        reference = storage.getReference().child(user.getEmail());
+        reference = storage.getReference();
 
         databaseHelper = new InstaDatabaseHelper(context);
 
@@ -77,7 +77,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 }
             }
         };
-        reference.child(id + "").getBytes(Resulation).addOnCompleteListener(listener);
+        reference.child("Users").child(user.getUid()).child("Posts").child(id+"").getBytes(Resulation).addOnCompleteListener(listener);
     }
 
     @Override

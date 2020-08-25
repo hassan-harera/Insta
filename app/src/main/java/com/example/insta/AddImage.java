@@ -28,12 +28,14 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 
@@ -49,7 +51,7 @@ public class AddImage extends AppCompatActivity {
     Button add;
 
     FirebaseDatabase database;
-
+    DatabaseReference databaseReference;
     FirebaseStorage storage;
     StorageReference storageReference;
     FirebaseAuth firebaseAuth;
@@ -74,7 +76,8 @@ public class AddImage extends AppCompatActivity {
         database = FirebaseDatabase.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
         storage = FirebaseStorage.getInstance();
-        storageReference = storage.getReference().child(firebaseUser.getEmail());
+        databaseReference = database.getReference();
+        storageReference = storage.getReference().child("Users").child(firebaseUser.getUid());
 
     }
 
@@ -88,23 +91,15 @@ public class AddImage extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (data != null && requestCode == ADD_IMAGE_REQUEST && resultCode == RESULT_OK) {
-            if (Build.VERSION.SDK_INT >= 29) {
-                uri = data.getData();
-                ContentResolver contentResolver = getContentResolver();
-
-                try {
-                    InputStream inputStream = contentResolver.openInputStream(uri);
-                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                    image.setImageBitmap(bitmap);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-            } else {
-
+        uri = data.getData();
+        if (uri != null) {
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                image.setImageBitmap(bitmap);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
-
     }
 
     public void addClicked(View view) {
@@ -118,13 +113,15 @@ public class AddImage extends AppCompatActivity {
 
 
         if (uri != null) {
-            storageReference.child(id + "").putFile(uri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+            storageReference.child("Posts").child(id + "").putFile(uri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                     if (task.isSuccessful()) {
-                        databaseHelper.insertPost(post);
+                        if(databaseHelper.insertPost(post)) {
+                            insertPostToFirebase(post);
+                        }
                         successedAdd();
-                    }else {
+                    } else {
                         failedAdd();
                     }
                 }
@@ -132,6 +129,13 @@ public class AddImage extends AppCompatActivity {
         } else {
             Toast.makeText(this, "Add an image firstly", Toast.LENGTH_LONG).show();
         }
+    }
+
+    private void insertPostToFirebase(Post post) {
+        DatabaseReference dr = databaseReference.child("Users").child(firebaseUser.getUid()).child("Posts").child(post.getId() + "");
+        dr.child("Id").setValue(post.getId());
+        dr.child("Title").setValue(post.getName());
+        dr.child("Details").setValue(post.getDetails());
     }
 
     private void failedAdd() {

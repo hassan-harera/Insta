@@ -58,7 +58,7 @@ public class InstaDatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public void insertPost(Post post) {
+    public Boolean insertPost(Post post) {
         SQLiteDatabase db = getWritableDatabase();
 
         ContentValues contentValues = new ContentValues();
@@ -66,15 +66,7 @@ public class InstaDatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(Info.NAME_COLUMN, post.getName());
         contentValues.put(Info.DETAILS_COLUMN, post.getDetails());
 
-        if (db.insert(Info.TABLE_USER_IMAGES, null, contentValues) != -1) {
-            databaseReference.push().setValue(firebaseUser.getUid());
-
-            databaseReference.child(firebaseUser.getUid()).child("Images").push().setValue(post.getId());
-            DatabaseReference image = databaseReference.child(firebaseUser.getEmail()).child("Images").child(post.getId() + "");
-            image.child("Id").setValue(post.getId());
-            image.child("Name").setValue(post.getName());
-            image.child("Details").setValue(post.getDetails());
-        }
+       return db.insert(Info.TABLE_USER_IMAGES, null, contentValues) != -1;
     }
 
     public List<Post> getAllPosots() {
