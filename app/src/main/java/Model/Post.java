@@ -6,6 +6,15 @@ public class Post {
 
     private String Title, details;
     private int id;
+    private Bitmap bitmap;
+
+    public void setBitmap(Bitmap bitmap) {
+        this.bitmap = bitmap;
+    }
+
+    public Bitmap getBitmap() {
+        return bitmap;
+    }
 
     public void setId(int id) {
         this.id = id;

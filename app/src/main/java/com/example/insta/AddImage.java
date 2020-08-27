@@ -107,8 +107,6 @@ public class AddImage extends AppCompatActivity {
     }
 
     public void addClicked(View view) {
-        final InstaDatabaseHelper databaseHelper = new InstaDatabaseHelper(this);
-
         final Post post = new Post();
         int id = (int) new Date().getTime();
         post.setTitle(title.getText().toString());
@@ -126,9 +124,7 @@ public class AddImage extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                     if (task.isSuccessful()) {
-                        if (databaseHelper.insertPost(post)) {
-                            insertPostToFirebase(post);
-                        }
+                        insertPostToFirebase(post);
                         successedAdd();
                     } else {
                         failedAdd();

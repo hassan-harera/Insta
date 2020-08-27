@@ -2,13 +2,20 @@ package com.example.insta;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -42,8 +49,10 @@ public class Feed extends AppCompatActivity {
     FirebaseUser user;
     StorageReference reference;
     FirebaseAuth auth;
+    DatabaseReference dr;
+    FirebaseDatabase firebaseDatabase;
 
-    FirebaseDatabaseController fdc;
+    List<Post> list;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +65,8 @@ public class Feed extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
         storage = FirebaseStorage.getInstance();
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        dr = firebaseDatabase.getReference();
         user = auth.getCurrentUser();
         reference = storage.getReference(user.getEmail());
 
@@ -68,14 +79,51 @@ public class Feed extends AppCompatActivity {
         });
 
         helper = new InstaDatabaseHelper(this);
-        List<Post> list = helper.getAllPosts();
 
-//        fdc = new FirebaseDatabaseController();
-//        List<Post> list = fdc.getAllPosts();
+        list = new ArrayList<>();
 
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(new RecyclerViewAdapter(this, list));
+
+        ConnectivityManager cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+
+        if(isConnected) {
+            getAllPostsFromFirebase();
+        } else {
+            getAllPostsFromLocalDatabase();
+        }
+    }
+
+    private void getAllPostsFromLocalDatabase() {
+        list = helper.getAllPosts();
+        recyclerView.setAdapter(new RecyclerViewAdapter(Feed.this, list));
+    }
+
+    private void getAllPostsFromFirebase() {
+        DatabaseReference databaseReference = dr.child("Users").child(user.getUid()).child("Posts");
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    Post p = new Post();
+                    long id = ds.child("Id").getValue(Integer.class);
+                    p.setId((int) id);
+                    p.setTitle(ds.child("Title").getValue(String.class));
+                    p.setDetails(ds.child("Details").getValue(String.class));
+                    list.add(p);
+                }
+                recyclerView.setAdapter(new RecyclerViewAdapter(Feed.this, list));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     private void addImage() {

@@ -8,5 +8,6 @@ public class Info {
     public static final String ID_COLUMN = "ID";
     public static final String NAME_COLUMN = "NAME";
     public static final String DETAILS_COLUMN = "DETAILS";
+    public static final String IMAGE_COLUMN = "IMAGE";
 
 }

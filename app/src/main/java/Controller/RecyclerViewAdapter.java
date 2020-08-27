@@ -1,8 +1,10 @@
 package Controller;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.Image;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,8 +39,8 @@ import Model.Post;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
 
-    List<Post> list;
     Context context;
+    List<Post> list;
 
     StorageReference reference;
     FirebaseUser user;
@@ -47,20 +49,18 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     FirebaseDatabase database;
     DatabaseReference databaseReference;
 
-
     InstaDatabaseHelper databaseHelper;
 
     public RecyclerViewAdapter(Context context, List<Post> list) {
         this.context = context;
         this.list = list;
+
         auth = FirebaseAuth.getInstance();
         storage = FirebaseStorage.getInstance();
         user = auth.getCurrentUser();
         reference = storage.getReference();
         database = FirebaseDatabase.getInstance();
         databaseHelper = new InstaDatabaseHelper(context);
-
-
     }
 
     @NonNull
@@ -71,24 +71,34 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
         holder.recName.setText(list.get(position).getTitle());
         holder.recDetails.setText(list.get(position).getDetails());
 
         int id = list.get(position).getId();
-
-        final long Resulation = 4096 * 4096;
-        OnCompleteListener<byte[]> listener = new OnCompleteListener<byte[]>() {
-            @Override
-            public void onComplete(@NonNull Task<byte[]> task) {
-                if (task.isSuccessful()) {
-                    holder.recImage.setImageBitmap(BitmapFactory.decodeByteArray(task.getResult(), 0, task.getResult().length));
-                } else {
-                    Toast.makeText(context, "Failed to load image", Toast.LENGTH_SHORT).show();
+        if (databaseHelper.postIsFound(id)) {
+            Post post = databaseHelper.getPosot(id);
+            holder.recImage.setImageBitmap(post.getBitmap());
+        } else {
+            final long Resulation = 4096 * 4096;
+            OnCompleteListener<byte[]> listener = new OnCompleteListener<byte[]>() {
+                @Override
+                public void onComplete(@NonNull Task<byte[]> task) {
+                    if (task.isSuccessful()) {
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(task.getResult(), 0, task.getResult().length);
+                        holder.recImage.setImageBitmap(bitmap);
+                        Post post = list.get(position);
+                        post.setBitmap(bitmap);
+                        databaseHelper.insertPost(post);
+                    } else {
+                        Toast.makeText(context, "Failed to load image", Toast.LENGTH_SHORT).show();
+                    }
                 }
-            }
-        };
-        reference.child("Users").child(user.getUid()).child("Posts").child(id + "").getBytes(Resulation).addOnCompleteListener(listener);
+            };
+            reference.child("Users").child(user.getUid()).child("Posts").child(id + "").getBytes(Resulation).addOnCompleteListener(listener);
+        }
+
+
     }
 
     @Override

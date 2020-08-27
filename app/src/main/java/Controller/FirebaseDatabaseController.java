@@ -2,6 +2,7 @@ package Controller;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -48,28 +49,8 @@ public class FirebaseDatabaseController {
         storageReference = firebaseStorage.getReference();
     }
 
-    public List<Post> getAllPosts() {
-        final List<Post> list = new ArrayList<>();
+    public void getAllPosts() {
 
-        databaseReference = database.getReference().child("Users").child(user.getUid()).child("Posts");
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot ds : snapshot.getChildren()) {
-                    Post p = new Post();
-                    long id = ds.child("Id").getValue(Integer.class);
-                    p.setId((int) id);
-                    p.setTitle(ds.child("Title").getValue(String.class));
-                    p.setDetails(ds.child("Details").getValue(String.class));
-                    list.add(p);
-                }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-        return null;
     }
 }
