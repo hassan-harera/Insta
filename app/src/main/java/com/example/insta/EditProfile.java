@@ -125,19 +125,15 @@ public class EditProfile extends AppCompatActivity {
     }
 
     public void editClicked(View view) {
-        Map<String, String> map = new HashMap();
-        map.put("Name", name.getText().toString());
-        map.put("Bio", bio.getText().toString());
-        map.put("Username", email.getText().toString());
-        databaseReference.child("Users").child(user.getUid()).setValue(map);
+        databaseReference.child("Users").child(user.getUid()).child("Id").setValue(name.getText().toString());
+        databaseReference.child("Users").child(user.getUid()).child("Bio").setValue(bio.getText().toString());
 
         if (uri != null) {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            bitmap1.compress(Bitmap.CompressFormat.PNG, 100 , bos);
+            bitmap1.compress(Bitmap.CompressFormat.PNG, 100, bos);
             reference.child("Users").child(user.getUid()).child("Profile Pic").putBytes(bos.toByteArray());
-            startActivity(new Intent(this, Feed.class));
-            finish();
         }
+        finish();
     }
 
     public void addImageClicked(View view) {

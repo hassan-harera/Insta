@@ -20,10 +20,10 @@
 
     <LinearLayout
 
-        android:layout_height="0dp"
         android:layout_width="match_parent"
-        android:orientation="vertical"
-        android:layout_weight="0.6">
+        android:layout_height="0dp"
+        android:layout_weight="0.6"
+        android:orientation="vertical">
 
 
         <EditText
@@ -38,7 +38,9 @@
             android:focusedByDefault="true"
             android:gravity="center"
             android:hint="Title"
-            android:selectAllOnFocus="true" />
+            android:imeOptions="actionNext"
+            android:selectAllOnFocus="true"
+            android:singleLine="true" />
 
         <EditText
             android:id="@+id/message"
@@ -52,7 +54,9 @@
             android:focusedByDefault="true"
             android:gravity="center"
             android:hint="Details"
-            android:selectAllOnFocus="true" />
+            android:imeOptions="actionDone"
+            android:selectAllOnFocus="true"
+            android:singleLine="true" />
     </LinearLayout>
 
     <Button

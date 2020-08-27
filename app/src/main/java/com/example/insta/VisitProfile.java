@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -55,6 +56,8 @@ public class VisitProfile extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
         uid = bundle.get("Token").toString();
+
+        
 
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference().child("Users").child(uid);

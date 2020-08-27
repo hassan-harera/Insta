@@ -179,4 +179,10 @@ public class Register extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
+
+    public void loginClicked(View view) {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
 }
