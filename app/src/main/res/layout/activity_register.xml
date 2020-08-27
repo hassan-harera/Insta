@@ -19,7 +19,11 @@
         android:layout_marginBottom="10dp"
         android:gravity="center"
         android:hint="name"
-        android:selectAllOnFocus="true" />
+        android:imeOptions="actionNext"
+        android:selectAllOnFocus="true"
+        android:inputType="textPersonName"
+        android:singleLine="true" />
+
 
     <EditText
         android:id="@+id/email"
@@ -31,8 +35,11 @@
         android:layout_marginBottom="10dp"
         android:gravity="center"
         android:hint="E-mail"
+        android:imeOptions="actionNext"
         android:inputType="textEmailAddress"
-        android:selectAllOnFocus="true" />
+        android:selectAllOnFocus="true"
+        android:singleLine="true" />
+
 
     <EditText
         android:id="@+id/password_register"
@@ -44,8 +51,11 @@
         android:layout_marginBottom="10dp"
         android:gravity="center"
         android:hint="password"
+        android:imeOptions="actionNext"
         android:inputType="textPassword"
-        android:selectAllOnFocus="true" />
+        android:selectAllOnFocus="true"
+        android:singleLine="true" />
+
 
     <EditText
         android:id="@+id/confirm_password_register"
@@ -59,7 +69,9 @@
         android:hint="repassword"
         android:imeOptions="actionDone"
         android:inputType="textPassword"
-        android:selectAllOnFocus="true" />
+        android:selectAllOnFocus="true"
+        android:singleLine="true" />
+
 
     <Button
         android:id="@+id/register_register"

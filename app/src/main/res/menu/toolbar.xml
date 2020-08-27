@@ -20,4 +20,16 @@
         android:title="Log out"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/get_token"
+        android:icon="@drawable/settings"
+        android:title="Get Token"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/search_token"
+        android:icon="@drawable/search"
+        app:showAsAction="ifRoom|withText"
+        app:actionViewClass="android.widget.SearchView"
+        android:title="Search" />
 </menu>

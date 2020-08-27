@@ -1,12 +1,17 @@
 package com.example.insta;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.media.session.MediaSession;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
@@ -22,6 +27,7 @@ import com.google.firebase.storage.StorageReference;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.MenuItemCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -30,6 +36,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.SearchView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,7 +99,7 @@ public class Feed extends AppCompatActivity {
         boolean isConnected = activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();
 
-        if(isConnected) {
+        if (isConnected) {
             getAllPostsFromFirebase();
         } else {
             getAllPostsFromLocalDatabase();
@@ -134,7 +142,39 @@ public class Feed extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar, menu);
+
+        MenuItem searchItem = menu.findItem(R.id.search_token);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(final String query) {
+                StorageReference storageReference = storage.getReference().child("Users").child(query).child("Profile Pic");
+                storageReference.getBytes(4096 * 4096).addOnCompleteListener(new OnCompleteListener<byte[]>() {
+                    @Override
+                    public void onComplete(@NonNull Task<byte[]> task) {
+                        if (task.isSuccessful()) {
+                            GoProfile(query);
+                        } else {
+                            Toast.makeText(Feed.this, "Incorrect Token", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
         return true;
+    }
+
+    private void GoProfile(String query) {
+        Intent intent = new Intent(this, VisitProfile.class);
+        intent.putExtra("Token", query);
+        startActivity(intent);
     }
 
 
@@ -151,8 +191,25 @@ public class Feed extends AppCompatActivity {
             startActivity(intent);
         } else if (itemId == R.id.logout) {
             logout();
+        } else if (itemId == R.id.get_token) {
+            getToken();
+        } else if (itemId == R.id.search_token) {
+            searchToken();
         }
         return true;
+    }
+
+    private void searchToken() {
+
+    }
+
+    private void getToken() {
+        String userId = user.getUid();
+
+        ClipboardManager clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clipData = ClipData.newPlainText("Token", userId);
+        clipboardManager.setPrimaryClip(clipData);
+        Toast.makeText(this, "Token copied", Toast.LENGTH_SHORT).show();
     }
 
     private void logout() {

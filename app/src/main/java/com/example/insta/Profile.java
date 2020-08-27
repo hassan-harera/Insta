@@ -29,7 +29,6 @@ import java.io.IOException;
 
 public class Profile extends AppCompatActivity {
 
-    RecyclerView view;
     FirebaseStorage storage;
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;

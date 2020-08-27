@@ -43,7 +43,6 @@ public class Register extends AppCompatActivity {
     DatabaseReference dbRef;
     FirebaseUser user;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,8 +92,6 @@ public class Register extends AppCompatActivity {
                 }
             });
         }
-
-
     }
 
 
