@@ -34,6 +34,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -56,7 +57,7 @@ public class AddImage extends AppCompatActivity {
     StorageReference storageReference;
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
-
+    Bitmap bitmapImg;
     Uri uri;
     String id;
 
@@ -91,13 +92,16 @@ public class AddImage extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        uri = data.getData();
-        if (uri != null) {
-            try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                image.setImageBitmap(bitmap);
-            } catch (IOException e) {
-                e.printStackTrace();
+        if (data != null && requestCode == ADD_IMAGE_REQUEST && resultCode == RESULT_OK) {
+            uri = data.getData();
+            if (uri != null) {
+                try {
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                    bitmapImg = Bitmap.createScaledBitmap(bitmap, 512, 512, true);
+                    image.setImageBitmap(bitmap);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -107,17 +111,22 @@ public class AddImage extends AppCompatActivity {
 
         final Post post = new Post();
         int id = (int) new Date().getTime();
-        post.setName(title.getText().toString());
+        post.setTitle(title.getText().toString());
         post.setDetails(this.message.getText().toString());
         post.setId(id);
 
 
-        if (uri != null) {
-            storageReference.child("Posts").child(id + "").putFile(uri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+        if (bitmapImg != null) {
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bitmapImg.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            byte[] byteArray = stream.toByteArray();
+            bitmapImg.recycle();
+
+            storageReference.child("Posts").child(id + "").putBytes(byteArray).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                     if (task.isSuccessful()) {
-                        if(databaseHelper.insertPost(post)) {
+                        if (databaseHelper.insertPost(post)) {
                             insertPostToFirebase(post);
                         }
                         successedAdd();
@@ -134,7 +143,7 @@ public class AddImage extends AppCompatActivity {
     private void insertPostToFirebase(Post post) {
         DatabaseReference dr = databaseReference.child("Users").child(firebaseUser.getUid()).child("Posts").child(post.getId() + "");
         dr.child("Id").setValue(post.getId());
-        dr.child("Title").setValue(post.getName());
+        dr.child("Title").setValue(post.getTitle());
         dr.child("Details").setValue(post.getDetails());
     }
 

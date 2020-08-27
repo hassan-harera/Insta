@@ -98,7 +98,7 @@ public class Profile extends AppCompatActivity {
     }
 
     private void getProfilePic() {
-        reference.child("Users").child(user.getUid()).child("Profile Pic").getBytes((1024 * 1024)).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+        reference.child("Users").child(user.getUid()).child("Profile Pic").getBytes((4096 * 4096)).addOnSuccessListener(new OnSuccessListener<byte[]>() {
             @Override
             public void onSuccess(byte[] b) {
                 if (b != null) {
@@ -111,6 +111,6 @@ public class Profile extends AppCompatActivity {
     public void editClicked(View view) {
         Intent intent = new Intent(this, EditProfile.class);
         startActivity(intent);
-        finishActivity(0125);
+        finish();
     }
 }

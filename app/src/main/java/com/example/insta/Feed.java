@@ -24,8 +24,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import Controller.FirebaseDatabaseController;
 import Controller.InstaDatabaseHelper;
 import Controller.RecyclerViewAdapter;
 import Model.Post;
@@ -39,6 +42,8 @@ public class Feed extends AppCompatActivity {
     FirebaseUser user;
     StorageReference reference;
     FirebaseAuth auth;
+
+    FirebaseDatabaseController fdc;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,14 +68,14 @@ public class Feed extends AppCompatActivity {
         });
 
         helper = new InstaDatabaseHelper(this);
+        List<Post> list = helper.getAllPosts();
 
-        List<Post> list = helper.getAllPosots();
+//        fdc = new FirebaseDatabaseController();
+//        List<Post> list = fdc.getAllPosts();
 
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(new RecyclerViewAdapter(this, list));
-
-        Log.e("ssss" , "kis");
     }
 
     private void addImage() {
@@ -96,7 +101,16 @@ public class Feed extends AppCompatActivity {
         } else if (itemId == R.id.settings) {
             Intent intent = new Intent(this, Settings.class);
             startActivity(intent);
+        } else if (itemId == R.id.logout) {
+            logout();
         }
         return true;
+    }
+
+    private void logout() {
+        auth.signOut();
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

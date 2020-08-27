@@ -73,16 +73,16 @@ public class MainActivity extends AppCompatActivity {
         } else if (password.equals("")) {
             this.email.setError("Password is required");
         } else {
-            auth.signInWithEmailAndPassword(username, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
-                    if (task.isSuccessful()) {
-                        successedLogin();
-                    } else {
-                        failedLogin();
+                auth.signInWithEmailAndPassword(username, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            successedLogin();
+                        } else {
+                            failedLogin();
+                        }
                     }
-                }
-            });
+                });
         }
     }
 

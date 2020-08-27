@@ -4,7 +4,7 @@ import android.graphics.Bitmap;
 
 public class Post {
 
-    private String name, details;
+    private String Title, details;
     private int id;
 
     public void setId(int id) {
@@ -16,19 +16,25 @@ public class Post {
     }
 
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTitle(String title) {
+        Title = title;
+    }
+
+    public String getTitle() {
+        return Title;
     }
 
     public void setDetails(String details) {
         this.details = details;
     }
 
-    public String getName() {
-        return name;
-    }
 
     public String getDetails() {
         return details;
+    }
+
+    @Override
+    public String toString() {
+        return id +"";
     }
 }

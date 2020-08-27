@@ -11,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.insta.R;
@@ -20,9 +21,16 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import Model.Post;
@@ -36,19 +44,22 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     FirebaseUser user;
     FirebaseAuth auth;
     FirebaseStorage storage;
+    FirebaseDatabase database;
+    DatabaseReference databaseReference;
+
 
     InstaDatabaseHelper databaseHelper;
 
     public RecyclerViewAdapter(Context context, List<Post> list) {
-        this.list = list;
         this.context = context;
-
+        this.list = list;
         auth = FirebaseAuth.getInstance();
         storage = FirebaseStorage.getInstance();
         user = auth.getCurrentUser();
         reference = storage.getReference();
-
+        database = FirebaseDatabase.getInstance();
         databaseHelper = new InstaDatabaseHelper(context);
+
 
     }
 
@@ -61,12 +72,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
-        holder.recName.setText(list.get(position).getName());
+        holder.recName.setText(list.get(position).getTitle());
         holder.recDetails.setText(list.get(position).getDetails());
 
         int id = list.get(position).getId();
 
-        final long Resulation = 1024 * 1024;
+        final long Resulation = 4096 * 4096;
         OnCompleteListener<byte[]> listener = new OnCompleteListener<byte[]>() {
             @Override
             public void onComplete(@NonNull Task<byte[]> task) {
@@ -77,7 +88,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 }
             }
         };
-        reference.child("Users").child(user.getUid()).child("Posts").child(id+"").getBytes(Resulation).addOnCompleteListener(listener);
+        reference.child("Users").child(user.getUid()).child("Posts").child(id + "").getBytes(Resulation).addOnCompleteListener(listener);
     }
 
     @Override

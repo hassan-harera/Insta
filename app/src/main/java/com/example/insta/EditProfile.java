@@ -30,6 +30,7 @@ import com.google.firebase.storage.StorageReference;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -54,7 +55,7 @@ public class EditProfile extends AppCompatActivity {
     TextView email;
     Button edit;
     Uri uri;
-
+    Bitmap bitmap1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,7 +114,7 @@ public class EditProfile extends AppCompatActivity {
     }
 
     private void getProfilePic() {
-        reference.child("Users").child(user.getUid()).child("Profile Pic").getBytes((1024 * 1024)).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+        reference.child("Users").child(user.getUid()).child("Profile Pic").getBytes((4096 * 4096)).addOnSuccessListener(new OnSuccessListener<byte[]>() {
             @Override
             public void onSuccess(byte[] b) {
                 if (b != null) {
@@ -131,7 +132,11 @@ public class EditProfile extends AppCompatActivity {
         databaseReference.child("Users").child(user.getUid()).setValue(map);
 
         if (uri != null) {
-            reference.child("Users").child(user.getUid()).child("Profile Pic").putFile(uri);
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            bitmap1.compress(Bitmap.CompressFormat.PNG, 100 , bos);
+            reference.child("Users").child(user.getUid()).child("Profile Pic").putBytes(bos.toByteArray());
+            startActivity(new Intent(this, Feed.class));
+            finish();
         }
     }
 
@@ -144,10 +149,11 @@ public class EditProfile extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == 123 && resultCode == RESULT_OK && data != null) {
+        if (data != null && requestCode == 123 && resultCode == RESULT_OK) {
             uri = data.getData();
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+                bitmap1 = Bitmap.createScaledBitmap(bitmap, 512, 512, true);
                 profilePic.setImageBitmap(bitmap);
             } catch (IOException e) {
                 e.printStackTrace();

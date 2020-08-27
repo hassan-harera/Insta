@@ -14,4 +14,10 @@
         android:title="Settings"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/logout"
+        android:icon="@drawable/settings"
+        android:title="Log out"
+        app:showAsAction="never" />
+
 </menu>

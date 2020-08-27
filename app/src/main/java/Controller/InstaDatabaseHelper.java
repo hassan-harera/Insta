@@ -63,13 +63,13 @@ public class InstaDatabaseHelper extends SQLiteOpenHelper {
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(Info.ID_COLUMN, post.getId());
-        contentValues.put(Info.NAME_COLUMN, post.getName());
+        contentValues.put(Info.NAME_COLUMN, post.getTitle());
         contentValues.put(Info.DETAILS_COLUMN, post.getDetails());
 
        return db.insert(Info.TABLE_USER_IMAGES, null, contentValues) != -1;
     }
 
-    public List<Post> getAllPosots() {
+    public List<Post> getAllPosts() {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.query(Info.TABLE_USER_IMAGES, new String[]{Info.ID_COLUMN, Info.NAME_COLUMN, Info.DETAILS_COLUMN},
                 null, null, null, null, null);
@@ -78,7 +78,7 @@ public class InstaDatabaseHelper extends SQLiteOpenHelper {
         while (cursor != null && cursor.moveToNext()) {
             Post p = new Post();
             p.setId(cursor.getInt(cursor.getColumnIndex(Info.ID_COLUMN)));
-            p.setName(cursor.getString(cursor.getColumnIndex(Info.NAME_COLUMN)));
+            p.setTitle(cursor.getString(cursor.getColumnIndex(Info.NAME_COLUMN)));
             p.setDetails(cursor.getString(cursor.getColumnIndex(Info.DETAILS_COLUMN)));
             list.add(p);
         }
@@ -93,7 +93,7 @@ public class InstaDatabaseHelper extends SQLiteOpenHelper {
         Post p = new Post();
         if (cursor != null && cursor.moveToNext()) {
             p.setId(cursor.getInt(cursor.getColumnIndex(Info.ID_COLUMN)));
-            p.setName(cursor.getString(cursor.getColumnIndex(Info.NAME_COLUMN)));
+            p.setTitle(cursor.getString(cursor.getColumnIndex(Info.NAME_COLUMN)));
             p.setDetails(cursor.getString(cursor.getColumnIndex(Info.DETAILS_COLUMN)));
         }
         return p;
