@@ -14,6 +14,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.insta.R;
@@ -29,6 +31,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.connection.RequestResultCallback;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -39,9 +42,8 @@ import Model.Post;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
 
-    Context context;
+    private final Context context;
     List<Post> list;
-
     StorageReference reference;
     FirebaseUser user;
     FirebaseAuth auth;
@@ -51,9 +53,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     InstaDatabaseHelper databaseHelper;
 
-    public RecyclerViewAdapter(Context context, List<Post> list) {
-        this.context = context;
+    public RecyclerViewAdapter(List<Post> list, Context context) {
         this.list = list;
+        this.context = context;
 
         auth = FirebaseAuth.getInstance();
         storage = FirebaseStorage.getInstance();
@@ -91,7 +93,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                         post.setBitmap(bitmap);
                         databaseHelper.insertPost(post);
                     } else {
-                        Toast.makeText(context, "Failed to load image", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(context, "Failed to load image", Toast.LENGTH_SHORT).show();
                     }
                 }
             };

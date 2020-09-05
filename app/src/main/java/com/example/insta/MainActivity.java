@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void goFeed() {
-        Intent intent = new Intent(this, Feed.class);
+        Intent intent = new Intent(this, Wall.class);
         startActivity(intent);
         finish();
     }
@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void successedLogin() {
-        Intent intent = new Intent(this, Feed.class);
+        Intent intent = new Intent(this, Wall.class);
         startActivity(intent);
         finish();
     }

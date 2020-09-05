@@ -46,7 +46,6 @@ public class VisitProfile extends AppCompatActivity {
     ImageView profilePic;
     TextView name, bio;
 
-    RecyclerViewAdapter recyclerViewAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +56,6 @@ public class VisitProfile extends AppCompatActivity {
         Bundle bundle = intent.getExtras();
         uid = bundle.get("Token").toString();
 
-        
 
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference().child("Users").child(uid);
@@ -131,7 +129,7 @@ public class VisitProfile extends AppCompatActivity {
                     p.setDetails(ds.child("Details").getValue(String.class));
                     list.add(p);
                 }
-                recyclerView.setAdapter(new RecyclerViewAdapter(VisitProfile.this, list));
+                recyclerView.setAdapter(new RecyclerViewAdapter(list, VisitProfile.this));
             }
 
             @Override

@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/profile"
+        android:id="@+id/edit_profile"
         android:icon="@drawable/user"
-        android:title="Profile"
+        android:title="Edit Profile"
         app:showAsAction="never" />
 
     <item
