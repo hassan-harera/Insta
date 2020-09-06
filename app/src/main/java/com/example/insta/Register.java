@@ -31,6 +31,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import Controller.InstaDatabaseHelper;
+import Model.User;
+
 public class Register extends AppCompatActivity {
 
     EditText password, email, repassword, name;
@@ -64,7 +67,7 @@ public class Register extends AppCompatActivity {
 
 
     public void registerClicked(View view) {
-        String password = this.password.getText().toString(),
+        final String password = this.password.getText().toString(),
                 username = this.email.getText().toString(),
                 repassword = this.repassword.getText().toString(),
                 name = this.name.getText().toString();

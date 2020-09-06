@@ -22,11 +22,13 @@ import com.google.firebase.storage.StorageReference;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.sql.Blob;
 import java.util.ArrayList;
 import java.util.List;
 
 import Database.Info;
 import Model.Post;
+import Model.User;
 
 public class InstaDatabaseHelper extends SQLiteOpenHelper {
 
@@ -45,53 +47,172 @@ public class InstaDatabaseHelper extends SQLiteOpenHelper {
         databaseReference = firebaseDatabase.getReference();
     }
 
+
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String query = " CREATE TABLE " + Info.TABLE_USER_IMAGES + " ( " +
-                Info.ID_COLUMN + " INTEGER PRIMARY KEY, " +
-                Info.NAME_COLUMN + " TEXT, " +
-                Info.DETAILS_COLUMN + " TEXT, " +
-                Info.IMAGE_COLUMN + " bitmap" +
-                " );";
-
-        db.execSQL(query);
+        createFeedTable(db);
+        createProfileTable(db);
+        createUserTable(db);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        String query = "DROP TABLE IF EXISTS " + Info.TABLE_USER_IMAGES;
-        db.execSQL(query);
+        dropProfileTable(db);
+        dropFeedTable(db);
+        dropUserTable(db);
         onCreate(db);
     }
 
-    public Boolean insertPost(Post post) {
+    private void dropFeedTable(SQLiteDatabase db) {
+        String query = "DROP TABLE IF EXISTS " + Info.TABLE_FEED_POSTS;
+        db.execSQL(query);
+    }
+
+    private void dropProfileTable(SQLiteDatabase db) {
+        String query = "DROP TABLE IF EXISTS " + Info.TABLE_PROFILE_POSTS;
+        db.execSQL(query);
+    }
+
+    private void dropUserTable(SQLiteDatabase db) {
+        String query = "DROP TABLE IF EXISTS " + Info.TABLE_USER;
+        db.execSQL(query);
+    }
+
+    public Boolean insertProfilePost(Post post) {
         SQLiteDatabase db = getWritableDatabase();
 
         ContentValues contentValues = new ContentValues();
-        contentValues.put(Info.ID_COLUMN, post.getId());
-        contentValues.put(Info.NAME_COLUMN, post.getTitle());
-        contentValues.put(Info.DETAILS_COLUMN, post.getDetails());
+        contentValues.put(Info.PROFILE_POST_ID_COLUMN, post.getId());
+        contentValues.put(Info.PROFILE_POST_TITLE_COLUMN, post.getTitle());
+        contentValues.put(Info.PROFILE_POST_DESCRIPTION_COLUMN, post.getDescription());
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         post.getBitmap().compress(Bitmap.CompressFormat.PNG, 100, stream);
-        contentValues.put(Info.IMAGE_COLUMN, stream.toByteArray());
+        contentValues.put(Info.PROFILE_POST_IMAGE_COLUMN, stream.toByteArray());
 
-       return db.insert(Info.TABLE_USER_IMAGES, null, contentValues) != -1;
+        return db.insert(Info.TABLE_PROFILE_POSTS, null, contentValues) != -1;
     }
 
-    public List<Post> getAllPosts() {
+    public Boolean insertFeedPost(Post post) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Info.FEED_POST_ID_COLUMN, post.getId());
+        contentValues.put(Info.FEED_POST_TITLE_COLUMN, post.getTitle());
+        contentValues.put(Info.FEED_POST_DESCRIPTION_COLUMN, post.getDescription());
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        post.getBitmap().compress(Bitmap.CompressFormat.PNG, 100, stream);
+        contentValues.put(Info.FEED_POST_IMAGE_COLUMN, stream.toByteArray());
+
+        return db.insert(Info.TABLE_FEED_POSTS, null, contentValues) != -1;
+    }
+
+    public Boolean insertUser(User user) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Info.USER_UID_COLUMN, user.getUid());
+        contentValues.put(Info.USER_NAME_COLUMN, user.getName());
+        contentValues.put(Info.USER_EMAIL_COLUMN, user.getEmail());
+        contentValues.put(Info.USER_BIO_COLUMN, user.getBio());
+
+        if (user.getProfilePic() != null) {
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            user.getProfilePic().compress(Bitmap.CompressFormat.PNG, 100, stream);
+            contentValues.put(Info.USER_IMAGE_COLUMN, stream.toByteArray());
+        }
+        return db.insert(Info.TABLE_USER, null, contentValues) != -1;
+    }
+
+    public void updateUserName(String name, String uid) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(Info.USER_NAME_COLUMN, name);
+        db.update(Info.TABLE_USER, values, Info.USER_UID_COLUMN + " = ? ", new String[]{uid});
+    }
+
+    public void updateUserBio(String bio, String uid) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(Info.USER_BIO_COLUMN, bio);
+        db.update(Info.TABLE_USER, values, Info.USER_UID_COLUMN + " = ? ", new String[]{uid});
+    }
+
+    public void updateUserProfilePic(byte[] profilePic, String uid) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(Info.USER_IMAGE_COLUMN, profilePic);
+        db.update(Info.TABLE_USER, values, Info.USER_UID_COLUMN + " = ? ", new String[]{uid});
+    }
+
+
+
+    public User getUser(String uid) {
+        User user = new User();
+
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.query(Info.TABLE_USER_IMAGES, new String[]{Info.ID_COLUMN, Info.NAME_COLUMN, Info.DETAILS_COLUMN , Info.IMAGE_COLUMN},
-                null, null, null, null, null);
+        Cursor cursor = db.query(Info.TABLE_USER, new String[]{Info.USER_UID_COLUMN,
+                        Info.USER_NAME_COLUMN, Info.USER_BIO_COLUMN,
+                        Info.USER_EMAIL_COLUMN, Info.USER_IMAGE_COLUMN},
+                Info.USER_UID_COLUMN + " = ?", new String[]{uid},
+                null, null, null);
+
+
+        if (cursor != null && cursor.moveToNext()) {
+            user.setUid(cursor.getString(cursor.getColumnIndex(Info.USER_UID_COLUMN)));
+            user.setBio(cursor.getString(cursor.getColumnIndex(Info.USER_BIO_COLUMN)));
+            user.setName(cursor.getString(cursor.getColumnIndex(Info.USER_NAME_COLUMN)));
+            user.setEmail(cursor.getString(cursor.getColumnIndex(Info.USER_EMAIL_COLUMN)));
+
+            byte[] bytes = cursor.getBlob(cursor.getColumnIndex(Info.USER_IMAGE_COLUMN));
+            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+            user.setProfilePic(bitmap);
+        }
+        return user;
+    }
+
+    public User getUserName(String uid) {
+        User user = new User();
+
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query(Info.TABLE_USER, new String[]{Info.USER_UID_COLUMN,
+                        Info.USER_NAME_COLUMN, Info.USER_BIO_COLUMN,
+                        Info.USER_EMAIL_COLUMN, Info.USER_IMAGE_COLUMN},
+                "WHERE " + Info.USER_UID_COLUMN + " = ?", new String[]{uid},
+                null, null, null);
+
+        if (cursor != null && cursor.moveToNext()) {
+            user.setUid(cursor.getString(cursor.getColumnIndex(Info.USER_UID_COLUMN)));
+            user.setBio(cursor.getString(cursor.getColumnIndex(Info.USER_BIO_COLUMN)));
+            user.setName(cursor.getString(cursor.getColumnIndex(Info.USER_NAME_COLUMN)));
+            user.setEmail(cursor.getString(cursor.getColumnIndex(Info.USER_EMAIL_COLUMN)));
+
+            byte[] bytes = cursor.getBlob(cursor.getColumnIndex(Info.USER_IMAGE_COLUMN));
+            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+            user.setProfilePic(bitmap);
+        }
+        return user;
+    }
+
+    public List<Post> getFeedPosts() {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query(Info.TABLE_FEED_POSTS, new String[]{Info.FEED_POST_ID_COLUMN,
+                        Info.FEED_POST_TITLE_COLUMN, Info.FEED_POST_DESCRIPTION_COLUMN,
+                        Info.FEED_POST_IMAGE_COLUMN}, null, null, null,
+                null, null);
 
         final List<Post> list = new ArrayList();
         while (cursor != null && cursor.moveToNext()) {
             Post p = new Post();
-            p.setId(cursor.getInt(cursor.getColumnIndex(Info.ID_COLUMN)));
-            p.setTitle(cursor.getString(cursor.getColumnIndex(Info.NAME_COLUMN)));
-            p.setDetails(cursor.getString(cursor.getColumnIndex(Info.DETAILS_COLUMN)));
+            p.setId(cursor.getInt(cursor.getColumnIndex(Info.FEED_POST_ID_COLUMN)));
+            p.setTitle(cursor.getString(cursor.getColumnIndex(Info.FEED_POST_TITLE_COLUMN)));
+            p.setDescription(cursor.getString(cursor.getColumnIndex(Info.FEED_POST_DESCRIPTION_COLUMN)));
 
-            byte [] bytes = cursor.getBlob(cursor.getColumnIndex(Info.IMAGE_COLUMN));
+            byte[] bytes = cursor.getBlob(cursor.getColumnIndex(Info.FEED_POST_IMAGE_COLUMN));
             Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
             p.setBitmap(bitmap);
 
@@ -100,28 +221,111 @@ public class InstaDatabaseHelper extends SQLiteOpenHelper {
         return list;
     }
 
-    public Post getPosot(int id) {
+    public Post getFeedPost(int id) {
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.query(Info.TABLE_USER_IMAGES, new String[]{Info.ID_COLUMN, Info.NAME_COLUMN, Info.DETAILS_COLUMN, Info.IMAGE_COLUMN},
-                Info.ID_COLUMN + " = ? ", new String[]{id + ""}, null, null, null);
+        Cursor cursor = db.query(Info.TABLE_FEED_POSTS, new String[]{Info.FEED_POST_ID_COLUMN,
+                        Info.FEED_POST_TITLE_COLUMN, Info.FEED_POST_DESCRIPTION_COLUMN,
+                        Info.FEED_POST_IMAGE_COLUMN}, Info.FEED_POST_ID_COLUMN + " = ? ", new String[]{id + ""},
+                null, null, null);
 
         Post p = new Post();
         if (cursor != null && cursor.moveToNext()) {
-            p.setId(cursor.getInt(cursor.getColumnIndex(Info.ID_COLUMN)));
-            p.setTitle(cursor.getString(cursor.getColumnIndex(Info.NAME_COLUMN)));
-            p.setDetails(cursor.getString(cursor.getColumnIndex(Info.DETAILS_COLUMN)));
+            p.setId(cursor.getInt(cursor.getColumnIndex(Info.FEED_POST_ID_COLUMN)));
+            p.setTitle(cursor.getString(cursor.getColumnIndex(Info.FEED_POST_TITLE_COLUMN)));
+            p.setDescription(cursor.getString(cursor.getColumnIndex(Info.FEED_POST_DESCRIPTION_COLUMN)));
 
-            byte [] bytes = cursor.getBlob(cursor.getColumnIndex(Info.IMAGE_COLUMN));
+            byte[] bytes = cursor.getBlob(cursor.getColumnIndex(Info.FEED_POST_IMAGE_COLUMN));
             Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
             p.setBitmap(bitmap);
         }
         return p;
     }
 
-    public Boolean postIsFound(int id) {
-        SQLiteDatabase db = getWritableDatabase();
-        String query = "select * from " + Info.TABLE_USER_IMAGES + " where " + Info.ID_COLUMN + " = ? ;";
-        return db.rawQuery(query,new String[]{id + ""}).moveToFirst();
+    public Post getProfilePost(int id) {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query(Info.TABLE_PROFILE_POSTS, new String[]{Info.PROFILE_POST_ID_COLUMN,
+                        Info.PROFILE_POST_TITLE_COLUMN, Info.PROFILE_POST_DESCRIPTION_COLUMN,
+                        Info.PROFILE_POST_IMAGE_COLUMN}, Info.PROFILE_POST_ID_COLUMN + " = ? ", new String[]{id + ""},
+                null, null, null);
+
+        Post p = new Post();
+        if (cursor != null && cursor.moveToNext()) {
+            p.setId(cursor.getInt(cursor.getColumnIndex(Info.FEED_POST_ID_COLUMN)));
+            p.setTitle(cursor.getString(cursor.getColumnIndex(Info.FEED_POST_TITLE_COLUMN)));
+            p.setDescription(cursor.getString(cursor.getColumnIndex(Info.FEED_POST_DESCRIPTION_COLUMN)));
+
+            byte[] bytes = cursor.getBlob(cursor.getColumnIndex(Info.FEED_POST_IMAGE_COLUMN));
+            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+            p.setBitmap(bitmap);
+        }
+        return p;
     }
 
+    public Boolean checkFeedPost(int id) {
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "select * from " + Info.TABLE_FEED_POSTS + " where " + Info.FEED_POST_ID_COLUMN + " = ? ;";
+        return db.rawQuery(query, new String[]{id + ""}).moveToFirst();
+    }
+
+    public Boolean checkProfilePost(int id) {
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "select * from " + Info.TABLE_PROFILE_POSTS + " where " + Info.PROFILE_POST_ID_COLUMN + " = ? ;";
+        return db.rawQuery(query, new String[]{id + ""}).moveToFirst();
+    }
+
+    public void createProfileTable(SQLiteDatabase db) {
+        String query = "CREATE TABLE " + Info.TABLE_PROFILE_POSTS + "("
+                + Info.PROFILE_POST_ID_COLUMN + " INT PRIMARY KEY,"
+                + Info.PROFILE_POST_TITLE_COLUMN + " TEXT,"
+                + Info.PROFILE_POST_DESCRIPTION_COLUMN + " TEXT,"
+                + Info.PROFILE_POST_IMAGE_COLUMN + " BITMAP"
+                + ");";
+        db.execSQL(query);
+    }
+
+
+    public void createFeedTable(SQLiteDatabase db) {
+        String query = " CREATE TABLE " + Info.TABLE_FEED_POSTS + " ( " +
+                Info.FEED_POST_ID_COLUMN + " INTEGER PRIMARY KEY, " +
+                Info.FEED_POST_TITLE_COLUMN + " TEXT, " +
+                Info.FEED_POST_DESCRIPTION_COLUMN + " TEXT, " +
+                Info.FEED_POST_IMAGE_COLUMN + " bitmap" +
+                " );";
+        db.execSQL(query);
+    }
+
+    public void createUserTable(SQLiteDatabase db) {
+        String query = " CREATE TABLE " + Info.TABLE_USER + " ( " +
+                Info.USER_UID_COLUMN + " TEXT PRIMARY KEY, " +
+                Info.USER_NAME_COLUMN + " TEXT, " +
+                Info.USER_BIO_COLUMN + " TEXT, " +
+                Info.USER_EMAIL_COLUMN + " TEXT, " +
+                Info.USER_IMAGE_COLUMN + " bitmap" +
+                " );";
+        db.execSQL(query);
+    }
+
+    public List<Post> getProfilePosts() {
+        List<Post> list = new ArrayList();
+        String query = "SELECT * FROM " + Info.TABLE_PROFILE_POSTS;
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+
+        while (cursor != null && cursor.moveToNext()) {
+            Post p = new Post();
+            p.setId(cursor.getInt(cursor.getColumnIndex(Info.PROFILE_POST_ID_COLUMN)));
+            p.setTitle(cursor.getString(cursor.getColumnIndex(Info.PROFILE_POST_TITLE_COLUMN)));
+            p.setDescription(cursor.getString(cursor.getColumnIndex(Info.PROFILE_POST_DESCRIPTION_COLUMN)));
+            byte[] bytes = cursor.getBlob(cursor.getColumnIndex(Info.PROFILE_POST_IMAGE_COLUMN));
+            p.setBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+            list.add(p);
+        }
+        return list;
+    }
+
+    public boolean checkUser(String uid) {
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "select * from " + Info.TABLE_USER + " where " + Info.USER_UID_COLUMN + " = ? ;";
+        return db.rawQuery(query, new String[]{uid + ""}).moveToFirst();
+    }
 }

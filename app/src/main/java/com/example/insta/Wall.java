@@ -72,6 +72,15 @@ public class Wall extends AppCompatActivity {
         });
         toolbar.setTitle("Insta");
 
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addImage();
+            }
+        });
+
+        fab.setVisibility(View.INVISIBLE);
 
 
         SearchView searchView = findViewById(R.id.search_token);
@@ -123,6 +132,10 @@ public class Wall extends AppCompatActivity {
         }).attach();
     }
 
+    private void addImage() {
+        Intent intent = new Intent(this, AddImage.class);
+        startActivity(intent);
+    }
 
 
     private void goProfile(String query) {

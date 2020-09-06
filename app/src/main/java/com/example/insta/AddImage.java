@@ -110,7 +110,7 @@ public class AddImage extends AppCompatActivity {
         final Post post = new Post();
         int id = (int) new Date().getTime();
         post.setTitle(title.getText().toString());
-        post.setDetails(this.message.getText().toString());
+        post.setDescription(this.message.getText().toString());
         post.setId(id);
 
 
@@ -140,7 +140,7 @@ public class AddImage extends AppCompatActivity {
         DatabaseReference dr = databaseReference.child("Users").child(firebaseUser.getUid()).child("Posts").child(post.getId() + "");
         dr.child("Id").setValue(post.getId());
         dr.child("Title").setValue(post.getTitle());
-        dr.child("Details").setValue(post.getDetails());
+        dr.child("Details").setValue(post.getDescription());
     }
 
     private void failedAdd() {

@@ -10,12 +10,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.widget.ImageView;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -27,7 +24,7 @@ import com.google.firebase.storage.StorageReference;
 import java.util.ArrayList;
 import java.util.List;
 
-import Controller.RecyclerViewAdapter;
+import Controller.VisitProfileRecyclerViewAdapter;
 import Model.Post;
 
 public class VisitProfile extends AppCompatActivity {
@@ -126,10 +123,10 @@ public class VisitProfile extends AppCompatActivity {
                     long id = ds.child("Id").getValue(Integer.class);
                     p.setId((int) id);
                     p.setTitle(ds.child("Title").getValue(String.class));
-                    p.setDetails(ds.child("Details").getValue(String.class));
+                    p.setDescription(ds.child("Details").getValue(String.class));
                     list.add(p);
                 }
-                recyclerView.setAdapter(new RecyclerViewAdapter(list, VisitProfile.this));
+                recyclerView.setAdapter(new VisitProfileRecyclerViewAdapter(list, VisitProfile.this));
             }
 
             @Override
