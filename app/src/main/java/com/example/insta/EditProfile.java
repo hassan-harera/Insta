@@ -2,12 +2,17 @@ package com.example.insta;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -40,9 +45,14 @@ import java.util.Map;
 
 import javax.xml.transform.Result;
 
+import Controller.InstaDatabaseHelper;
+import Model.User;
+
 public class EditProfile extends AppCompatActivity {
 
-    RecyclerView view;
+
+    InstaDatabaseHelper helper;
+
     FirebaseStorage storage;
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
@@ -62,6 +72,8 @@ public class EditProfile extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
 
+        helper = new InstaDatabaseHelper(this);
+
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference();
         storage = FirebaseStorage.getInstance();
@@ -75,11 +87,29 @@ public class EditProfile extends AppCompatActivity {
         bio = findViewById(R.id.EditProfile_bio);
         email = findViewById(R.id.user_profile_email);
 
-        getProfilePic();
-        getName();
-        getBio();
+        getInfo();
         email.setText(user.getEmail());
 
+    }
+
+    private void getInfo() {
+        ConnectivityManager cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+
+        if (isConnected) {
+            getProfilePic();
+            getName();
+            getBio();
+        } else {
+            User user;
+            user = helper.getUser(auth.getCurrentUser().getUid());
+            if(user.getProfilePic() != null){
+                profilePic.setImageBitmap(user.getProfilePic());
+            }
+            name.setText(user.getName());
+            bio.setText(user.getBio());
+        }
     }
 
     private void getName() {
@@ -124,7 +154,33 @@ public class EditProfile extends AppCompatActivity {
         });
     }
 
-    public void editClicked(View view) {
+    public void editClicked(final View view) {
+        ConnectivityManager cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+
+        if(!isConnected){
+            AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+
+            dialog.setTitle("Internet Problem");
+
+            dialog.setPositiveButton("Try again", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    editClicked(edit.getRootView());
+                    dialog.dismiss();
+                }
+            });
+            dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            dialog.show();
+            return;
+        }
+
         databaseReference.child("Users").child(user.getUid()).child("Id").setValue(name.getText().toString());
         databaseReference.child("Users").child(user.getUid()).child("Bio").setValue(bio.getText().toString());
 
