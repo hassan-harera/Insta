@@ -9,10 +9,13 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -32,32 +35,40 @@ public class VisitProfile extends AppCompatActivity {
 
     List<Post> list;
 
-    private String uid;
+    private String visitedUID;
 
     RecyclerView recyclerView;
     FirebaseStorage storage;
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
     StorageReference reference;
+    FirebaseAuth auth;
 
-    ImageView profilePic;
+    ImageView profilePic, addFriend;
     TextView name, bio;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_visit_profile);
 
+        auth = FirebaseAuth.getInstance();
+
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
-        uid = bundle.get("Token").toString();
+        visitedUID = bundle.get("Token").toString();
 
+        addFriend = findViewById(R.id.add_friend);
+
+        if(visitedUID.equals(auth.getUid())){
+            addFriend.setVisibility(View.INVISIBLE);
+            addFriend.setClickable(false);
+        }
 
         firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference().child("Users").child(uid);
+        databaseReference = firebaseDatabase.getReference().child("Users").child(visitedUID);
         storage = FirebaseStorage.getInstance();
-        reference = storage.getReference().child("Users").child(uid);
+        reference = storage.getReference().child("Users").child(visitedUID);
 
         profilePic = findViewById(R.id.user_profile_photo);
         name = findViewById(R.id.user_profile_name);
@@ -136,4 +147,23 @@ public class VisitProfile extends AppCompatActivity {
         });
     }
 
+    public void addFriendClicked(View view) {
+        DatabaseReference dbr = FirebaseDatabase.getInstance().getReference().child("Users").child(auth.getUid()).child("FriendRequests").child(visitedUID);
+        dbr.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.child("From").getValue() == null) {
+                    snapshot.child("From").getRef().setValue(visitedUID);
+                    Toast.makeText(VisitProfile.this, "Request Sent", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(VisitProfile.this, "Request Already Sent", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
 }

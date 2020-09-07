@@ -3,8 +3,6 @@ package Controller;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Image;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,7 +55,7 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerVi
     @NonNull
     @Override
     public FeedRecyclerViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_view_card, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.post_view_card, parent, false);
         return new FeedRecyclerViewAdapter.ViewHolder(view);
     }
 

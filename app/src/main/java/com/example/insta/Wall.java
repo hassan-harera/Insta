@@ -111,7 +111,7 @@ public class Wall extends AppCompatActivity {
         list = new ArrayList();
         list.add(new Feed());
         list.add(new ViewProfile());
-        list.add(new SecondFragment());
+        list.add(new Notifications());
 
         viewPager = findViewById(R.id.view_pager);
         FragmentAdapter adapter = new FragmentAdapter(this, list);

@@ -125,7 +125,7 @@ public class AddImage extends AppCompatActivity {
                 public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                     if (task.isSuccessful()) {
                         insertPostToFirebase(post);
-                        successedAdd();
+                        successAdd();
                     } else {
                         failedAdd();
                     }
@@ -147,7 +147,7 @@ public class AddImage extends AppCompatActivity {
         Toast.makeText(this, "Failed to upload the image", Toast.LENGTH_LONG).show();
     }
 
-    private void successedAdd() {
+    private void successAdd() {
         Toast.makeText(this, "The image added Successfully", Toast.LENGTH_LONG).show();
         Intent intent = new Intent(this, Feed.class);
         startActivity(intent);

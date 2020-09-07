@@ -10,9 +10,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.GnssNavigationMessage;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -102,7 +104,13 @@ public class ViewProfile extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+
+        viewCompnents();
+    }
+
+    private void viewCompnents() {
         helper = new InstaDatabaseHelper(view.getContext());
+
 
         ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
@@ -209,10 +217,16 @@ public class ViewProfile extends Fragment {
     }
 
     @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         if (getActivity() != null) {
             fab.setVisibility(View.INVISIBLE);
+            viewCompnents();
         }
     }
 }

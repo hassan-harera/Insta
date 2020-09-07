@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
-                        successedLogin();
+                        successLogin();
                     } else {
                         failedLogin();
                     }
@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void successedLogin() {
+    private void successLogin() {
         Intent intent = new Intent(this, Wall.class);
         startActivity(intent);
         finish();

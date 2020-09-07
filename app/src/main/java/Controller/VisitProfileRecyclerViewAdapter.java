@@ -55,7 +55,7 @@ public class VisitProfileRecyclerViewAdapter extends RecyclerView.Adapter<VisitP
     @NonNull
     @Override
     public VisitProfileRecyclerViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_view_card, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.post_view_card, parent, false);
         return new VisitProfileRecyclerViewAdapter.ViewHolder(view);
     }
 

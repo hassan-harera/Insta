@@ -7,9 +7,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -17,11 +14,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -30,9 +25,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-
-import Controller.InstaDatabaseHelper;
-import Model.User;
 
 public class Register extends AppCompatActivity {
 
@@ -88,7 +80,7 @@ public class Register extends AppCompatActivity {
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
                         addUserToDatabase();
-                        successedRegister();
+                        succeedRegister();
                     } else {
                         failedRegister();
                     }
@@ -175,8 +167,9 @@ public class Register extends AppCompatActivity {
         finish();
     }
 
-    private void successedRegister() {
-        Toast.makeText(this, "Successful register", Toast.LENGTH_LONG).show();
+    private void succeedRegister() {
+        Toast.makeText(this, "succeful register", Toast.LENGTH_LONG).show();
+        Intent intent = new Intent(this, Wall.class);
     }
 
     public void loginClicked(View view) {

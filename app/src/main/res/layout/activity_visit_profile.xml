@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/scrollView"
@@ -31,6 +30,18 @@
             android:padding="20dp"
             android:scaleType="centerCrop"
             android:src="@drawable/profile" />
+
+        <ImageView
+            android:id="@+id/add_friend"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_below="@+id/header_cover_image"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="15dp"
+            android:layout_toRightOf="@+id/user_profile_photo"
+            android:elevation="5dp"
+            android:src="@drawable/add_friend"
+            android:onClick="addFriendClicked"/>
 
         <RelativeLayout
             android:id="@+id/profile_layout"
