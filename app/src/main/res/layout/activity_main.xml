@@ -9,20 +9,19 @@
 
 
     <ImageView
-        android:layout_marginStart="0dp"
         android:id="@+id/image1"
         android:layout_width="match_parent"
-        android:layout_height="302dp"
-        android:src="#1D1A2F" />
+        android:layout_height="320dp"
+        android:src="@drawable/animated_button3" />
 
     <ImageView
         android:id="@+id/image2"
         android:layout_width="47dp"
         android:layout_height="47dp"
+        android:layout_below="@+id/image1"
         android:layout_marginStart="5.27dp"
         android:layout_marginTop="-40dp"
-        android:layout_below="@+id/image1"
-        android:src="#1D1A2F"
+        android:background="@drawable/animated_button3"
         android:rotation="45" />
 
     <TextView
@@ -71,24 +70,25 @@
 
     <Button
         android:id="@+id/login"
-        android:layout_width="187.5dp"
-        android:layout_height="70dp"
-        android:layout_marginLeft="222dp"
-        android:layout_marginTop="80dp"
-        android:background="#1D1A2F"
+        android:layout_width="250dp"
+        android:layout_height="47dp"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/animated_button2"
         android:onClick="loginClicked"
+        android:layout_centerHorizontal="true"
         android:layout_below="@id/linear"
         android:text="login"
         android:textColor="#FAFAFA" />
 
     <TextView
         android:id="@+id/register_text"
-        android:layout_width="134dp"
+        android:layout_width="160dp"
         android:layout_height="35dp"
-        android:layout_marginLeft="24dp"
-        android:layout_marginTop="95dp"
+        android:layout_marginTop="10dp"
         android:onClick="registerClicked"
-        android:layout_below="@+id/linear"
-        android:text="Don’t have an account? SIGN UP"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/login"
+        android:gravity="center"
+        android:text="Do you want to SIGN UP?"
         android:textColor="#707070" />
 </RelativeLayout>

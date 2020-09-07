@@ -1,76 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:weightSum="2"
     tools:context=".AddImage">
 
     <ImageView
         android:id="@+id/image_add"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_margin="45dp"
-        android:layout_weight="1.1"
+        android:layout_height="300dp"
+        android:layout_marginTop="45dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
         android:onClick="addImageClicked"
         android:scaleType="centerCrop"
         android:src="@drawable/add_image" />
-
-    <LinearLayout
-
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.6"
-        android:orientation="vertical">
 
 
         <EditText
             android:id="@+id/title"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="10dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="50dp"
             android:layout_marginRight="20dp"
             android:layout_marginBottom="20dp"
-            android:layout_weight="0.2"
-            android:focusedByDefault="true"
             android:gravity="center"
             android:hint="Title"
+            android:layout_below="@id/image_add"
             android:imeOptions="actionNext"
             android:selectAllOnFocus="true"
             android:singleLine="true" />
 
         <EditText
             android:id="@+id/message"
+            android:layout_height="40dp"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
             android:layout_marginLeft="20dp"
             android:layout_marginTop="10dp"
             android:layout_marginRight="20dp"
             android:layout_marginBottom="20dp"
-            android:layout_weight="0.2"
             android:focusedByDefault="true"
             android:gravity="center"
             android:hint="Details"
+            android:layout_below="@id/title"
             android:imeOptions="actionDone"
             android:selectAllOnFocus="true"
             android:singleLine="true" />
-    </LinearLayout>
-
     <Button
         android:id="@+id/add_add_image"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
+        android:layout_width="200dp"
+        android:layout_height="35dp"
         android:layout_gravity="center"
         android:layout_marginLeft="20dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="50dp"
         android:layout_marginRight="20dp"
         android:layout_marginBottom="30dp"
-        android:layout_weight="0.2"
+        android:layout_centerHorizontal="true"
         android:background="@drawable/animated_button"
         android:onClick="addClicked"
-        android:text="add" />
+        android:text="add"
+        android:textColor="#FAFAFA"
+        android:layout_below="@id/message"/>
 
-</LinearLayout>
+</RelativeLayout>

@@ -56,7 +56,7 @@ public class Register extends AppCompatActivity {
         password = findViewById(R.id.password_register);
         repassword = findViewById(R.id.confirm_password_register);
 
-        register = findViewById(R.id.register_register);
+        register = findViewById(R.id.register_signup);
         auth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
         storage = FirebaseStorage.getInstance();
@@ -103,7 +103,7 @@ public class Register extends AppCompatActivity {
         DatabaseReference userRef = dbRef.child("Users").child(user.getUid());
         userRef.child("Name").setValue(name.getText().toString());
         userRef.child("Username").setValue(email.getText().toString());
-        userRef.child("Bio").setValue("");
+        userRef.child("Bio").setValue("Bio");
 
         Uri uri = Uri.parse("android.resource://com.example.insta/drawable/profile");
         reference.child("Users").child(user.getUid()).child("Profile Pic").putFile(uri);
@@ -177,10 +177,6 @@ public class Register extends AppCompatActivity {
 
     private void successedRegister() {
         Toast.makeText(this, "Successful register", Toast.LENGTH_LONG).show();
-        reference.child(user.getUid());
-        Intent intent = new Intent(this, Feed.class);
-        startActivity(intent);
-        finish();
     }
 
     public void loginClicked(View view) {

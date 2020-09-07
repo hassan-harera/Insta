@@ -328,4 +328,11 @@ public class InstaDatabaseHelper extends SQLiteOpenHelper {
         String query = "select * from " + Info.TABLE_USER + " where " + Info.USER_UID_COLUMN + " = ? ;";
         return db.rawQuery(query, new String[]{uid + ""}).moveToFirst();
     }
+
+    public void resetDatabase() {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete(Info.TABLE_FEED_POSTS, null, null);
+        db.delete(Info.TABLE_USER, null, null);
+        db.delete(Info.TABLE_PROFILE_POSTS, null, null);
+    }
 }
