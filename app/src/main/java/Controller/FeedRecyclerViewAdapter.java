@@ -68,9 +68,9 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerVi
             holder.recName.setText(list.get(position).getTitle());
             holder.recDetails.setText(list.get(position).getDescription());
         } else {
-            final long Resulation = 4096 * 4096;
+            final long resolution = 4096 * 4096;
             reference.child("Users").child(user.getUid()).child("Posts").child(id + "").
-                    getBytes(Resulation).addOnCompleteListener(new OnCompleteListener<byte[]>() {
+                    getBytes(resolution).addOnCompleteListener(new OnCompleteListener<byte[]>() {
                 @Override
                 public void onComplete(@NonNull Task<byte[]> task) {
                     if (task.isSuccessful()) {

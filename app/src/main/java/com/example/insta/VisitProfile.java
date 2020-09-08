@@ -60,7 +60,7 @@ public class VisitProfile extends AppCompatActivity {
 
         addFriend = findViewById(R.id.add_friend);
 
-        if(visitedUID.equals(auth.getUid())){
+        if (visitedUID.equals(auth.getUid())) {
             addFriend.setVisibility(View.INVISIBLE);
             addFriend.setClickable(false);
         }
@@ -137,7 +137,7 @@ public class VisitProfile extends AppCompatActivity {
                     p.setDescription(ds.child("Details").getValue(String.class));
                     list.add(p);
                 }
-                recyclerView.setAdapter(new VisitProfileRecyclerViewAdapter(list, VisitProfile.this));
+                recyclerView.setAdapter(new VisitProfileRecyclerViewAdapter(list, visitedUID, VisitProfile.this));
             }
 
             @Override
@@ -148,12 +148,13 @@ public class VisitProfile extends AppCompatActivity {
     }
 
     public void addFriendClicked(View view) {
-        DatabaseReference dbr = FirebaseDatabase.getInstance().getReference().child("Users").child(auth.getUid()).child("FriendRequests").child(visitedUID);
+        addFriend.setEnabled(false);
+        DatabaseReference dbr = FirebaseDatabase.getInstance().getReference().child("Users").child(visitedUID).child("FriendRequests").child(auth.getUid());
         dbr.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.child("From").getValue() == null) {
-                    snapshot.child("From").getRef().setValue(visitedUID);
+                    snapshot.child("From").getRef().setValue(auth.getUid());
                     Toast.makeText(VisitProfile.this, "Request Sent", Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(VisitProfile.this, "Request Already Sent", Toast.LENGTH_LONG).show();

@@ -2,10 +2,14 @@ package com.example.insta;
 
 import androidx.fragment.app.Fragment;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -45,7 +49,7 @@ public class Notifications extends Fragment {
     RecyclerView notifs;
 
     public Notifications() {
-        this.uids = new ArrayList<>();
+        this.uids = new ArrayList();
 
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
@@ -53,7 +57,18 @@ public class Notifications extends Fragment {
         dbr = db.getReference();
         fs = FirebaseStorage.getInstance();
         sr = fs.getReference();
+    }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+
+        if (!isConnected) {
+            Toast.makeText(getContext(), "No Internet Connection", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override

@@ -1,17 +1,21 @@
 package Controller;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.QuickContactBadge;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.insta.R;
+import com.example.insta.VisitProfile;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -38,6 +42,7 @@ public class FriendRequestsRecyclerViewAdapter extends RecyclerView.Adapter<Frie
     StorageReference sr;
     FirebaseStorage fs;
 
+
     public FriendRequestsRecyclerViewAdapter(List<String> uids, Context context) {
         this.uids = uids;
         this.context = context;
@@ -59,11 +64,20 @@ public class FriendRequestsRecyclerViewAdapter extends RecyclerView.Adapter<Frie
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
+        holder.ll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, VisitProfile.class);
+                intent.putExtra("Token", uids.get(position));
+                context.startActivity(intent);
+            }
+        });
+
         dbr.child("Users").child(uids.get(position)).child("Name").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                holder.message.setText(snapshot.getValue(String.class)+ "\n" + "Sent you a friend request");
+                holder.message.setText(snapshot.getValue(String.class) + "\n" + "Sent you a friend request");
             }
 
             @Override
@@ -72,12 +86,13 @@ public class FriendRequestsRecyclerViewAdapter extends RecyclerView.Adapter<Frie
             }
         });
 
-        sr.child("Users").child(uids.get(position)).child("Profile Pic").getBytes(4096*4096).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-            @Override
-            public void onSuccess(byte[] b) {
-                holder.profilePic.setImageBitmap(BitmapFactory.decodeByteArray(b, 0,b.length));
-            }
-        });
+        sr.child("Users").child(uids.get(position)).child("Profile Pic").getBytes(4096 * 4096)
+                .addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] b) {
+                        holder.profilePic.setImageBitmap(BitmapFactory.decodeByteArray(b, 0, b.length));
+                    }
+                });
 
     }
 
@@ -86,15 +101,16 @@ public class FriendRequestsRecyclerViewAdapter extends RecyclerView.Adapter<Frie
         return uids.size();
     }
 
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView profilePic;
         TextView message;
-
+        LinearLayout ll;
         public ViewHolder(@NonNull View v) {
             super(v);
-
             profilePic = v.findViewById(R.id.profile_pic);
             message = v.findViewById(R.id.request_message);
+            ll = v.findViewById(R.id.ll);
         }
     }
 }

@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +31,7 @@ import Model.Post;
 public class VisitProfileRecyclerViewAdapter extends RecyclerView.Adapter<VisitProfileRecyclerViewAdapter.ViewHolder> {
 
     private final Context context;
+    private final String visitedUID;
     List<Post> list;
     StorageReference reference;
     FirebaseUser user;
@@ -40,8 +42,9 @@ public class VisitProfileRecyclerViewAdapter extends RecyclerView.Adapter<VisitP
 
 //    InstaDatabaseHelper databaseHelper;
 
-    public VisitProfileRecyclerViewAdapter(List<Post> list, Context context) {
+    public VisitProfileRecyclerViewAdapter(List<Post> list, String visitedUID, Context context) {
         this.list = list;
+        this.visitedUID = visitedUID;
         this.context = context;
 
         auth = FirebaseAuth.getInstance();
@@ -63,7 +66,7 @@ public class VisitProfileRecyclerViewAdapter extends RecyclerView.Adapter<VisitP
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
         int id = list.get(position).getId();
         final long Resulation = 4096 * 4096;
-        reference.child("Users").child(user.getUid()).child("Posts").child(id + "").getBytes(Resulation)
+        reference.child("Users").child(visitedUID).child("Posts").child(id + "").getBytes(Resulation)
                 .addOnCompleteListener(new OnCompleteListener<byte[]>() {
                     @Override
                     public void onComplete(@NonNull Task<byte[]> task) {
@@ -89,14 +92,11 @@ public class VisitProfileRecyclerViewAdapter extends RecyclerView.Adapter<VisitP
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView recName, recDetails;
         ImageView recImage;
-
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-
             recDetails = itemView.findViewById(R.id.rec_details);
             recImage = itemView.findViewById(R.id.rec_image);
             recName = itemView.findViewById(R.id.rec_name);
-
         }
     }
 }

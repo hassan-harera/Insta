@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void loginClicked(View view) {
+        login.setEnabled(false);
         String password = this.password.getText().toString(),
                 username = this.email.getText().toString();
 

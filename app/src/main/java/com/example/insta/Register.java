@@ -168,12 +168,15 @@ public class Register extends AppCompatActivity {
     }
 
     private void succeedRegister() {
-        Toast.makeText(this, "succeful register", Toast.LENGTH_LONG).show();
-        Intent intent = new Intent(this, Wall.class);
+        Toast.makeText(this, "successful register", Toast.LENGTH_LONG).show();
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     public void loginClicked(View view) {
         Intent intent = new Intent(this, MainActivity.class);
+        auth.signOut();
         startActivity(intent);
         finish();
     }

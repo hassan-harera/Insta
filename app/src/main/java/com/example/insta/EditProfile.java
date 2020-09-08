@@ -145,6 +145,7 @@ public class EditProfile extends AppCompatActivity {
     }
 
     public void editClicked(final View view) {
+        edit.setEnabled(false);
         ConnectivityManager cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();

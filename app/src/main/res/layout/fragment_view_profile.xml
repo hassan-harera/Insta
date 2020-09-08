@@ -21,8 +21,8 @@
 
         <ImageView
             android:id="@+id/view_profile_photo"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
+            android:layout_width="130dp"
+            android:layout_height="130dp"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="45dp"
             android:elevation="5dp"
@@ -33,22 +33,23 @@
         <ImageView
             android:id="@+id/profile_layout"
             android:layout_width="match_parent"
-            android:layout_height="190dp"
+            android:layout_height="150dp"
             android:layout_below="@+id/header_cover_image"
             android:src="#ebca0707"
             />
 
         <TextView
             android:id="@+id/view_profile_user_name"
-            android:layout_width="150dp"
+            android:layout_width="190dp"
             android:layout_height="40dp"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             android:layout_below="@id/view_profile_photo"
             android:text="Name"
             android:gravity="center"
             android:textColor="#FAFAFA"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:textSize="18dp"/>
 
         <TextView
             android:id="@+id/view_profile_user_bio"
@@ -56,10 +57,9 @@
             android:layout_height="40dp"
             android:layout_below="@+id/view_profile_user_name"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="12dp"
-            android:singleLine="true"
             android:gravity="center"
             android:textColor="#FAFAFA"
+            android:textSize="14dp"
             android:text="Bio" />
 
 

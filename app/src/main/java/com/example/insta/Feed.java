@@ -70,9 +70,14 @@ public class Feed extends Fragment {
         super.onStart();
         fab.setVisibility(View.VISIBLE);
 
+        viewComponents();
+    }
+
+    private void viewComponents() {
         ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+
         if (isConnected) {
             getAllPostsFromFirebase();
         } else {
@@ -110,8 +115,8 @@ public class Feed extends Fragment {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot ds : snapshot.getChildren()) {
                     Post p = new Post();
-                    long id = ds.child("Id").getValue(Integer.class);
-                    p.setId((int) id);
+                    int id = ds.child("Id").getValue(Integer.class);
+                    p.setId(id);
                     p.setTitle(ds.child("Title").getValue(String.class));
                     p.setDescription(ds.child("Details").getValue(String.class));
                     list.add(p);
@@ -131,6 +136,7 @@ public class Feed extends Fragment {
         super.onResume();
         if(getActivity()!=null){
             fab.setVisibility(View.VISIBLE);
+//            viewComponents();
         }
     }
 }

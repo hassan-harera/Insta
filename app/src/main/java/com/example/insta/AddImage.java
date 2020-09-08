@@ -107,6 +107,9 @@ public class AddImage extends AppCompatActivity {
     }
 
     public void addClicked(View view) {
+        if (bitmapImg != null) {
+            add.setEnabled(false);
+        }
         final Post post = new Post();
         int id = (int) new Date().getTime();
         post.setTitle(title.getText().toString());
@@ -115,10 +118,10 @@ public class AddImage extends AppCompatActivity {
 
 
         if (bitmapImg != null) {
+            add.setEnabled(false);
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             bitmapImg.compress(Bitmap.CompressFormat.PNG, 100, stream);
             byte[] byteArray = stream.toByteArray();
-            bitmapImg.recycle();
 
             storageReference.child("Posts").child(id + "").putBytes(byteArray).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                 @Override
@@ -149,7 +152,7 @@ public class AddImage extends AppCompatActivity {
 
     private void successAdd() {
         Toast.makeText(this, "The image added Successfully", Toast.LENGTH_LONG).show();
-        Intent intent = new Intent(this, Feed.class);
+        Intent intent = new Intent(this, Wall.class);
         startActivity(intent);
         finish();
     }
