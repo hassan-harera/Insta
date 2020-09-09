@@ -83,8 +83,7 @@ public class InstaDatabaseHelper extends SQLiteOpenHelper {
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(Info.PROFILE_POST_ID_COLUMN, post.getId());
-        contentValues.put(Info.PROFILE_POST_TITLE_COLUMN, post.getTitle());
-        contentValues.put(Info.PROFILE_POST_DESCRIPTION_COLUMN, post.getDescription());
+        contentValues.put(Info.PROFILE_POST_CAPTION_COLUMN, post.getCaption());
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         post.getBitmap().compress(Bitmap.CompressFormat.PNG, 100, stream);
@@ -98,8 +97,7 @@ public class InstaDatabaseHelper extends SQLiteOpenHelper {
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(Info.FEED_POST_ID_COLUMN, post.getId());
-        contentValues.put(Info.FEED_POST_TITLE_COLUMN, post.getTitle());
-        contentValues.put(Info.FEED_POST_DESCRIPTION_COLUMN, post.getDescription());
+        contentValues.put(Info.FEED_POST_CAPTION_COLUMN, post.getCaption());
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         post.getBitmap().compress(Bitmap.CompressFormat.PNG, 100, stream);
@@ -201,7 +199,7 @@ public class InstaDatabaseHelper extends SQLiteOpenHelper {
     public List<Post> getFeedPosts() {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.query(Info.TABLE_FEED_POSTS, new String[]{Info.FEED_POST_ID_COLUMN,
-                        Info.FEED_POST_TITLE_COLUMN, Info.FEED_POST_DESCRIPTION_COLUMN,
+                        Info.FEED_POST_CAPTION_COLUMN,
                         Info.FEED_POST_IMAGE_COLUMN}, null, null, null,
                 null, null);
 
@@ -209,8 +207,7 @@ public class InstaDatabaseHelper extends SQLiteOpenHelper {
         while (cursor != null && cursor.moveToNext()) {
             Post p = new Post();
             p.setId(cursor.getInt(cursor.getColumnIndex(Info.FEED_POST_ID_COLUMN)));
-            p.setTitle(cursor.getString(cursor.getColumnIndex(Info.FEED_POST_TITLE_COLUMN)));
-            p.setDescription(cursor.getString(cursor.getColumnIndex(Info.FEED_POST_DESCRIPTION_COLUMN)));
+            p.setCaption(cursor.getString(cursor.getColumnIndex(Info.FEED_POST_CAPTION_COLUMN)));
 
             byte[] bytes = cursor.getBlob(cursor.getColumnIndex(Info.FEED_POST_IMAGE_COLUMN));
             Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
@@ -224,15 +221,14 @@ public class InstaDatabaseHelper extends SQLiteOpenHelper {
     public Post getFeedPost(int id) {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.query(Info.TABLE_FEED_POSTS, new String[]{Info.FEED_POST_ID_COLUMN,
-                        Info.FEED_POST_TITLE_COLUMN, Info.FEED_POST_DESCRIPTION_COLUMN,
+                        Info.FEED_POST_CAPTION_COLUMN,
                         Info.FEED_POST_IMAGE_COLUMN}, Info.FEED_POST_ID_COLUMN + " = ? ", new String[]{id + ""},
                 null, null, null);
 
         Post p = new Post();
         if (cursor != null && cursor.moveToNext()) {
             p.setId(cursor.getInt(cursor.getColumnIndex(Info.FEED_POST_ID_COLUMN)));
-            p.setTitle(cursor.getString(cursor.getColumnIndex(Info.FEED_POST_TITLE_COLUMN)));
-            p.setDescription(cursor.getString(cursor.getColumnIndex(Info.FEED_POST_DESCRIPTION_COLUMN)));
+            p.setCaption(cursor.getString(cursor.getColumnIndex(Info.FEED_POST_CAPTION_COLUMN)));
 
             byte[] bytes = cursor.getBlob(cursor.getColumnIndex(Info.FEED_POST_IMAGE_COLUMN));
             Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
@@ -244,15 +240,14 @@ public class InstaDatabaseHelper extends SQLiteOpenHelper {
     public Post getProfilePost(int id) {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.query(Info.TABLE_PROFILE_POSTS, new String[]{Info.PROFILE_POST_ID_COLUMN,
-                        Info.PROFILE_POST_TITLE_COLUMN, Info.PROFILE_POST_DESCRIPTION_COLUMN,
+                        Info.PROFILE_POST_CAPTION_COLUMN,
                         Info.PROFILE_POST_IMAGE_COLUMN}, Info.PROFILE_POST_ID_COLUMN + " = ? ", new String[]{id + ""},
                 null, null, null);
 
         Post p = new Post();
         if (cursor != null && cursor.moveToNext()) {
             p.setId(cursor.getInt(cursor.getColumnIndex(Info.FEED_POST_ID_COLUMN)));
-            p.setTitle(cursor.getString(cursor.getColumnIndex(Info.FEED_POST_TITLE_COLUMN)));
-            p.setDescription(cursor.getString(cursor.getColumnIndex(Info.FEED_POST_DESCRIPTION_COLUMN)));
+            p.setCaption(cursor.getString(cursor.getColumnIndex(Info.FEED_POST_CAPTION_COLUMN)));
 
             byte[] bytes = cursor.getBlob(cursor.getColumnIndex(Info.FEED_POST_IMAGE_COLUMN));
             Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
@@ -276,8 +271,7 @@ public class InstaDatabaseHelper extends SQLiteOpenHelper {
     public void createProfileTable(SQLiteDatabase db) {
         String query = "CREATE TABLE " + Info.TABLE_PROFILE_POSTS + "("
                 + Info.PROFILE_POST_ID_COLUMN + " INT PRIMARY KEY,"
-                + Info.PROFILE_POST_TITLE_COLUMN + " TEXT,"
-                + Info.PROFILE_POST_DESCRIPTION_COLUMN + " TEXT,"
+                + Info.PROFILE_POST_CAPTION_COLUMN + " TEXT,"
                 + Info.PROFILE_POST_IMAGE_COLUMN + " BITMAP"
                 + ");";
         db.execSQL(query);
@@ -287,8 +281,7 @@ public class InstaDatabaseHelper extends SQLiteOpenHelper {
     public void createFeedTable(SQLiteDatabase db) {
         String query = " CREATE TABLE " + Info.TABLE_FEED_POSTS + " ( " +
                 Info.FEED_POST_ID_COLUMN + " INTEGER PRIMARY KEY, " +
-                Info.FEED_POST_TITLE_COLUMN + " TEXT, " +
-                Info.FEED_POST_DESCRIPTION_COLUMN + " TEXT, " +
+                Info.FEED_POST_CAPTION_COLUMN + " TEXT, " +
                 Info.FEED_POST_IMAGE_COLUMN + " bitmap" +
                 " );";
         db.execSQL(query);
@@ -314,8 +307,7 @@ public class InstaDatabaseHelper extends SQLiteOpenHelper {
         while (cursor != null && cursor.moveToNext()) {
             Post p = new Post();
             p.setId(cursor.getInt(cursor.getColumnIndex(Info.PROFILE_POST_ID_COLUMN)));
-            p.setTitle(cursor.getString(cursor.getColumnIndex(Info.PROFILE_POST_TITLE_COLUMN)));
-            p.setDescription(cursor.getString(cursor.getColumnIndex(Info.PROFILE_POST_DESCRIPTION_COLUMN)));
+            p.setCaption(cursor.getString(cursor.getColumnIndex(Info.PROFILE_POST_CAPTION_COLUMN)));
             byte[] bytes = cursor.getBlob(cursor.getColumnIndex(Info.PROFILE_POST_IMAGE_COLUMN));
             p.setBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
             list.add(p);

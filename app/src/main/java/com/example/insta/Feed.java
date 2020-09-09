@@ -6,14 +6,18 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
 import android.view.LayoutInflater;
 
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.widget.ProgressBar;
 
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -33,6 +37,7 @@ import java.util.List;
 
 import Controller.FeedRecyclerViewAdapter;
 import Controller.InstaDatabaseHelper;
+import Controller.ProfileRecyclerViewAdapter;
 import Model.Post;
 
 
@@ -53,6 +58,7 @@ public class Feed extends Fragment {
 
     List<Post> list;
     View view;
+    ProgressBar progressBar;
 
     public Feed() {
         list = new ArrayList<>();
@@ -68,12 +74,18 @@ public class Feed extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        fab.setVisibility(View.VISIBLE);
 
-        viewComponents();
+        progressBar = view.findViewById(R.id.prgress_bar);
+        getInfo();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                recyclerView.setAdapter(new FeedRecyclerViewAdapter(list, view.getContext()));
+                progressBar.setVisibility(View.GONE);
+            }
+        }, 3000);
     }
-
-    private void viewComponents() {
+    private void getInfo() {
         ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
@@ -87,7 +99,7 @@ public class Feed extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.activity_feed, container, false);
+        view = inflater.inflate(R.layout.fragment_feed, container, false);
 
         recyclerView = view.findViewById(R.id.posts);
         recyclerView.setHasFixedSize(true);
@@ -109,19 +121,44 @@ public class Feed extends Fragment {
 
     private void getAllPostsFromFirebase() {
         list = new ArrayList();
-        DatabaseReference databaseReference = dr.child("Users").child(user.getUid()).child("Posts");
+        DatabaseReference databaseReference = dr.child("Users").child(user.getUid()).child("Friends");
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot ds : snapshot.getChildren()) {
+                    getFriendPosts(ds.getValue(String.class));
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void getFriendPosts(final String friendUID) {
+        DatabaseReference databaseReference = dr.child("Users").child(friendUID).child("Posts");
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                int count = 0;
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    if (count++ > 10) {
+                        break;
+                    }
                     Post p = new Post();
                     int id = ds.child("Id").getValue(Integer.class);
                     p.setId(id);
-                    p.setTitle(ds.child("Title").getValue(String.class));
-                    p.setDescription(ds.child("Details").getValue(String.class));
+                    p.setCaption(ds.child("Caption").getValue(String.class));
+                    p.setUID(friendUID);
                     list.add(p);
                 }
-                recyclerView.setAdapter(new FeedRecyclerViewAdapter(list, getContext()));
+                for (int i = 0, j = list.size() - 1; i < j; i++, j--) {
+                    Post temp = list.get(i);
+                    list.set(i, list.get(j));
+                    list.set(j, temp);
+                }
             }
 
             @Override
@@ -132,11 +169,15 @@ public class Feed extends Fragment {
     }
 
     @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
-        if(getActivity()!=null){
+        if (getActivity() != null) {
             fab.setVisibility(View.VISIBLE);
-//            viewComponents();
         }
     }
 }

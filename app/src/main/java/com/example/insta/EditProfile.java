@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -151,28 +152,11 @@ public class EditProfile extends AppCompatActivity {
         boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
 
         if(!isConnected){
-            AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-
-            dialog.setTitle("Internet Problem");
-
-            dialog.setPositiveButton("Try again", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    editClicked(edit.getRootView());
-                    dialog.dismiss();
-                }
-            });
-            dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
-            dialog.show();
+            Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        databaseReference.child("Users").child(user.getUid()).child("Id").setValue(name.getText().toString());
+        databaseReference.child("Users").child(user.getUid()).child("Name").setValue(name.getText().toString());
         databaseReference.child("Users").child(user.getUid()).child("Bio").setValue(bio.getText().toString());
 
         if (uri != null) {

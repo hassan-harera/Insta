@@ -9,8 +9,10 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,6 +48,7 @@ public class VisitProfile extends AppCompatActivity {
 
     ImageView profilePic, addFriend;
     TextView name, bio;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +85,15 @@ public class VisitProfile extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         getAllPostsFromFirebase();
+
+        progressBar = findViewById(R.id.prgress_bar);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                recyclerView.setAdapter(new VisitProfileRecyclerViewAdapter(list, visitedUID, VisitProfile.this));
+                progressBar.setVisibility(View.GONE);
+            }
+        }, 3000);
     }
 
     private void getBio() {
@@ -133,11 +145,15 @@ public class VisitProfile extends AppCompatActivity {
                     Post p = new Post();
                     long id = ds.child("Id").getValue(Integer.class);
                     p.setId((int) id);
-                    p.setTitle(ds.child("Title").getValue(String.class));
-                    p.setDescription(ds.child("Details").getValue(String.class));
+                    p.setCaption(ds.child("Title").getValue(String.class));
                     list.add(p);
                 }
-                recyclerView.setAdapter(new VisitProfileRecyclerViewAdapter(list, visitedUID, VisitProfile.this));
+                // instead of using sorting based time take O(N l(n)) this swishes take O(N)
+                for (int i = 0, j = list.size() - 1; i < j; i++, j--) {
+                    Post temp = list.get(i);
+                    list.set(i, list.get(j));
+                    list.set(j, temp);
+                }
             }
 
             @Override

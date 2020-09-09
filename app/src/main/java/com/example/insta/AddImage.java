@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.Navigator;
 
+import android.app.MediaRouteButton;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -22,6 +23,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -48,7 +50,7 @@ public class AddImage extends AppCompatActivity {
     public static final int ADD_IMAGE_REQUEST = 1025;
 
     ImageView image;
-    EditText title, message;
+    EditText caption;
     Button add;
 
     FirebaseDatabase database;
@@ -62,6 +64,7 @@ public class AddImage extends AppCompatActivity {
     String id;
 
     Bundle bundle;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,10 +72,10 @@ public class AddImage extends AppCompatActivity {
         setContentView(R.layout.activity_add_image);
 
         image = findViewById(R.id.image_add);
-        title = findViewById(R.id.title);
-        message = findViewById(R.id.message);
+        caption = findViewById(R.id.caption);
         add = findViewById(R.id.add_add_image);
 
+        progressBar = findViewById(R.id.prgress_bar);
         firebaseAuth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
@@ -112,12 +115,12 @@ public class AddImage extends AppCompatActivity {
         }
         final Post post = new Post();
         int id = (int) new Date().getTime();
-        post.setTitle(title.getText().toString());
-        post.setDescription(this.message.getText().toString());
+        post.setCaption(caption.getText().toString());
         post.setId(id);
 
 
         if (bitmapImg != null) {
+            progressBar.setVisibility(View.VISIBLE);
             add.setEnabled(false);
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             bitmapImg.compress(Bitmap.CompressFormat.PNG, 100, stream);
@@ -128,6 +131,7 @@ public class AddImage extends AppCompatActivity {
                 public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                     if (task.isSuccessful()) {
                         insertPostToFirebase(post);
+                        progressBar.setVisibility(View.GONE);
                         successAdd();
                     } else {
                         failedAdd();
@@ -142,8 +146,7 @@ public class AddImage extends AppCompatActivity {
     private void insertPostToFirebase(Post post) {
         DatabaseReference dr = databaseReference.child("Users").child(firebaseUser.getUid()).child("Posts").child(post.getId() + "");
         dr.child("Id").setValue(post.getId());
-        dr.child("Title").setValue(post.getTitle());
-        dr.child("Details").setValue(post.getDescription());
+        dr.child("Caption").setValue(post.getCaption());
     }
 
     private void failedAdd() {

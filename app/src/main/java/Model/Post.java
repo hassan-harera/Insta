@@ -4,7 +4,7 @@ import android.graphics.Bitmap;
 
 public class Post {
 
-    private String title, description;
+    private String caption, UID;
     private int id;
     private Bitmap bitmap;
 
@@ -24,24 +24,24 @@ public class Post {
         return id;
     }
 
-    public String getTitle() {
-        return title;
+    public void setCaption(String caption) {
+        this.caption = caption;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+    public String getCaption() {
+        return caption;
     }
 
     @Override
     public String toString() {
-        return id +"";
+        return id + "";
+    }
+
+    public String getUID() {
+        return UID;
+    }
+
+    public void setUID(String UID) {
+        this.UID = UID;
     }
 }

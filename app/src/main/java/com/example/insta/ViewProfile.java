@@ -10,15 +10,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.location.GnssNavigationMessage;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.view.ActionMode;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -66,6 +66,7 @@ public class ViewProfile extends Fragment {
     View view;
     FloatingActionButton fab;
     ProfileRecyclerViewAdapter profileRecyclerViewAdapter;
+    private ProgressBar progressBar;
 
 
     public ViewProfile() {
@@ -85,6 +86,7 @@ public class ViewProfile extends Fragment {
 
         view = inflater.inflate(R.layout.fragment_view_profile, container, false);
 
+        progressBar = view.findViewById(R.id.prgress_bar);
         profilePic = view.findViewById(R.id.view_profile_photo);
         name = view.findViewById(R.id.view_profile_user_name);
         bio = view.findViewById(R.id.view_profile_user_bio);
@@ -105,10 +107,17 @@ public class ViewProfile extends Fragment {
     public void onStart() {
         super.onStart();
 
-        viewCompnents();
+        getInfo();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                recyclerView.setAdapter(new ProfileRecyclerViewAdapter(list, view.getContext()));
+                progressBar.setVisibility(View.GONE);
+            }
+        }, 3000);
     }
 
-    private void viewCompnents() {
+    private void getInfo() {
         helper = new InstaDatabaseHelper(view.getContext());
 
 
@@ -129,7 +138,7 @@ public class ViewProfile extends Fragment {
             }
             name.setText(user.getName());
             bio.setText(user.getBio());
-            getProfilelPostsFromLocalDatabase();
+            getProfilePostsFromLocalDatabase();
         }
 
         if(!helper.checkUser(user.getUid())){
@@ -186,13 +195,13 @@ public class ViewProfile extends Fragment {
                 });
     }
 
-    private void getProfilelPostsFromLocalDatabase() {
+    private void getProfilePostsFromLocalDatabase() {
+        list = new ArrayList();
         list = helper.getProfilePosts();
-        recyclerView.setAdapter(new ProfileRecyclerViewAdapter(list, getContext()));
     }
 
     private void getProfilePostsFromFirebase() {
-        list = new ArrayList<>();
+        list = new ArrayList();
 
         DatabaseReference postsReference = databaseReference.child("Posts");
         postsReference.addValueEventListener(new ValueEventListener() {
@@ -202,11 +211,9 @@ public class ViewProfile extends Fragment {
                     Post p = new Post();
                     long id = ds.child("Id").getValue(Integer.class);
                     p.setId((int) id);
-                    p.setTitle(ds.child("Title").getValue(String.class));
-                    p.setDescription(ds.child("Details").getValue(String.class));
+                    p.setCaption(ds.child("Caption").getValue(String.class));
                     list.add(p);
                 }
-                recyclerView.setAdapter(new ProfileRecyclerViewAdapter(list, view.getContext()));
             }
 
             @Override
@@ -224,9 +231,9 @@ public class ViewProfile extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+
         if (getActivity() != null) {
             fab.setVisibility(View.INVISIBLE);
-            viewCompnents();
         }
     }
 }

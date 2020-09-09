@@ -40,7 +40,6 @@ public class VisitProfileRecyclerViewAdapter extends RecyclerView.Adapter<VisitP
     FirebaseDatabase database;
     DatabaseReference databaseReference;
 
-//    InstaDatabaseHelper databaseHelper;
 
     public VisitProfileRecyclerViewAdapter(List<Post> list, String visitedUID, Context context) {
         this.list = list;
@@ -52,7 +51,6 @@ public class VisitProfileRecyclerViewAdapter extends RecyclerView.Adapter<VisitP
         user = auth.getCurrentUser();
         reference = storage.getReference();
         database = FirebaseDatabase.getInstance();
-//        databaseHelper = new InstaDatabaseHelper(context);
     }
 
     @NonNull
@@ -73,8 +71,7 @@ public class VisitProfileRecyclerViewAdapter extends RecyclerView.Adapter<VisitP
                         if (task.isSuccessful()) {
                             Bitmap bitmap = BitmapFactory.decodeByteArray(task.getResult(), 0, task.getResult().length);
                             holder.recImage.setImageBitmap(bitmap);
-                            holder.recName.setText(list.get(position).getTitle());
-                            holder.recDetails.setText(list.get(position).getDescription());
+                            holder.caption.setText(list.get(position).getCaption());
                             Post post = list.get(position);
                             post.setBitmap(bitmap);
                         } else {
@@ -90,13 +87,12 @@ public class VisitProfileRecyclerViewAdapter extends RecyclerView.Adapter<VisitP
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView recName, recDetails;
+        TextView caption;
         ImageView recImage;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            recDetails = itemView.findViewById(R.id.rec_details);
+            caption = itemView.findViewById(R.id.caption);
             recImage = itemView.findViewById(R.id.rec_image);
-            recName = itemView.findViewById(R.id.rec_name);
         }
     }
 }

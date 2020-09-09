@@ -65,8 +65,7 @@ public class ProfileRecyclerViewAdapter extends RecyclerView.Adapter<ProfileRecy
         if (databaseHelper.checkProfilePost(id)) {
             Post post = databaseHelper.getProfilePost(id);
             holder.recImage.setImageBitmap(post.getBitmap());
-            holder.recName.setText(list.get(position).getTitle());
-            holder.recDetails.setText(list.get(position).getDescription());
+            holder.caption.setText(list.get(position).getCaption());
         } else {
             final long resolution = 4096 * 4096;
             reference.child("Users").child(user.getUid()).child("Posts").child(id + "").
@@ -76,8 +75,7 @@ public class ProfileRecyclerViewAdapter extends RecyclerView.Adapter<ProfileRecy
                     if (task.isSuccessful()) {
                         Bitmap bitmap = BitmapFactory.decodeByteArray(task.getResult(), 0, task.getResult().length);
                         holder.recImage.setImageBitmap(bitmap);
-                        holder.recName.setText(list.get(position).getTitle());
-                        holder.recDetails.setText(list.get(position).getDescription());
+                        holder.caption.setText(list.get(position).getCaption());
                         Post post = list.get(position);
                         post.setBitmap(bitmap);
                         databaseHelper.insertProfilePost(post);
@@ -95,16 +93,14 @@ public class ProfileRecyclerViewAdapter extends RecyclerView.Adapter<ProfileRecy
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView recName, recDetails;
+        TextView caption;
         ImageView recImage;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            recDetails = itemView.findViewById(R.id.rec_details);
+            caption = itemView.findViewById(R.id.caption);
             recImage = itemView.findViewById(R.id.rec_image);
-            recName = itemView.findViewById(R.id.rec_name);
-
         }
     }
 }

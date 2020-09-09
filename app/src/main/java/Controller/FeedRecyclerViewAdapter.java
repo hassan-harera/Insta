@@ -62,22 +62,21 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerVi
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
         int id = list.get(position).getId();
-        if (databaseHelper.checkFeedPost(id)) {
-            Post post = databaseHelper.getFeedPost(id);
-            holder.recImage.setImageBitmap(post.getBitmap());
-            holder.recName.setText(list.get(position).getTitle());
-            holder.recDetails.setText(list.get(position).getDescription());
-        } else {
+//        if (databaseHelper.checkFeedPost(id)) {
+//            Post post = databaseHelper.getFeedPost(id);
+//            holder.recImage.setImageBitmap(post.getBitmap());
+//            holder.recName.setText(list.get(position).getTitle());
+//            holder.recDetails.setText(list.get(position).getDescription());
+//        } else {
             final long resolution = 4096 * 4096;
-            reference.child("Users").child(user.getUid()).child("Posts").child(id + "").
+            reference.child("Users").child(list.get(position).getUID()).child("Posts").child(id + "").
                     getBytes(resolution).addOnCompleteListener(new OnCompleteListener<byte[]>() {
                 @Override
                 public void onComplete(@NonNull Task<byte[]> task) {
                     if (task.isSuccessful()) {
                         Bitmap bitmap = BitmapFactory.decodeByteArray(task.getResult(), 0, task.getResult().length);
                         holder.recImage.setImageBitmap(bitmap);
-                        holder.recName.setText(list.get(position).getTitle());
-                        holder.recDetails.setText(list.get(position).getDescription());
+                        holder.caption.setText(list.get(position).getCaption());
                         Post post = list.get(position);
                         post.setBitmap(bitmap);
                         databaseHelper.insertFeedPost(post);
@@ -86,7 +85,7 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerVi
                     }
                 }
             });
-        }
+//        }
 
 
     }
@@ -97,16 +96,14 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerVi
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView recName, recDetails;
+        TextView caption;
         ImageView recImage;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            recDetails = itemView.findViewById(R.id.rec_details);
+            caption = itemView.findViewById(R.id.caption);
             recImage = itemView.findViewById(R.id.rec_image);
-            recName = itemView.findViewById(R.id.rec_name);
-
         }
     }
 }

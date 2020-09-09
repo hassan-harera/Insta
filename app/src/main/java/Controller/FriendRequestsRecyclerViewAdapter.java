@@ -6,10 +6,12 @@ import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.QuickContactBadge;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -74,6 +76,26 @@ public class FriendRequestsRecyclerViewAdapter extends RecyclerView.Adapter<Frie
             }
         });
 
+        holder.confirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                holder.confirm.setEnabled(false);
+                holder.delete.setEnabled(false);
+                confirm(position);
+                uids.remove(0);
+            }
+        });
+
+        holder.delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                holder.confirm.setEnabled(false);
+                holder.delete.setEnabled(false);
+                delete(position);
+                uids.remove(0);
+            }
+        });
+
         dbr.child("Users").child(uids.get(position)).child("Name").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -96,6 +118,32 @@ public class FriendRequestsRecyclerViewAdapter extends RecyclerView.Adapter<Frie
 
     }
 
+    private void delete(int i) {
+        DatabaseReference dRef = dbr.child("Users").child(auth.getUid());
+
+        DatabaseReference dRef2 = dbr.child("Users").child(uids.get(i));
+
+        dRef.child("FriendRequests").child(uids.get(i)).removeValue();
+
+        dRef2.child("FriendRequests").child(auth.getUid()).removeValue();
+
+        Toast.makeText(context, "Request deleted", Toast.LENGTH_SHORT).show();
+    }
+
+    private void confirm(int i) {
+        DatabaseReference dRef = dbr.child("Users").child(auth.getUid());
+        dRef.child("Friends").child(uids.get(i)).setValue(uids.get(i));
+
+        DatabaseReference dRef2 = dbr.child("Users").child(uids.get(i));
+        dRef2.child("Friends").child(auth.getUid()).setValue(auth.getUid());
+
+        dRef.child("FriendRequests").child(uids.get(i)).removeValue();
+
+        dRef2.child("FriendRequests").child(auth.getUid()).removeValue();
+
+        Toast.makeText(context, "Request accepted", Toast.LENGTH_SHORT).show();
+    }
+
     @Override
     public int getItemCount() {
         return uids.size();
@@ -104,13 +152,16 @@ public class FriendRequestsRecyclerViewAdapter extends RecyclerView.Adapter<Frie
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView profilePic;
-        TextView message;
+        TextView message,confirm, delete;
         LinearLayout ll;
+
         public ViewHolder(@NonNull View v) {
             super(v);
             profilePic = v.findViewById(R.id.profile_pic);
             message = v.findViewById(R.id.request_message);
             ll = v.findViewById(R.id.ll);
+            confirm = v.findViewById(R.id.confirm);
+            delete = v.findViewById(R.id.delete);
         }
     }
 }
