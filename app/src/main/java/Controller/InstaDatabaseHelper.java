@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.Blob;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import Database.Info;
@@ -50,26 +51,19 @@ public class InstaDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        createFeedTable(db);
-        createProfileTable(db);
+        createPostsTable(db);
         createUserTable(db);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        dropProfileTable(db);
-        dropFeedTable(db);
+        dropPostsTable(db);
         dropUserTable(db);
         onCreate(db);
     }
 
-    private void dropFeedTable(SQLiteDatabase db) {
-        String query = "DROP TABLE IF EXISTS " + Info.TABLE_FEED_POSTS;
-        db.execSQL(query);
-    }
-
-    private void dropProfileTable(SQLiteDatabase db) {
-        String query = "DROP TABLE IF EXISTS " + Info.TABLE_PROFILE_POSTS;
+    private void dropPostsTable(SQLiteDatabase db) {
+        String query = "DROP TABLE IF EXISTS " + Info.TABLE_POSTS;
         db.execSQL(query);
     }
 
@@ -78,32 +72,22 @@ public class InstaDatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(query);
     }
 
-    public Boolean insertProfilePost(Post post) {
+    public void insertPost(Post post) {
         SQLiteDatabase db = getWritableDatabase();
 
         ContentValues contentValues = new ContentValues();
-        contentValues.put(Info.PROFILE_POST_ID_COLUMN, post.getId());
-        contentValues.put(Info.PROFILE_POST_CAPTION_COLUMN, post.getCaption());
+        contentValues.put(Info.POST_CAPTION_COLUMN, post.getCaption());
+        contentValues.put(Info.POST_ID_COLUMN, post.getId());
+        contentValues.put(Info.POST_USER_ID_COLUMN, post.getUID());
+        contentValues.put(Info.POST_LIKED_COLUMN, post.getLiked() ? 1 : 0);
+        contentValues.put(Info.POST_DATE_COLUMN, post.getDate().toString());
+        contentValues.put(Info.POST_LIKES_COLUMN, post.getLikes());
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         post.getBitmap().compress(Bitmap.CompressFormat.PNG, 100, stream);
-        contentValues.put(Info.PROFILE_POST_IMAGE_COLUMN, stream.toByteArray());
+        contentValues.put(Info.POST_IMAGE_COLUMN, stream.toByteArray());
 
-        return db.insert(Info.TABLE_PROFILE_POSTS, null, contentValues) != -1;
-    }
-
-    public Boolean insertFeedPost(Post post) {
-        SQLiteDatabase db = getWritableDatabase();
-
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(Info.FEED_POST_ID_COLUMN, post.getId());
-        contentValues.put(Info.FEED_POST_CAPTION_COLUMN, post.getCaption());
-
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        post.getBitmap().compress(Bitmap.CompressFormat.PNG, 100, stream);
-        contentValues.put(Info.FEED_POST_IMAGE_COLUMN, stream.toByteArray());
-
-        return db.insert(Info.TABLE_FEED_POSTS, null, contentValues) != -1;
+        db.insert(Info.TABLE_POSTS, null, contentValues);
     }
 
     public Boolean insertUser(User user) {
@@ -148,7 +132,6 @@ public class InstaDatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-
     public User getUser(String uid) {
         User user = new User();
 
@@ -173,43 +156,30 @@ public class InstaDatabaseHelper extends SQLiteOpenHelper {
         return user;
     }
 
-    public User getUserName(String uid) {
-        User user = new User();
-
+    public List<Post> getUserPosts(String UID) {
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.query(Info.TABLE_USER, new String[]{Info.USER_UID_COLUMN,
-                        Info.USER_NAME_COLUMN, Info.USER_BIO_COLUMN,
-                        Info.USER_EMAIL_COLUMN, Info.USER_IMAGE_COLUMN},
-                "WHERE " + Info.USER_UID_COLUMN + " = ?", new String[]{uid},
-                null, null, null);
-
-        if (cursor != null && cursor.moveToNext()) {
-            user.setUid(cursor.getString(cursor.getColumnIndex(Info.USER_UID_COLUMN)));
-            user.setBio(cursor.getString(cursor.getColumnIndex(Info.USER_BIO_COLUMN)));
-            user.setName(cursor.getString(cursor.getColumnIndex(Info.USER_NAME_COLUMN)));
-            user.setEmail(cursor.getString(cursor.getColumnIndex(Info.USER_EMAIL_COLUMN)));
-
-            byte[] bytes = cursor.getBlob(cursor.getColumnIndex(Info.USER_IMAGE_COLUMN));
-            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-            user.setProfilePic(bitmap);
-        }
-        return user;
-    }
-
-    public List<Post> getFeedPosts() {
-        SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.query(Info.TABLE_FEED_POSTS, new String[]{Info.FEED_POST_ID_COLUMN,
-                        Info.FEED_POST_CAPTION_COLUMN,
-                        Info.FEED_POST_IMAGE_COLUMN}, null, null, null,
+        Cursor cursor = db.query(Info.TABLE_POSTS, new String[]{
+                        Info.POST_ID_COLUMN,
+                        Info.POST_USER_ID_COLUMN,
+                        Info.POST_CAPTION_COLUMN,
+                        Info.POST_IMAGE_COLUMN,
+                        Info.POST_LIKED_COLUMN,
+                        Info.POST_LIKES_COLUMN,
+                        Info.POST_DATE_COLUMN},
+                Info.POST_USER_ID_COLUMN + " = ?",
+                new String[]{UID}, null,
                 null, null);
 
         final List<Post> list = new ArrayList();
         while (cursor != null && cursor.moveToNext()) {
             Post p = new Post();
-            p.setId(cursor.getInt(cursor.getColumnIndex(Info.FEED_POST_ID_COLUMN)));
-            p.setCaption(cursor.getString(cursor.getColumnIndex(Info.FEED_POST_CAPTION_COLUMN)));
-
-            byte[] bytes = cursor.getBlob(cursor.getColumnIndex(Info.FEED_POST_IMAGE_COLUMN));
+            p.setId(cursor.getInt(cursor.getColumnIndex(Info.POST_ID_COLUMN)));
+            p.setUID(cursor.getString(cursor.getColumnIndex(Info.POST_USER_ID_COLUMN)));
+            p.setDate(cursor.getString(cursor.getColumnIndex(Info.POST_DATE_COLUMN)));
+            p.setLikes(cursor.getInt(cursor.getColumnIndex(Info.POST_LIKES_COLUMN)));
+            p.setLiked(cursor.getInt(cursor.getColumnIndex(Info.POST_LIKED_COLUMN)) == 1);
+            p.setCaption(cursor.getString(cursor.getColumnIndex(Info.POST_CAPTION_COLUMN)));
+            byte[] bytes = cursor.getBlob(cursor.getColumnIndex(Info.POST_IMAGE_COLUMN));
             Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
             p.setBitmap(bitmap);
 
@@ -218,72 +188,86 @@ public class InstaDatabaseHelper extends SQLiteOpenHelper {
         return list;
     }
 
-    public Post getFeedPost(int id) {
+    public List<Post> getPosts() {
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.query(Info.TABLE_FEED_POSTS, new String[]{Info.FEED_POST_ID_COLUMN,
-                        Info.FEED_POST_CAPTION_COLUMN,
-                        Info.FEED_POST_IMAGE_COLUMN}, Info.FEED_POST_ID_COLUMN + " = ? ", new String[]{id + ""},
-                null, null, null);
+        Cursor cursor = db.query(Info.TABLE_POSTS, new String[]{
+                        Info.POST_CAPTION_COLUMN,
+                        Info.POST_DATE_COLUMN,
+                        Info.POST_ID_COLUMN,
+                        Info.POST_LIKED_COLUMN,
+                        Info.POST_USER_ID_COLUMN,
+                        Info.POST_LIKES_COLUMN,
+                        Info.POST_IMAGE_COLUMN,},
+                null, null, null,
+                null, null);
 
-        Post p = new Post();
+        final List<Post> list = new ArrayList();
+        while (cursor != null && cursor.moveToNext()) {
+            Post p = new Post();
+            p.setId(cursor.getInt(cursor.getColumnIndex(Info.POST_ID_COLUMN)));
+            p.setUID(cursor.getString(cursor.getColumnIndex(Info.POST_USER_ID_COLUMN)));
+            p.setDate(cursor.getString(cursor.getColumnIndex(Info.POST_DATE_COLUMN)));
+            p.setLikes(cursor.getInt(cursor.getColumnIndex(Info.POST_LIKES_COLUMN)));
+            p.setLiked(cursor.getInt(cursor.getColumnIndex(Info.POST_LIKED_COLUMN)) == 1);
+            p.setCaption(cursor.getString(cursor.getColumnIndex(Info.POST_CAPTION_COLUMN)));
+            byte[] bytes = cursor.getBlob(cursor.getColumnIndex(Info.POST_IMAGE_COLUMN));
+            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+            p.setBitmap(bitmap);
+            list.add(p);
+        }
+        return list;
+    }
+
+    public Post getPost(String UID, int ID) {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query(Info.TABLE_POSTS, new String[]{Info.POST_CAPTION_COLUMN,
+                        Info.POST_DATE_COLUMN,
+                        Info.POST_ID_COLUMN,
+                        Info.POST_LIKES_COLUMN,
+                        Info.POST_LIKED_COLUMN,
+                        Info.POST_USER_ID_COLUMN,
+                        Info.POST_IMAGE_COLUMN,},
+                Info.POST_USER_ID_COLUMN + " = ? and " + Info.POST_ID_COLUMN + " = ?",
+                new String[]{UID, ID + ""}, null,
+                null, null);
+
+        final Post p = new Post();
         if (cursor != null && cursor.moveToNext()) {
-            p.setId(cursor.getInt(cursor.getColumnIndex(Info.FEED_POST_ID_COLUMN)));
-            p.setCaption(cursor.getString(cursor.getColumnIndex(Info.FEED_POST_CAPTION_COLUMN)));
-
-            byte[] bytes = cursor.getBlob(cursor.getColumnIndex(Info.FEED_POST_IMAGE_COLUMN));
+            p.setId(cursor.getInt(cursor.getColumnIndex(Info.POST_ID_COLUMN)));
+            p.setUID(cursor.getString(cursor.getColumnIndex(Info.POST_USER_ID_COLUMN)));
+            p.setDate(cursor.getString(cursor.getColumnIndex(Info.POST_DATE_COLUMN)));
+            p.setLikes(cursor.getInt(cursor.getColumnIndex(Info.POST_LIKES_COLUMN)));
+            p.setLiked(cursor.getInt(cursor.getColumnIndex(Info.POST_LIKED_COLUMN)) == 1);
+            p.setCaption(cursor.getString(cursor.getColumnIndex(Info.POST_CAPTION_COLUMN)));
+            byte[] bytes = cursor.getBlob(cursor.getColumnIndex(Info.POST_IMAGE_COLUMN));
             Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
             p.setBitmap(bitmap);
         }
         return p;
     }
 
-    public Post getProfilePost(int id) {
-        SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.query(Info.TABLE_PROFILE_POSTS, new String[]{Info.PROFILE_POST_ID_COLUMN,
-                        Info.PROFILE_POST_CAPTION_COLUMN,
-                        Info.PROFILE_POST_IMAGE_COLUMN}, Info.PROFILE_POST_ID_COLUMN + " = ? ", new String[]{id + ""},
-                null, null, null);
-
-        Post p = new Post();
-        if (cursor != null && cursor.moveToNext()) {
-            p.setId(cursor.getInt(cursor.getColumnIndex(Info.FEED_POST_ID_COLUMN)));
-            p.setCaption(cursor.getString(cursor.getColumnIndex(Info.FEED_POST_CAPTION_COLUMN)));
-
-            byte[] bytes = cursor.getBlob(cursor.getColumnIndex(Info.FEED_POST_IMAGE_COLUMN));
-            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-            p.setBitmap(bitmap);
-        }
-        return p;
-    }
-
-    public Boolean checkFeedPost(int id) {
+    public Boolean checkPost(String UID, int ID) {
         SQLiteDatabase db = getWritableDatabase();
-        String query = "select * from " + Info.TABLE_FEED_POSTS + " where " + Info.FEED_POST_ID_COLUMN + " = ? ;";
-        return db.rawQuery(query, new String[]{id + ""}).moveToFirst();
+        String query = "SELECT * FROM " + Info.TABLE_POSTS + " WHERE " + Info.POST_USER_ID_COLUMN + " = ? AND " + Info.POST_ID_COLUMN+ " = ?";
+        return db.rawQuery(query, new String[]{UID, ID+""}).moveToFirst();
     }
 
-    public Boolean checkProfilePost(int id) {
+    public Boolean checkUser(String UID) {
         SQLiteDatabase db = getWritableDatabase();
-        String query = "select * from " + Info.TABLE_PROFILE_POSTS + " where " + Info.PROFILE_POST_ID_COLUMN + " = ? ;";
-        return db.rawQuery(query, new String[]{id + ""}).moveToFirst();
+        String query = "SELECT * FROM " + Info.TABLE_USER + " WHERE " + Info.USER_UID_COLUMN + " = ? ;";
+        return db.rawQuery(query, new String[]{UID}).moveToFirst();
     }
 
-    public void createProfileTable(SQLiteDatabase db) {
-        String query = "CREATE TABLE " + Info.TABLE_PROFILE_POSTS + "("
-                + Info.PROFILE_POST_ID_COLUMN + " INT PRIMARY KEY,"
-                + Info.PROFILE_POST_CAPTION_COLUMN + " TEXT,"
-                + Info.PROFILE_POST_IMAGE_COLUMN + " BITMAP"
+    public void createPostsTable(SQLiteDatabase db) {
+        String query = "CREATE TABLE " + Info.TABLE_POSTS + "("
+                + Info.POST_ID_COLUMN + " INT NOT NULL,"
+                + Info.POST_USER_ID_COLUMN + " TEXT NOT NULL,"
+                + Info.POST_LIKED_COLUMN + " INT NOT NULL,"
+                + Info.POST_CAPTION_COLUMN + " TEXT NOT NULL,"
+                + Info.POST_LIKES_COLUMN + " INTEGER NOT NULL,"
+                + Info.POST_DATE_COLUMN + " TEXT NOT NULL,"
+                + Info.POST_IMAGE_COLUMN + " BITMAP NOT NULL"
                 + ");";
-        db.execSQL(query);
-    }
-
-
-    public void createFeedTable(SQLiteDatabase db) {
-        String query = " CREATE TABLE " + Info.TABLE_FEED_POSTS + " ( " +
-                Info.FEED_POST_ID_COLUMN + " INTEGER PRIMARY KEY, " +
-                Info.FEED_POST_CAPTION_COLUMN + " TEXT, " +
-                Info.FEED_POST_IMAGE_COLUMN + " bitmap" +
-                " );";
         db.execSQL(query);
     }
 
@@ -298,33 +282,21 @@ public class InstaDatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(query);
     }
 
-    public List<Post> getProfilePosts() {
-        List<Post> list = new ArrayList();
-        String query = "SELECT * FROM " + Info.TABLE_PROFILE_POSTS;
-        SQLiteDatabase db = getWritableDatabase();
-        Cursor cursor = db.rawQuery(query, null);
-
-        while (cursor != null && cursor.moveToNext()) {
-            Post p = new Post();
-            p.setId(cursor.getInt(cursor.getColumnIndex(Info.PROFILE_POST_ID_COLUMN)));
-            p.setCaption(cursor.getString(cursor.getColumnIndex(Info.PROFILE_POST_CAPTION_COLUMN)));
-            byte[] bytes = cursor.getBlob(cursor.getColumnIndex(Info.PROFILE_POST_IMAGE_COLUMN));
-            p.setBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
-            list.add(p);
-        }
-        return list;
-    }
-
-    public boolean checkUser(String uid) {
-        SQLiteDatabase db = getWritableDatabase();
-        String query = "select * from " + Info.TABLE_USER + " where " + Info.USER_UID_COLUMN + " = ? ;";
-        return db.rawQuery(query, new String[]{uid + ""}).moveToFirst();
-    }
-
     public void resetDatabase() {
         SQLiteDatabase db = getWritableDatabase();
-        db.delete(Info.TABLE_FEED_POSTS, null, null);
+        db.delete(Info.TABLE_POSTS, null, null);
         db.delete(Info.TABLE_USER, null, null);
-        db.delete(Info.TABLE_PROFILE_POSTS, null, null);
+    }
+
+    public void updatePost(Post p) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(Info.POST_LIKED_COLUMN, p.getLiked());
+        values.put(Info.POST_CAPTION_COLUMN, p.getCaption());
+        values.put(Info.POST_DATE_COLUMN, p.getDate());
+        values.put(Info.POST_LIKES_COLUMN, p.getLikes());
+        db.update(Info.TABLE_POSTS, values, Info.POST_ID_COLUMN + " = ? AND " + Info.POST_USER_ID_COLUMN + " = ?",
+                new String[]{p.getId()+"", p.getUID()});
     }
 }

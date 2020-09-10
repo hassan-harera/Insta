@@ -26,6 +26,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import Controller.InstaDatabaseHelper;
+import Model.User;
+
 public class Register extends AppCompatActivity {
 
     EditText password, email, repassword, name;
@@ -37,6 +40,7 @@ public class Register extends AppCompatActivity {
     FirebaseAuth auth;
     DatabaseReference dbRef;
     FirebaseUser user;
+    private InstaDatabaseHelper helper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,9 +100,19 @@ public class Register extends AppCompatActivity {
         userRef.child("Name").setValue(name.getText().toString());
         userRef.child("Username").setValue(email.getText().toString());
         userRef.child("Bio").setValue("Bio");
+        userRef.child("Posts").child("Count").setValue(1);
+        userRef.child("Notifications").child("Count").setValue(1);
 
         Uri uri = Uri.parse("android.resource://com.example.insta/drawable/profile");
         reference.child("Users").child(user.getUid()).child("Profile Pic").putFile(uri);
+        if(!helper.checkUser(user.getUid())){
+            User user = new User();
+            user.setName(name.getText().toString());
+            user.setBio("Bio");
+            user.setEmail(auth.getCurrentUser().getEmail());
+            user.setUid(auth.getCurrentUser().getUid());
+            helper.insertUser(user);
+        }
     }
 
     private void failedRegister() {

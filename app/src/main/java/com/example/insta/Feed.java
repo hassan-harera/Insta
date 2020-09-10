@@ -16,7 +16,6 @@ import android.view.LayoutInflater;
 
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
 import android.widget.ProgressBar;
 
 
@@ -33,11 +32,11 @@ import com.google.firebase.storage.StorageReference;
 
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import Controller.FeedRecyclerViewAdapter;
 import Controller.InstaDatabaseHelper;
-import Controller.ProfileRecyclerViewAdapter;
 import Model.Post;
 
 
@@ -56,9 +55,10 @@ public class Feed extends Fragment {
 
     FloatingActionButton fab;
 
+    FeedRecyclerViewAdapter adapter;
+
     List<Post> list;
     View view;
-    ProgressBar progressBar;
 
     public Feed() {
         list = new ArrayList<>();
@@ -67,24 +67,10 @@ public class Feed extends Fragment {
         firebaseDatabase = FirebaseDatabase.getInstance();
         dr = firebaseDatabase.getReference();
         user = auth.getCurrentUser();
-        reference = storage.getReference(user.getEmail());
+        reference = storage.getReference(user.getUid());
     }
 
 
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        progressBar = view.findViewById(R.id.prgress_bar);
-        getInfo();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                recyclerView.setAdapter(new FeedRecyclerViewAdapter(list, view.getContext()));
-                progressBar.setVisibility(View.GONE);
-            }
-        }, 3000);
-    }
     private void getInfo() {
         ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
@@ -109,18 +95,23 @@ public class Feed extends Fragment {
         fab.setVisibility(View.VISIBLE);
 
         helper = new InstaDatabaseHelper(getContext());
-
+        list = new ArrayList();
+        getInfo();
         return view;
     }
 
     private void getAllPostsFromLocalDatabase() {
-        list = new ArrayList();
-        list = helper.getFeedPosts();
-        recyclerView.setAdapter(new FeedRecyclerViewAdapter(list, getContext()));
+        list = helper.getPosts();
+        for (int i = 0, j = list.size() - 1; i < j; i++, j--) {
+            Post temp = list.get(i);
+            list.set(i, list.get(j));
+            list.set(j, temp);
+        }
+        adapter = new FeedRecyclerViewAdapter(list, view.getContext());
+        recyclerView.setAdapter(adapter);
     }
 
     private void getAllPostsFromFirebase() {
-        list = new ArrayList();
         DatabaseReference databaseReference = dr.child("Users").child(user.getUid()).child("Friends");
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -128,11 +119,17 @@ public class Feed extends Fragment {
                 for (DataSnapshot ds : snapshot.getChildren()) {
                     getFriendPosts(ds.getValue(String.class));
                 }
+                for (int i = 0, j = list.size() - 1; i < j; i++, j--) {
+                    Post temp = list.get(i);
+                    list.set(i, list.get(j));
+                    list.set(j, temp);
+                }
+                adapter = new FeedRecyclerViewAdapter(list, view.getContext());
+                recyclerView.setAdapter(adapter);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
             }
         });
     }
@@ -144,20 +141,35 @@ public class Feed extends Fragment {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 int count = 0;
                 for (DataSnapshot ds : snapshot.getChildren()) {
-                    if (count++ > 10) {
+                    if (ds.getKey().equals("Count")) {
+                        continue;
+                    }
+                    if (count++ > 11) {
                         break;
                     }
-                    Post p = new Post();
-                    int id = ds.child("Id").getValue(Integer.class);
-                    p.setId(id);
+                    final Post p = new Post();
+                    p.setId(ds.child("Id").getValue(Integer.class));
                     p.setCaption(ds.child("Caption").getValue(String.class));
+                    p.setLikes(ds.child("Likes").getValue(Integer.class));
+                    p.setDate(ds.child("Date").getValue(String.class));
+                    dr.child("Users").child(friendUID).child("Notifications").child("Likes")
+                            .addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    if (snapshot.child(user.getUid() + " " + p.getId()) != null) {
+                                        p.setLiked(true);
+                                    } else {
+                                        p.setLiked(false);
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                }
+                            });
                     p.setUID(friendUID);
                     list.add(p);
-                }
-                for (int i = 0, j = list.size() - 1; i < j; i++, j--) {
-                    Post temp = list.get(i);
-                    list.set(i, list.get(j));
-                    list.set(j, temp);
                 }
             }
 
@@ -169,15 +181,17 @@ public class Feed extends Fragment {
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
+
         if (getActivity() != null) {
             fab.setVisibility(View.VISIBLE);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    adapter.notifyDataSetChanged();
+                }
+            }, 4000);
         }
     }
 }

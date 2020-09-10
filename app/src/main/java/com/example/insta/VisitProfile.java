@@ -48,30 +48,42 @@ public class VisitProfile extends AppCompatActivity {
 
     ImageView profilePic, addFriend;
     TextView name, bio;
-    private ProgressBar progressBar;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_visit_profile);
 
-        auth = FirebaseAuth.getInstance();
 
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
         visitedUID = bundle.get("Token").toString();
 
-        addFriend = findViewById(R.id.add_friend);
-
-        if (visitedUID.equals(auth.getUid())) {
-            addFriend.setVisibility(View.INVISIBLE);
-            addFriend.setClickable(false);
-        }
-
+        auth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference().child("Users").child(visitedUID);
         storage = FirebaseStorage.getInstance();
         reference = storage.getReference().child("Users").child(visitedUID);
+
+        addFriend = findViewById(R.id.add_friend);
+
+        databaseReference.child("Friends").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.child(auth.getUid()).getValue() != null){
+                    addFriend.setVisibility(View.INVISIBLE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        if (visitedUID.equals(auth.getUid())) {
+            addFriend.setVisibility(View.INVISIBLE);
+        }
 
         profilePic = findViewById(R.id.user_profile_photo);
         name = findViewById(R.id.user_profile_name);
@@ -86,14 +98,12 @@ public class VisitProfile extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         getAllPostsFromFirebase();
 
-        progressBar = findViewById(R.id.prgress_bar);
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 recyclerView.setAdapter(new VisitProfileRecyclerViewAdapter(list, visitedUID, VisitProfile.this));
-                progressBar.setVisibility(View.GONE);
             }
-        }, 3000);
+        }, 20000);
     }
 
     private void getBio() {
@@ -142,9 +152,12 @@ public class VisitProfile extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot ds : snapshot.getChildren()) {
+                    if(ds.getKey().equals("Count")){
+                        continue;
+                    }
                     Post p = new Post();
-                    long id = ds.child("Id").getValue(Integer.class);
-                    p.setId((int) id);
+                    int id = ds.child("Id").getValue(Integer.class);
+                    p.setId( id);
                     p.setCaption(ds.child("Title").getValue(String.class));
                     list.add(p);
                 }

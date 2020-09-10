@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,10 +22,15 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
+import java.util.HashMap;
 
 import Controller.InstaDatabaseHelper;
 import Model.User;
@@ -41,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     FirebaseUser user;
     FirebaseStorage storage;
     StorageReference reference;
+    private InstaDatabaseHelper helper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void loginClicked(View view) {
         login.setEnabled(false);
-        String password = this.password.getText().toString(),
+        final String password = this.password.getText().toString(),
                 username = this.email.getText().toString();
 
         if (username.equals("")) {
@@ -85,6 +92,24 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
+                        if(!helper.checkUser(user.getUid())){
+                            final User user = new User();
+                            user.setUid(auth.getCurrentUser().getUid());
+                            databaseReference.child("Users").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    user.setName(snapshot.child("Name").getValue().toString());
+                                    user.setBio(snapshot.child("Bio").getValue().toString());
+                                    user.setEmail(auth.getCurrentUser().getEmail());
+                                    helper.insertUser(user);
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                }
+                            });
+                        }
                         successLogin();
                     } else {
                         failedLogin();

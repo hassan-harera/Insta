@@ -1,5 +1,6 @@
 package Controller;
 
+import android.app.MediaRouteButton;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -73,6 +75,7 @@ public class VisitProfileRecyclerViewAdapter extends RecyclerView.Adapter<VisitP
                             holder.recImage.setImageBitmap(bitmap);
                             holder.caption.setText(list.get(position).getCaption());
                             Post post = list.get(position);
+                            holder.bar.setVisibility(View.GONE);
                             post.setBitmap(bitmap);
                         } else {
                             Toast.makeText(context, "Failed to load image", Toast.LENGTH_SHORT).show();
@@ -87,12 +90,14 @@ public class VisitProfileRecyclerViewAdapter extends RecyclerView.Adapter<VisitP
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
+        public ProgressBar bar;
         TextView caption;
         ImageView recImage;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             caption = itemView.findViewById(R.id.caption);
             recImage = itemView.findViewById(R.id.rec_image);
+            bar = itemView.findViewById(R.id.progress_bar);
         }
     }
 }

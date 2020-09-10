@@ -3,6 +3,7 @@ package Controller;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.text.style.AlignmentSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

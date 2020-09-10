@@ -34,6 +34,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import Controller.InstaDatabaseHelper;
@@ -66,10 +67,10 @@ public class ViewProfile extends Fragment {
     View view;
     FloatingActionButton fab;
     ProfileRecyclerViewAdapter profileRecyclerViewAdapter;
-    private ProgressBar progressBar;
 
 
     public ViewProfile() {
+        list = new ArrayList<>();
         firebaseDatabase = FirebaseDatabase.getInstance();
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
@@ -86,7 +87,6 @@ public class ViewProfile extends Fragment {
 
         view = inflater.inflate(R.layout.fragment_view_profile, container, false);
 
-        progressBar = view.findViewById(R.id.prgress_bar);
         profilePic = view.findViewById(R.id.view_profile_photo);
         name = view.findViewById(R.id.view_profile_user_name);
         bio = view.findViewById(R.id.view_profile_user_bio);
@@ -112,18 +112,17 @@ public class ViewProfile extends Fragment {
             @Override
             public void run() {
                 recyclerView.setAdapter(new ProfileRecyclerViewAdapter(list, view.getContext()));
-                progressBar.setVisibility(View.GONE);
             }
-        }, 3000);
+        }, 2000);
     }
 
     private void getInfo() {
         helper = new InstaDatabaseHelper(view.getContext());
 
-
         ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+
 
         if (isConnected) {
             getProfilePic();
@@ -139,16 +138,6 @@ public class ViewProfile extends Fragment {
             name.setText(user.getName());
             bio.setText(user.getBio());
             getProfilePostsFromLocalDatabase();
-        }
-
-        if(!helper.checkUser(user.getUid())){
-            User user = new User();
-            user.setName(name.getText().toString());
-            user.setBio(bio.getText().toString());
-            user.setEmail(auth.getCurrentUser().getEmail());
-            user.setUid(auth.getCurrentUser().getUid());
-            InstaDatabaseHelper db = new InstaDatabaseHelper(view.getContext());
-            db.insertUser(user);
         }
     }
 
@@ -196,22 +185,24 @@ public class ViewProfile extends Fragment {
     }
 
     private void getProfilePostsFromLocalDatabase() {
-        list = new ArrayList();
-        list = helper.getProfilePosts();
+        list = helper.getUserPosts(user.getUid());
     }
 
     private void getProfilePostsFromFirebase() {
-        list = new ArrayList();
-
         DatabaseReference postsReference = databaseReference.child("Posts");
         postsReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot ds : snapshot.getChildren()) {
+                    if(ds.getKey().equals("Count")){
+                        continue;
+                    }
                     Post p = new Post();
-                    long id = ds.child("Id").getValue(Integer.class);
-                    p.setId((int) id);
+                    p.setId(ds.child("Id").getValue(Integer.class));
                     p.setCaption(ds.child("Caption").getValue(String.class));
+                    p.setDate(ds.child("Date").getValue(String.class));
+                    p.setLikes(ds.child("Likes").getValue(Integer.class));
+                    p.setUID(auth.getUid());
                     list.add(p);
                 }
             }
@@ -234,6 +225,7 @@ public class ViewProfile extends Fragment {
 
         if (getActivity() != null) {
             fab.setVisibility(View.INVISIBLE);
+            view.refreshDrawableState();
         }
     }
 }

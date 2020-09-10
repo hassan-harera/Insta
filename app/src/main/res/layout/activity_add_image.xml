@@ -25,6 +25,7 @@
         android:layout_below="@id/image_add"
         android:layout_margin="20dp"
         android:hint="caption"
+        android:gravity="top"
         android:imeOptions="actionDone"
         android:selectAllOnFocus="true"
         android:maxLength="120"/>
@@ -43,7 +44,7 @@
         android:textColor="#FAFAFA" />
 
     <ProgressBar
-        android:id="@+id/prgress_bar"
+        android:id="@+id/progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:foregroundGravity="center"

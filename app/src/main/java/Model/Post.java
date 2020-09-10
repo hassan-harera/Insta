@@ -2,11 +2,40 @@ package Model;
 
 import android.graphics.Bitmap;
 
+import java.util.Date;
+import java.util.List;
+
 public class Post {
 
-    private String caption, UID;
+    private String caption, UID, date;;
     private int id;
     private Bitmap bitmap;
+    private int likes;
+    private Boolean isLiked;
+
+    public void setLiked(Boolean liked) {
+        isLiked = liked;
+    }
+
+    public Boolean getLiked() {
+        return isLiked;
+    }
+
+    public void setLikes(int likes) {
+        this.likes = likes;
+    }
+
+    public int getLikes() {
+        return likes;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getDate() {
+        return date;
+    }
 
     public void setBitmap(Bitmap bitmap) {
         this.bitmap = bitmap;
