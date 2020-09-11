@@ -7,8 +7,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -18,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -58,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
         password = findViewById(R.id.password);
         login = findViewById(R.id.login);
         register = findViewById(R.id.register_text);
-
+        helper = new InstaDatabaseHelper(this);
         database = FirebaseDatabase.getInstance();
         storage = FirebaseStorage.getInstance();
         reference = storage.getReference();
@@ -92,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
+                        user = auth.getCurrentUser();
                         if(!helper.checkUser(user.getUid())){
                             final User user = new User();
                             user.setUid(auth.getCurrentUser().getUid());
@@ -100,8 +105,15 @@ public class MainActivity extends AppCompatActivity {
                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                                     user.setName(snapshot.child("Name").getValue().toString());
                                     user.setBio(snapshot.child("Bio").getValue().toString());
-                                    user.setEmail(auth.getCurrentUser().getEmail());
-                                    helper.insertUser(user);
+                                    reference.child("Users").child(user.getUid()).child("Profile Pic").getBytes(4096*4096)
+                                            .addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                                        @Override
+                                        public void onSuccess(byte[] bytes) {
+                                            user.setProfilePic(BitmapFactory.decodeByteArray(bytes, 0 , bytes.length));
+                                            user.setEmail(auth.getCurrentUser().getEmail());
+                                            helper.insertUser(user);
+                                        }
+                                    });
                                 }
 
                                 @Override
@@ -120,9 +132,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void successLogin() {
-        Intent intent = new Intent(this, Wall.class);
-        startActivity(intent);
-        finish();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent(MainActivity.this, Wall.class);
+                startActivity(intent);
+                finish();
+            }
+        }, 500);
     }
 
     private void failedLogin() {

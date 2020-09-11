@@ -48,6 +48,7 @@ public class VisitProfile extends AppCompatActivity {
 
     ImageView profilePic, addFriend;
     TextView name, bio;
+    private VisitProfileRecyclerViewAdapter adapter;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -59,6 +60,7 @@ public class VisitProfile extends AppCompatActivity {
         Bundle bundle = intent.getExtras();
         visitedUID = bundle.get("Token").toString();
 
+        list = new ArrayList<>();
         auth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference().child("Users").child(visitedUID);
@@ -66,7 +68,6 @@ public class VisitProfile extends AppCompatActivity {
         reference = storage.getReference().child("Users").child(visitedUID);
 
         addFriend = findViewById(R.id.add_friend);
-
         databaseReference.child("Friends").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -101,9 +102,10 @@ public class VisitProfile extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                recyclerView.setAdapter(new VisitProfileRecyclerViewAdapter(list, visitedUID, VisitProfile.this));
+                adapter = new VisitProfileRecyclerViewAdapter(list, visitedUID, VisitProfile.this);
+                recyclerView.setAdapter(adapter);
             }
-        }, 20000);
+        }, 2000);
     }
 
     private void getBio() {
@@ -145,23 +147,20 @@ public class VisitProfile extends AppCompatActivity {
     }
 
     private void getAllPostsFromFirebase() {
-        list = new ArrayList<>();
-
-        DatabaseReference postsReference = databaseReference.child("Posts");
-        postsReference.addValueEventListener(new ValueEventListener() {
+        databaseReference.child("Posts").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot ds : snapshot.getChildren()) {
-                    if(ds.getKey().equals("Count")){
-                        continue;
-                    }
-                    Post p = new Post();
-                    int id = ds.child("Id").getValue(Integer.class);
-                    p.setId( id);
-                    p.setCaption(ds.child("Title").getValue(String.class));
+                    if(ds.getKey().equals("Count")){continue;}
+                    final Post p = new Post();
+                    p.setId(ds.child("Id").getValue(Integer.class));
+                    p.setCaption(ds.child("Caption").getValue(String.class));
+                    p.setLikes((int) ds.child("Likes").getChildrenCount());
+                    p.setDate(ds.child("Date").getValue(String.class));
+                    p.setLiked(ds.child("Likes").child(auth.getUid()) != null);
+                    p.setUID(visitedUID);
                     list.add(p);
                 }
-                // instead of using sorting based time take O(N l(n)) this swishes take O(N)
                 for (int i = 0, j = list.size() - 1; i < j; i++, j--) {
                     Post temp = list.get(i);
                     list.set(i, list.get(j));
@@ -171,7 +170,6 @@ public class VisitProfile extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
             }
         });
     }
@@ -195,5 +193,16 @@ public class VisitProfile extends AppCompatActivity {
 
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                adapter.notifyDataSetChanged();
+            }
+        }, 2000);
     }
 }

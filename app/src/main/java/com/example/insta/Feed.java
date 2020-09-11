@@ -150,24 +150,13 @@ public class Feed extends Fragment {
                     final Post p = new Post();
                     p.setId(ds.child("Id").getValue(Integer.class));
                     p.setCaption(ds.child("Caption").getValue(String.class));
-                    p.setLikes(ds.child("Likes").getValue(Integer.class));
+                    p.setLikes((int) ds.child("Likes").getChildrenCount());
                     p.setDate(ds.child("Date").getValue(String.class));
-                    dr.child("Users").child(friendUID).child("Notifications").child("Likes")
-                            .addValueEventListener(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                    if (snapshot.child(user.getUid() + " " + p.getId()) != null) {
-                                        p.setLiked(true);
-                                    } else {
-                                        p.setLiked(false);
-                                    }
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError error) {
-
-                                }
-                            });
+                    if (ds.child("Likes").child(user.getUid()).getValue() != null) {
+                        p.setLiked(true);
+                    } else {
+                        p.setLiked(false);
+                    }
                     p.setUID(friendUID);
                     list.add(p);
                 }

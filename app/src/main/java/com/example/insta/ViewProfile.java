@@ -66,7 +66,7 @@ public class ViewProfile extends Fragment {
 
     View view;
     FloatingActionButton fab;
-    ProfileRecyclerViewAdapter profileRecyclerViewAdapter;
+    private ProfileRecyclerViewAdapter adapter;
 
 
     public ViewProfile() {
@@ -99,21 +99,8 @@ public class ViewProfile extends Fragment {
         recyclerView = view.findViewById(R.id.view_profile_posts);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
-
-        return view;
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
         getInfo();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                recyclerView.setAdapter(new ProfileRecyclerViewAdapter(list, view.getContext()));
-            }
-        }, 2000);
+        return view;
     }
 
     private void getInfo() {
@@ -186,10 +173,12 @@ public class ViewProfile extends Fragment {
 
     private void getProfilePostsFromLocalDatabase() {
         list = helper.getUserPosts(user.getUid());
+        adapter = new ProfileRecyclerViewAdapter(list, view.getContext());
+        recyclerView.setAdapter(adapter);
     }
 
     private void getProfilePostsFromFirebase() {
-        DatabaseReference postsReference = databaseReference.child("Posts");
+        final DatabaseReference postsReference = databaseReference.child("Posts");
         postsReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -201,10 +190,13 @@ public class ViewProfile extends Fragment {
                     p.setId(ds.child("Id").getValue(Integer.class));
                     p.setCaption(ds.child("Caption").getValue(String.class));
                     p.setDate(ds.child("Date").getValue(String.class));
-                    p.setLikes(ds.child("Likes").getValue(Integer.class));
+                    p.setLikes((int) ds.child("Likes").getChildrenCount());
+                    p.setLiked(false);
                     p.setUID(auth.getUid());
                     list.add(p);
                 }
+                adapter = new ProfileRecyclerViewAdapter(list, view.getContext());
+                recyclerView.setAdapter(adapter);
             }
 
             @Override
@@ -215,17 +207,16 @@ public class ViewProfile extends Fragment {
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
-
         if (getActivity() != null) {
             fab.setVisibility(View.INVISIBLE);
-            view.refreshDrawableState();
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    adapter.notifyDataSetChanged();
+                }
+            }, 4000);
         }
     }
 }

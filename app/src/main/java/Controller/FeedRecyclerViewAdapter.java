@@ -75,22 +75,21 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerVi
             @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View v) {
+                holder.love.setEnabled(false);
                 if (!list.get(position).getLiked()) {
-                    databaseReference.child("Users").child(list.get(position).getUID()).child("Posts").child(list.get(position).getId() + "").child("Likes")
-                            .setValue(list.get(position).getLikes() + 1);
-                    list.get(position).setLikes(list.get(position).getLikes() + 1);
                     list.get(position).setLiked(true);
-                    holder.loveList.setText(list.get(position).getLikes() + " Loves");
+                    list.get(position).setLikes(list.get(position).getLikes()+1);
+                    holder.loveList.setText((list.get(position).getLikes()) + " Loves");
                     holder.love.setBackgroundResource(R.drawable.loved);
-                    setNotification(list.get(position));
+                    doChanges(list.get(position));
+                    holder.love.setEnabled(true);
                 } else {
-                    databaseReference.child("Users").child(list.get(position).getUID()).child("Posts").child(list.get(position).getId() + "").child("Likes")
-                            .setValue(list.get(position).getLikes() - 1);
-                    list.get(position).setLikes(list.get(position).getLikes() - 1);
-                    holder.loveList.setText(list.get(position).getLikes() + " Loves");
-                    holder.love.setBackgroundResource(R.drawable.love);
                     list.get(position).setLiked(false);
-                    deleteNotifications(list.get(position));
+                    list.get(position).setLikes(list.get(position).getLikes()- 1);
+                    holder.loveList.setText((list.get(position).getLikes()) + " Loves");
+                    holder.love.setBackgroundResource(R.drawable.love);
+                    undoChanges(list.get(position));
+                    holder.love.setEnabled(true);
                 }
             }
         });
@@ -101,6 +100,7 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerVi
             holder.caption.setText(list.get(position).getCaption());
             holder.loveList.setText(list.get(position).getLikes() + " Loves");
             holder.bar.setVisibility(View.GONE);
+            databaseHelper.updatePost(list.get(position));
         } else {
             final long resolution = 4096 * 4096;
             reference.child("Users").child(list.get(position).getUID()).child("Posts").child(list.get(position).getId() + "").
@@ -129,20 +129,30 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerVi
         }
     }
 
-    private void deleteNotifications(final Post post) {
-        databaseReference.child("Users").child(post.getUID()).child("Notifications").child("Likes").child(user.getUid() + " " + post.getId()).removeValue();
+    private void undoChanges(final Post post) {
+        databaseReference.child("Users").child(post.getUID()).child("Notifications")
+                .child("Likes").child(user.getUid() + " " + post.getId()).removeValue();
+
+        databaseReference.child("Users").child(post.getUID()).child("Posts")
+                .child(post.getId() + "").child("Likes").child(user.getUid())
+                .removeValue();
     }
 
-    private void setNotification(final Post post) {
+    private void doChanges(final Post post) {
         String name = databaseHelper.getUser(user.getUid()).getName();
 
-        DatabaseReference dbr = databaseReference.child("Users").child(post.getUID()).child("Notifications").child("Likes").child(user.getUid() + " " + post.getId());
+        DatabaseReference dbr = databaseReference.child("Users").child(post.getUID()).child("Notifications")
+                .child("Likes").child(user.getUid() + " " + post.getId());
 
         dbr.child("Message")
                 .setValue(name + " Liked your picture");
-        dbr.child("Posts ID")
+        dbr.child("Post ID")
                 .setValue(post.getId());
         dbr.child("UID")
+                .setValue(user.getUid());
+
+        databaseReference.child("Users").child(post.getUID()).child("Posts")
+                .child(post.getId() + "").child("Likes").child(user.getUid())
                 .setValue(user.getUid());
     }
 

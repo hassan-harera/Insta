@@ -70,6 +70,7 @@ public class ProfileRecyclerViewAdapter extends RecyclerView.Adapter<ProfileRecy
             holder.caption.setText(list.get(position).getCaption());
             holder.love_list.setText(list.get(position).getLikes() + " Loves");
             holder.bar.setVisibility(View.GONE);
+            databaseHelper.updatePost(list.get(position));
         } else {
             final long resolution = 4096 * 4096;
             reference.child("Users").child(user.getUid()).child("Posts").child(id + "").
@@ -82,6 +83,7 @@ public class ProfileRecyclerViewAdapter extends RecyclerView.Adapter<ProfileRecy
                         holder.caption.setText(list.get(position).getCaption());
                         Post post = list.get(position);
                         post.setBitmap(bitmap);
+                        post.setLiked(false);
                         holder.bar.setVisibility(View.GONE);
                         if (!databaseHelper.checkPost(post.getUID(), post.getId())) {
                             databaseHelper.insertPost(post);

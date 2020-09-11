@@ -171,7 +171,7 @@ public class AddImage extends AppCompatActivity {
         dr.child("Id").setValue(post.getId());
         dr.child("Caption").setValue(post.getCaption());
         dr.child("Date").setValue(post.getDate());
-        dr.child("Likes").setValue(post.getLikes());
+        dr.child("Likes");
     }
 
     private void failedAdd() {
