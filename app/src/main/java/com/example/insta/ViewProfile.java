@@ -70,7 +70,7 @@ public class ViewProfile extends Fragment {
 
 
     public ViewProfile() {
-        list = new ArrayList<>();
+        list = new ArrayList();
         firebaseDatabase = FirebaseDatabase.getInstance();
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
@@ -86,7 +86,7 @@ public class ViewProfile extends Fragment {
                              @Nullable Bundle savedInstanceState) {
 
         view = inflater.inflate(R.layout.fragment_view_profile, container, false);
-
+        adapter = new ProfileRecyclerViewAdapter(new ArrayList<Post>(), view.getContext());
         profilePic = view.findViewById(R.id.view_profile_photo);
         name = view.findViewById(R.id.view_profile_user_name);
         bio = view.findViewById(R.id.view_profile_user_bio);
@@ -104,8 +104,9 @@ public class ViewProfile extends Fragment {
     }
 
     private void getInfo() {
+        list = new ArrayList<>();
+        
         helper = new InstaDatabaseHelper(view.getContext());
-
         ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
@@ -215,8 +216,9 @@ public class ViewProfile extends Fragment {
                 @Override
                 public void run() {
                     adapter.notifyDataSetChanged();
+                    view.refreshDrawableState();
                 }
-            }, 4000);
+            }, 1000);
         }
     }
 }

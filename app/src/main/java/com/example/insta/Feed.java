@@ -6,7 +6,6 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,7 +15,6 @@ import android.view.LayoutInflater;
 
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -32,7 +30,6 @@ import com.google.firebase.storage.StorageReference;
 
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import Controller.FeedRecyclerViewAdapter;
@@ -96,12 +93,14 @@ public class Feed extends Fragment {
 
         helper = new InstaDatabaseHelper(getContext());
         list = new ArrayList();
+
+        adapter = new FeedRecyclerViewAdapter(list, view.getContext());
         getInfo();
         return view;
     }
 
     private void getAllPostsFromLocalDatabase() {
-        list = helper.getPosts();
+        list = helper.getFeedPosts();
         for (int i = 0, j = list.size() - 1; i < j; i++, j--) {
             Post temp = list.get(i);
             list.set(i, list.get(j));
@@ -180,7 +179,7 @@ public class Feed extends Fragment {
                 public void run() {
                     adapter.notifyDataSetChanged();
                 }
-            }, 4000);
+            }, 3000);
         }
     }
 }

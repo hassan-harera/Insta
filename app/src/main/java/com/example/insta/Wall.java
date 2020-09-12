@@ -84,7 +84,7 @@ public class Wall extends AppCompatActivity {
         fab.setVisibility(View.INVISIBLE);
 
 
-        SearchView searchView = findViewById(R.id.search_token);
+        final SearchView searchView = findViewById(R.id.search_token);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(final String query) {
@@ -104,7 +104,7 @@ public class Wall extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                return false;
+                return true;
             }
         });
 

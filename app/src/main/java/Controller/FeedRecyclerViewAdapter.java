@@ -29,6 +29,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.Date;
 import java.util.DuplicateFormatFlagsException;
 import java.util.List;
 
@@ -130,30 +131,20 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerVi
     }
 
     private void undoChanges(final Post post) {
-        databaseReference.child("Users").child(post.getUID()).child("Notifications")
-                .child("Likes").child(user.getUid() + " " + post.getId()).removeValue();
-
-        databaseReference.child("Users").child(post.getUID()).child("Posts")
-                .child(post.getId() + "").child("Likes").child(user.getUid())
-                .removeValue();
+        databaseReference.child("Users").child(post.getUID()).child("Posts").child(post.getId()+"")
+                .child("Likes").child(user.getUid()).removeValue();
     }
 
     private void doChanges(final Post post) {
-        String name = databaseHelper.getUser(user.getUid()).getName();
+        DatabaseReference dbr = databaseReference.child("Users").child(post.getUID()).child("Posts").child(post.getId()+"")
+                .child("Likes").child(user.getUid());
 
-        DatabaseReference dbr = databaseReference.child("Users").child(post.getUID()).child("Notifications")
-                .child("Likes").child(user.getUid() + " " + post.getId());
-
-        dbr.child("Message")
-                .setValue(name + " Liked your picture");
         dbr.child("Post ID")
                 .setValue(post.getId());
         dbr.child("UID")
                 .setValue(user.getUid());
-
-        databaseReference.child("Users").child(post.getUID()).child("Posts")
-                .child(post.getId() + "").child("Likes").child(user.getUid())
-                .setValue(user.getUid());
+        dbr.child("Date")
+                .setValue(new Date().toString());
     }
 
     @Override

@@ -124,11 +124,13 @@ public class AddImage extends AppCompatActivity {
         }
 
         final Post post = new Post();
-        databaseReference.child("Users").child(firebaseUser.getUid()).child("Posts").child("Count").addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child("Users").child(firebaseUser.getUid()).child("Posts").child("Count")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 post.setId(Integer.parseInt(snapshot.getValue().toString()));
-                databaseReference.child("Users").child(firebaseUser.getUid()).child("Posts").child("Count").setValue(post.getId() + 1);
+                databaseReference.child("Users").child(firebaseUser.getUid()).child("Posts")
+                        .child("Count").setValue(post.getId() + 1);
             }
 
             @Override
@@ -136,6 +138,8 @@ public class AddImage extends AppCompatActivity {
 
             }
         });
+        databaseReference.child("Users").child(firebaseUser.getUid()).child("Posts")
+                .child(post.getId()+"").child("Likes");
 
         post.setCaption(caption.getText().toString());
         post.setDate(new Date().toString());

@@ -51,7 +51,7 @@ public class Register extends AppCompatActivity {
         email = findViewById(R.id.email);
         password = findViewById(R.id.password_register);
         repassword = findViewById(R.id.confirm_password_register);
-
+        helper = new InstaDatabaseHelper(this);
         register = findViewById(R.id.register_signup);
         auth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();

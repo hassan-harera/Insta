@@ -6,9 +6,11 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -27,9 +29,12 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
-import Controller.FriendRequestsRecyclerViewAdapter;
+import Controller.NotificationsRecyclerViewAdapter;
+import Model.Notification;
 
 public class Notifications extends Fragment {
 
@@ -37,7 +42,7 @@ public class Notifications extends Fragment {
     private View view;
 
 
-    List<String> uids;
+    List<Notification> notifications;
 
     FirebaseAuth auth;
     FirebaseUser user;
@@ -46,10 +51,11 @@ public class Notifications extends Fragment {
     StorageReference sr;
     FirebaseStorage fs;
 
-    RecyclerView notifs;
+    RecyclerView recyclerView;
+    private NotificationsRecyclerViewAdapter aapter;
 
     public Notifications() {
-        this.uids = new ArrayList();
+        this.notifications = new ArrayList();
 
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
@@ -69,29 +75,46 @@ public class Notifications extends Fragment {
         if (!isConnected) {
             Toast.makeText(getContext(), "No Internet Connection", Toast.LENGTH_SHORT).show();
         }
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                aapter = new NotificationsRecyclerViewAdapter(notifications, view.getContext());
+                recyclerView.setAdapter(aapter);
+            }
+        }, 3000);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState ) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_notifications, container, false);
         fab = getActivity().findViewById(R.id.fab);
         fab.setVisibility(View.INVISIBLE);
 
-        notifs = view.findViewById(R.id.recycler_view_notifications);
-        notifs.setLayoutManager(new LinearLayoutManager(view.getContext()));
-        notifs.setHasFixedSize(true);
+        recyclerView = view.findViewById(R.id.recycler_view_notifications);
+        recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        recyclerView.setHasFixedSize(true);
         getNotifications();
         return view;
     }
 
     private void getNotifications() {
-        dbr.child("Users").child(user.getUid()).child("FriendRequests").addValueEventListener(new ValueEventListener() {
+        getFriendRequests(dbr.child("Users").child(user.getUid()).child("Friend Requests"));
+        getLikes(dbr.child("Users").child(user.getUid()).child("Posts"));
+        Collections.sort(notifications);
+    }
+
+    private void getFriendRequests(DatabaseReference friend_requests) {
+        friend_requests.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot s: snapshot.getChildren()) {
-                    uids.add(s.child("From").getValue(String.class));
+            public void onDataChange(@NonNull DataSnapshot ds) {
+                for (DataSnapshot s : ds.getChildren()) {
+                    Notification n = new Notification();
+                    n.setType("Friend Request");
+                    n.setUID(s.child("UID").getValue().toString());
+                    n.setDate(new Date(s.child("Date").getValue().toString()));
+                    notifications.add(n);
                 }
-                notifs.setAdapter(new FriendRequestsRecyclerViewAdapter(uids, view.getContext()));
             }
 
             @Override
@@ -101,11 +124,54 @@ public class Notifications extends Fragment {
         });
     }
 
+    private void getLikes(final DatabaseReference posts) {
+        posts.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot ds) {
+                for (DataSnapshot s : ds.getChildren()) {
+                    if (s.getKey().equals("Count")) {
+                        continue;
+                    }
+                    s.child("Likes").getRef().addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dss) {
+                            for (DataSnapshot s : dss.getChildren()) {
+                                Notification n = new Notification();
+                                n.setType("Like");
+                                n.setPostID(s.child("Post ID").getValue().toString());
+                                n.setUID(s.child("UID").getValue().toString());
+                                n.setDate(new Date(s.child("Date").getValue().toString()));
+                                notifications.add(n);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+
     @Override
     public void onResume() {
         super.onResume();
-        if(getActivity()!=null){
-            fab.setVisibility(View.INVISIBLE);
-        }
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                fab.setVisibility(View.INVISIBLE);
+                aapter.notifyDataSetChanged();
+            }
+        }, 4000);
     }
 }

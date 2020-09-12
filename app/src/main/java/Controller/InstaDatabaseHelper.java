@@ -188,7 +188,7 @@ public class InstaDatabaseHelper extends SQLiteOpenHelper {
         return list;
     }
 
-    public List<Post> getPosts() {
+    public List<Post> getFeedPosts() {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.query(Info.TABLE_POSTS, new String[]{
                         Info.POST_CAPTION_COLUMN,
@@ -198,7 +198,7 @@ public class InstaDatabaseHelper extends SQLiteOpenHelper {
                         Info.POST_USER_ID_COLUMN,
                         Info.POST_LIKES_COLUMN,
                         Info.POST_IMAGE_COLUMN,},
-                null, null, null,
+                Info.POST_USER_ID_COLUMN + " != ? ", new String[]{firebaseAuth.getUid()}, null,
                 null, null);
 
         final List<Post> list = new ArrayList();

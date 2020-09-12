@@ -27,6 +27,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import Controller.VisitProfileRecyclerViewAdapter;
@@ -175,13 +176,18 @@ public class VisitProfile extends AppCompatActivity {
     }
 
     public void addFriendClicked(View view) {
+        //                n.setUID(s.child("UID").getValue().toString());
+        //                n.setDate(new Date(s.child("Date").getValue().toString()));
         addFriend.setEnabled(false);
-        DatabaseReference dbr = FirebaseDatabase.getInstance().getReference().child("Users").child(visitedUID).child("FriendRequests").child(auth.getUid());
+        DatabaseReference dbr = FirebaseDatabase.getInstance().getReference().child("Users").child(visitedUID)
+                .child("Friend Requests");
         dbr.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.child("From").getValue() == null) {
-                    snapshot.child("From").getRef().setValue(auth.getUid());
+                if (snapshot.child(auth.getUid()).getValue() == null) {
+                    DatabaseReference dbr = snapshot.child(auth.getUid()).getRef();
+                    dbr.child("UID").setValue(auth.getUid());
+                    dbr.child("Date").setValue(new Date().toString());
                     Toast.makeText(VisitProfile.this, "Request Sent", Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(VisitProfile.this, "Request Already Sent", Toast.LENGTH_LONG).show();

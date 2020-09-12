@@ -19,10 +19,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -32,6 +35,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -58,6 +62,8 @@ public class EditProfile extends AppCompatActivity {
     Uri uri;
     Bitmap bitmap1;
 
+    ProgressBar progressBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,6 +83,7 @@ public class EditProfile extends AppCompatActivity {
         name = findViewById(R.id.EditProfile_name);
         bio = findViewById(R.id.EditProfile_bio);
         email = findViewById(R.id.user_profile_email);
+        progressBar = findViewById(R.id.progress_bar);
 
         getInfo();
         email.setText(user.getEmail());
@@ -95,7 +102,7 @@ public class EditProfile extends AppCompatActivity {
         } else {
             User user;
             user = helper.getUser(auth.getCurrentUser().getUid());
-            if(user.getProfilePic() != null){
+            if (user.getProfilePic() != null) {
                 profilePic.setImageBitmap(user.getProfilePic());
             }
             name.setText(user.getName());
@@ -151,7 +158,7 @@ public class EditProfile extends AppCompatActivity {
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
 
-        if(!isConnected){
+        if (!isConnected) {
             Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -160,14 +167,23 @@ public class EditProfile extends AppCompatActivity {
         databaseReference.child("Users").child(user.getUid()).child("Bio").setValue(bio.getText().toString());
 
         if (uri != null) {
+            progressBar.setVisibility(View.VISIBLE);
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             bitmap1.compress(Bitmap.CompressFormat.PNG, 100, bos);
-            reference.child("Users").child(user.getUid()).child("Profile Pic").putBytes(bos.toByteArray());
+            reference.child("Users").child(user.getUid()).child("Profile Pic").putBytes(bos.toByteArray())
+                    .addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                            finish();
+                        }
+                    });
+        } else {
+            finish();
         }
-        finish();
     }
 
     public void addImageClicked(View view) {
+        profilePic.setEnabled(false);
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, 123);
     }
@@ -175,7 +191,7 @@ public class EditProfile extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
+        profilePic.setEnabled(true);
         if (data != null && requestCode == 123 && resultCode == RESULT_OK) {
             uri = data.getData();
             try {
