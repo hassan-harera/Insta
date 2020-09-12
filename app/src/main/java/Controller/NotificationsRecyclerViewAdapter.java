@@ -14,9 +14,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.insta.R;
+import com.example.insta.ViewPost;
 import com.example.insta.VisitProfile;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -84,15 +86,17 @@ public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<Notif
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
+
         switch (notifications.get(position).getType()) {
             case "Like":
                 final LikeHolder lh = (LikeHolder) holder;
                 lh.ll.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-//                        Intent intent = new Intent(context, PostView.class);
-//                        intent.putExtra("Post ID", notifications.get(position).getPostID());
-//                        context.startActivity(intent);
+                        Intent intent = new Intent(context, ViewPost.class);
+                        intent.putExtra("Post ID", notifications.get(position).getPostID());
+                        intent.putExtra("UID", notifications.get(position).getUID());
+                        context.startActivity(intent);
                     }
                 });
 
@@ -149,17 +153,17 @@ public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<Notif
 
                 dbr.child("Users").child(notifications.get(position).getUID()).child("Name")
                         .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @SuppressLint("SetTextI18n")
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        fh.message.setText(snapshot.getValue().toString() + "\nSent you a friend request");
-                    }
+                            @SuppressLint("SetTextI18n")
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                fh.message.setText(snapshot.getValue().toString() + "\nSent you a friend request");
+                            }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
 
-                    }
-                });
+                            }
+                        });
 
                 sr.child("Users").child(notifications.get(position).getUID()).child("Profile Pic")
                         .getBytes(4096 * 4096)
@@ -170,8 +174,6 @@ public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<Notif
                             }
                         });
         }
-
-
     }
 
     private void delete(int i) {
