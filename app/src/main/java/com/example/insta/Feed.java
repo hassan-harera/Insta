@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -189,5 +190,7 @@ public class Feed extends Fragment {
                 }
             }, 3000);
         }
+
+
     }
 }

@@ -5,12 +5,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Handler;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.insta.R;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -32,6 +37,7 @@ import com.google.firebase.storage.StorageReference;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
+import java.security.MessageDigest;
 import java.text.Format;
 import java.util.Date;
 import java.util.DuplicateFormatFlagsException;
@@ -108,48 +114,51 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerVi
             holder.caption.setText(list.get(position).getCaption());
             holder.loveList.setText(list.get(position).getLikes() + " Loves");
             databaseHelper.updatePost(list.get(position));
-            getUserPic(holder, position);
-            holder.bar.setVisibility(View.GONE);
+            getUser(holder, position);
         } else {
             getPost(holder, position);
-            getUserPic(holder, position);
-            holder.bar.setVisibility(View.GONE);
+            getUser(holder, position);
         }
+
+
+
     }
 
-    private void getUserPic(final ViewHolder holder, final int position) {
-        reference.child("Users").child(list.get(position).getUID()).child("Profile Pic").
-                getBytes(1024 * 1024).addOnCompleteListener(new OnCompleteListener<byte[]>() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onComplete(@NonNull Task<byte[]> task) {
-                if (task.isSuccessful()) {
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(task.getResult(), 0, task.getResult().length);
-                    holder.user_pic.setImageBitmap(bitmap);
-                    if (!databaseHelper.checkUser(list.get(position).getUID())) {
-                        User user = new User();
-                        user.setUid(list.get(position).getUID());
-                        user.setProfilePic(bitmap);
-                        databaseHelper.insertUser(user);
-                    } else {
-                        databaseHelper.updateUserProfilePic(task.getResult(), list.get(position).getUID());
-                    }
+    private void getUser(final FeedRecyclerViewAdapter.ViewHolder holder, final int position) {
+        if (!databaseHelper.checkUser(list.get(position).getUID())) {
+            final User user = new User();
+            user.setUid(list.get(position).getUID());
 
-                }
-            }
-        });
-        databaseReference.child("Users").child(list.get(position).getUID()).child("Name")
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                holder.name.setText(snapshot.getValue(String.class));
-            }
+            reference.child("Users").child(list.get(position).getUID())
+                    .child("Profile Pic").getBytes(1024 * 1024).
+                    addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                        @Override
+                        public void onSuccess(byte[] bytes) {
+                            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                            holder.user_pic.setImageBitmap(bitmap);
+                            user.setProfilePic(bitmap);
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+                            databaseReference.child("Users").child(list.get(position).getUID())
+                                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot ds) {
+                                            user.setName(ds.child("Name").getValue(String.class));
+                                            holder.name.setText(user.getName());
+                                            databaseHelper.insertUser(user);
+                                        }
 
-            }
-        });
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+                                        }
+                                    });
+                        }
+                    });
+        } else {
+            User user = databaseHelper.getUser(list.get(position).getUID());
+            holder.user_pic.setImageBitmap(user.getProfilePic());
+            holder.name.setText(user.getName());
+        }
+        holder.bar.setVisibility(View.GONE);
     }
 
     private void getPost(final ViewHolder holder, final int position) {
@@ -218,8 +227,6 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerVi
             date = itemView.findViewById(R.id.date);
             user_pic = itemView.findViewById(R.id.user_pic);
             bar = itemView.findViewById(R.id.progress_bar);
-
-
         }
     }
 }

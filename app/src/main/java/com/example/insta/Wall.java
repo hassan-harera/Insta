@@ -1,6 +1,7 @@
 package com.example.insta;
 
 import android.animation.StateListAnimator;
+import android.app.MediaRouteButton;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -28,8 +29,10 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.os.Handler;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -54,6 +57,7 @@ public class Wall extends AppCompatActivity {
     FirebaseDatabase firebaseDatabase;
 
     Toolbar toolbar;
+    private RelativeLayout logo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +72,7 @@ public class Wall extends AppCompatActivity {
         reference = storage.getReference(user.getEmail());
 
         toolbar = findViewById(R.id.toolbar);
+        logo = findViewById(R.id.logo);
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
@@ -131,10 +136,16 @@ public class Wall extends AppCompatActivity {
         new TabLayoutMediator(tabLayout, viewPager, new TabLayoutMediator.TabConfigurationStrategy() {
             @Override
             public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
-//                tab.setText(l.get(position));
                 tab.setIcon(res.get(position));
             }
         }).attach();
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                logo.setVisibility(View.INVISIBLE);
+            }
+        }, 5000);
     }
 
     private void addImage() {
@@ -148,7 +159,6 @@ public class Wall extends AppCompatActivity {
         intent.putExtra("Token", query);
         startActivity(intent);
     }
-
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {

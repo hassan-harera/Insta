@@ -79,47 +79,17 @@ public class ProfileRecyclerViewAdapter extends RecyclerView.Adapter<ProfileRecy
             holder.love_list.setText(list.get(position).getLikes() + " Loves");
             databaseHelper.updatePost(list.get(position));
             getUser(holder, position);
-            holder.bar.setVisibility(View.GONE);
         } else {
             getPost(holder, position);
             getUser(holder, position);
-            holder.bar.setVisibility(View.GONE);
         }
     }
 
-    private void getUser(final ProfileRecyclerViewAdapter.ViewHolder holder, final int position) {
-        reference.child("Users").child(list.get(position).getUID()).child("Profile Pic").
-                getBytes(1024 * 1024).addOnCompleteListener(new OnCompleteListener<byte[]>() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onComplete(@NonNull Task<byte[]> task) {
-                if (task.isSuccessful()) {
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(task.getResult(), 0, task.getResult().length);
-                    holder.user_pic.setImageBitmap(bitmap);
-                    if (!databaseHelper.checkUser(list.get(position).getUID())) {
-                        User user = new User();
-                        user.setUid(list.get(position).getUID());
-                        user.setProfilePic(bitmap);
-                        databaseHelper.insertUser(user);
-                    } else {
-                        databaseHelper.updateUserProfilePic(task.getResult(), list.get(position).getUID());
-                    }
-
-                }
-            }
-        });
-        databaseReference.child("Users").child(list.get(position).getUID()).
-                child("Name").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                holder.name.setText(snapshot.getValue(String.class));
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+    private void getUser(final ProfileRecyclerViewAdapter.ViewHolder holder, int position) {
+        User user = databaseHelper.getUser(auth.getUid());
+        holder.user_pic.setImageBitmap(user.getProfilePic());
+        holder.name.setText(user.getName());
+        holder.bar.setVisibility(View.GONE);
     }
 
     private void getPost(final ProfileRecyclerViewAdapter.ViewHolder holder, final int position) {
