@@ -138,7 +138,7 @@ public class VisitProfile extends AppCompatActivity {
     }
 
     private void getProfilePic() {
-        reference.child("Profile Pic").getBytes(4096 * 4096).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+        reference.child("Profile Pic").getBytes(1024 * 1024).addOnSuccessListener(new OnSuccessListener<byte[]>() {
             @Override
             public void onSuccess(byte[] bytes) {
                 Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);

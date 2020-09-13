@@ -2,6 +2,7 @@ package Controller;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
@@ -29,11 +30,15 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+import java.text.Format;
 import java.util.Date;
 import java.util.DuplicateFormatFlagsException;
 import java.util.List;
 
 import Model.Post;
+import Model.User;
 
 public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerViewAdapter.ViewHolder> {
 
@@ -68,6 +73,7 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerVi
         return new FeedRecyclerViewAdapter.ViewHolder(view);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
         holder.love.setBackgroundResource(list.get(position).getLiked() ? R.drawable.loved : R.drawable.love);
@@ -79,14 +85,14 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerVi
                 holder.love.setEnabled(false);
                 if (!list.get(position).getLiked()) {
                     list.get(position).setLiked(true);
-                    list.get(position).setLikes(list.get(position).getLikes()+1);
+                    list.get(position).setLikes(list.get(position).getLikes() + 1);
                     holder.loveList.setText((list.get(position).getLikes()) + " Loves");
                     holder.love.setBackgroundResource(R.drawable.loved);
                     doChanges(list.get(position));
                     holder.love.setEnabled(true);
                 } else {
                     list.get(position).setLiked(false);
-                    list.get(position).setLikes(list.get(position).getLikes()- 1);
+                    list.get(position).setLikes(list.get(position).getLikes() - 1);
                     holder.loveList.setText((list.get(position).getLikes()) + " Loves");
                     holder.love.setBackgroundResource(R.drawable.love);
                     undoChanges(list.get(position));
@@ -98,45 +104,88 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerVi
         if (databaseHelper.checkPost(list.get(position).getUID(), list.get(position).getId())) {
             Bitmap bitmap = databaseHelper.getPost(list.get(position).getUID(), list.get(position).getId()).getBitmap();
             holder.recImage.setImageBitmap(bitmap);
+            holder.date.setText(list.get(position).getDate());
             holder.caption.setText(list.get(position).getCaption());
             holder.loveList.setText(list.get(position).getLikes() + " Loves");
-            holder.bar.setVisibility(View.GONE);
             databaseHelper.updatePost(list.get(position));
+            getUserPic(holder, position);
+            holder.bar.setVisibility(View.GONE);
         } else {
-            final long resolution = 1024 * 1024;
-            reference.child("Users").child(list.get(position).getUID()).child("Posts").child(list.get(position).getId() + "").
-                    getBytes(resolution).addOnCompleteListener(new OnCompleteListener<byte[]>() {
-                @SuppressLint("SetTextI18n")
-                @Override
-                public void onComplete(@NonNull Task<byte[]> task) {
-                    if (task.isSuccessful()) {
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(task.getResult(), 0, task.getResult().length);
-                        holder.recImage.setImageBitmap(bitmap);
-                        holder.caption.setText(list.get(position).getCaption());
-                        holder.loveList.setText(list.get(position).getLikes() + " Loves");
-                        Post post = list.get(position);
-                        post.setBitmap(bitmap);
-                        holder.bar.setVisibility(View.GONE);
-                        if (!databaseHelper.checkPost(post.getUID(), post.getId())) {
-                            databaseHelper.insertPost(post);
-                        } else {
-                            databaseHelper.updatePost(post);
-                        }
-                    } else {
-                        Toast.makeText(context, "Failed to load image", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
+            getPost(holder, position);
+            getUserPic(holder, position);
+            holder.bar.setVisibility(View.GONE);
         }
     }
 
+    private void getUserPic(final ViewHolder holder, final int position) {
+        reference.child("Users").child(list.get(position).getUID()).child("Profile Pic").
+                getBytes(1024 * 1024).addOnCompleteListener(new OnCompleteListener<byte[]>() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onComplete(@NonNull Task<byte[]> task) {
+                if (task.isSuccessful()) {
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(task.getResult(), 0, task.getResult().length);
+                    holder.user_pic.setImageBitmap(bitmap);
+                    if (!databaseHelper.checkUser(list.get(position).getUID())) {
+                        User user = new User();
+                        user.setUid(list.get(position).getUID());
+                        user.setProfilePic(bitmap);
+                        databaseHelper.insertUser(user);
+                    } else {
+                        databaseHelper.updateUserProfilePic(task.getResult(), list.get(position).getUID());
+                    }
+
+                }
+            }
+        });
+        databaseReference.child("Users").child(list.get(position).getUID()).child("Name")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                holder.name.setText(snapshot.getValue(String.class));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void getPost(final ViewHolder holder, final int position) {
+        reference.child("Users").child(list.get(position).getUID()).child("Posts").child(list.get(position).getId() + "").
+                getBytes(1024 * 1024).addOnCompleteListener(new OnCompleteListener<byte[]>() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onComplete(@NonNull Task<byte[]> task) {
+                if (task.isSuccessful()) {
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(task.getResult(), 0, task.getResult().length);
+                    holder.recImage.setImageBitmap(bitmap);
+                    holder.caption.setText(list.get(position).getCaption());
+                    holder.loveList.setText(list.get(position).getLikes() + " Loves");
+                    holder.date.setText(list.get(position).getDate());
+                    Post post = list.get(position);
+                    post.setBitmap(bitmap);
+                    holder.bar.setVisibility(View.GONE);
+                    if (!databaseHelper.checkPost(post.getUID(), post.getId())) {
+                        databaseHelper.insertPost(post);
+                    } else {
+                        databaseHelper.updatePost(post);
+                    }
+                } else {
+                    Toast.makeText(context, "Failed to load image", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
     private void undoChanges(final Post post) {
-        databaseReference.child("Users").child(post.getUID()).child("Posts").child(post.getId()+"")
+        databaseReference.child("Users").child(post.getUID()).child("Posts").child(post.getId() + "")
                 .child("Likes").child(user.getUid()).removeValue();
     }
 
     private void doChanges(final Post post) {
-        DatabaseReference dbr = databaseReference.child("Users").child(post.getUID()).child("Posts").child(post.getId()+"")
+        DatabaseReference dbr = databaseReference.child("Users").child(post.getUID()).child("Posts").child(post.getId() + "")
                 .child("Likes").child(user.getUid());
 
         dbr.child("Post ID")
@@ -153,8 +202,8 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerVi
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView caption, loveList;
-        ImageView recImage;
+        TextView caption, loveList, name, date;
+        ImageView recImage, user_pic;
         Button love;
         ProgressBar bar;
 
@@ -165,7 +214,12 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerVi
             recImage = itemView.findViewById(R.id.rec_image);
             love = itemView.findViewById(R.id.love);
             loveList = itemView.findViewById(R.id.love_list);
+            name = itemView.findViewById(R.id.name);
+            date = itemView.findViewById(R.id.date);
+            user_pic = itemView.findViewById(R.id.user_pic);
             bar = itemView.findViewById(R.id.progress_bar);
+
+
         }
     }
 }

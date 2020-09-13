@@ -1,5 +1,6 @@
 package Controller;
 
+import android.annotation.SuppressLint;
 import android.app.MediaRouteButton;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -7,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -20,14 +22,18 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.List;
 
 import Model.Post;
+import Model.User;
 
 public class ProfileRecyclerViewAdapter extends RecyclerView.Adapter<ProfileRecyclerViewAdapter.ViewHolder> {
 
@@ -51,6 +57,7 @@ public class ProfileRecyclerViewAdapter extends RecyclerView.Adapter<ProfileRecy
         user = auth.getCurrentUser();
         reference = storage.getReference();
         database = FirebaseDatabase.getInstance();
+        databaseReference = database.getReference();
         databaseHelper = new InstaDatabaseHelper(context);
     }
 
@@ -68,35 +75,80 @@ public class ProfileRecyclerViewAdapter extends RecyclerView.Adapter<ProfileRecy
             Bitmap bitmap = databaseHelper.getPost(list.get(position).getUID(), list.get(position).getId()).getBitmap();
             holder.recImage.setImageBitmap(bitmap);
             holder.caption.setText(list.get(position).getCaption());
+            holder.date.setText(list.get(position).getDate());
             holder.love_list.setText(list.get(position).getLikes() + " Loves");
-            holder.bar.setVisibility(View.GONE);
             databaseHelper.updatePost(list.get(position));
+            getUser(holder, position);
+            holder.bar.setVisibility(View.GONE);
         } else {
-            final long resolution = 1024 * 1024;
-            reference.child("Users").child(user.getUid()).child("Posts").child(id + "").
-                    getBytes(resolution).addOnCompleteListener(new OnCompleteListener<byte[]>() {
-                @Override
-                public void onComplete(@NonNull Task<byte[]> task) {
-                    if (task.isSuccessful()) {
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(task.getResult(), 0, task.getResult().length);
-                        holder.recImage.setImageBitmap(bitmap);
-                        holder.caption.setText(list.get(position).getCaption());
-                        Post post = list.get(position);
-                        post.setBitmap(bitmap);
-                        post.setLiked(false);
-                        holder.bar.setVisibility(View.GONE);
-                        if (!databaseHelper.checkPost(post.getUID(), post.getId())) {
-                            databaseHelper.insertPost(post);
-                        } else {
-                            databaseHelper.updatePost(post);
-                        }
-                    } else {
-                        Toast.makeText(context, "Failed to load image", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
+            getPost(holder, position);
+            getUser(holder, position);
+            holder.bar.setVisibility(View.GONE);
         }
     }
+
+    private void getUser(final ProfileRecyclerViewAdapter.ViewHolder holder, final int position) {
+        reference.child("Users").child(list.get(position).getUID()).child("Profile Pic").
+                getBytes(1024 * 1024).addOnCompleteListener(new OnCompleteListener<byte[]>() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onComplete(@NonNull Task<byte[]> task) {
+                if (task.isSuccessful()) {
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(task.getResult(), 0, task.getResult().length);
+                    holder.user_pic.setImageBitmap(bitmap);
+                    if (!databaseHelper.checkUser(list.get(position).getUID())) {
+                        User user = new User();
+                        user.setUid(list.get(position).getUID());
+                        user.setProfilePic(bitmap);
+                        databaseHelper.insertUser(user);
+                    } else {
+                        databaseHelper.updateUserProfilePic(task.getResult(), list.get(position).getUID());
+                    }
+
+                }
+            }
+        });
+        databaseReference.child("Users").child(list.get(position).getUID()).
+                child("Name").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                holder.name.setText(snapshot.getValue(String.class));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void getPost(final ProfileRecyclerViewAdapter.ViewHolder holder, final int position) {
+        reference.child("Users").child(list.get(position).getUID()).child("Posts").child(list.get(position).getId() + "").
+                getBytes(1024 * 1024).addOnCompleteListener(new OnCompleteListener<byte[]>() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onComplete(@NonNull Task<byte[]> task) {
+                if (task.isSuccessful()) {
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(task.getResult(), 0, task.getResult().length);
+                    holder.recImage.setImageBitmap(bitmap);
+                    holder.date.setText(list.get(position).getDate());
+                    holder.caption.setText(list.get(position).getCaption());
+                    holder.love_list.setText(list.get(position).getLikes() + " Loves");
+                    Post post = list.get(position);
+                    post.setBitmap(bitmap);
+                    post.setLiked(false);
+                    if (!databaseHelper.checkPost(post.getUID(), post.getId())) {
+                        databaseHelper.insertPost(post);
+                    } else {
+                        databaseHelper.updatePost(post);
+                    }
+                } else {
+                    Toast.makeText(context, "Failed to load image", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
 
     @Override
     public int getItemCount() {
@@ -104,6 +156,8 @@ public class ProfileRecyclerViewAdapter extends RecyclerView.Adapter<ProfileRecy
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
+        TextView name, date;
+        ImageView user_pic;
         public ProgressBar bar;
         TextView caption, love_list;
         ImageView recImage;
@@ -115,6 +169,9 @@ public class ProfileRecyclerViewAdapter extends RecyclerView.Adapter<ProfileRecy
             recImage = itemView.findViewById(R.id.rec_image);
             love_list = itemView.findViewById(R.id.love_list);
             bar = itemView.findViewById(R.id.progress_bar);
+            name = itemView.findViewById(R.id.name);
+            date = itemView.findViewById(R.id.date);
+            user_pic = itemView.findViewById(R.id.user_pic);
         }
     }
 }

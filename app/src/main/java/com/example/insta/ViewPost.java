@@ -114,7 +114,7 @@ public class ViewPost extends AppCompatActivity {
 
 
 
-            final long resolution = 4096 * 4096;
+            final long resolution = 1024 * 1024;
             reference.child("Users").child(UID).child("Posts").child(postID).
                     getBytes(resolution).addOnCompleteListener(new OnCompleteListener<byte[]>() {
                 @SuppressLint("SetTextI18n")

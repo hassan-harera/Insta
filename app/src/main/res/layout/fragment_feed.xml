@@ -10,19 +10,19 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tabs"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#FAFAFA" />
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/posts"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/tabs"
             android:layout_margin="5dp" />
-
-
     </RelativeLayout>
+
+<!--    <com.google.android.material.tabs.TabLayout-->
+<!--        android:id="@+id/tabs"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:background="#FAFAFA" />-->
+<!--    android:layout_below="@id/tabs"-->
+
+
 </FrameLayout>

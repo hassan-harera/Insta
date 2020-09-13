@@ -142,7 +142,7 @@ public class EditProfile extends AppCompatActivity {
     }
 
     private void getProfilePic() {
-        reference.child("Users").child(user.getUid()).child("Profile Pic").getBytes((1028 * 1028)).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+        reference.child("Users").child(user.getUid()).child("Profile Pic").getBytes((1024 * 1024)).addOnSuccessListener(new OnSuccessListener<byte[]>() {
             @Override
             public void onSuccess(byte[] b) {
                 if (b != null) {

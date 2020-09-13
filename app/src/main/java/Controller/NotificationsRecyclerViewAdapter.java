@@ -114,14 +114,17 @@ public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<Notif
                             }
                         });
 
-                sr.child("Users").child(notifications.get(position).getUID()).child("Profile Pic")
-                        .getBytes(4096 * 4096)
+                sr.child("Users").child(auth.getUid()).child("Posts")
+                        .child(notifications.get(position).getPostID())
+                        .getBytes(800 * 800)
                         .addOnSuccessListener(new OnSuccessListener<byte[]>() {
                             @Override
                             public void onSuccess(byte[] b) {
                                 lh.profilePic.setImageBitmap(BitmapFactory.decodeByteArray(b, 0, b.length));
                             }
                         });
+
+
                 break;
 
             case "Friend Request":

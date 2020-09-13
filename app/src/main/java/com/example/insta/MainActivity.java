@@ -105,7 +105,8 @@ public class MainActivity extends AppCompatActivity {
                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                                     user.setName(snapshot.child("Name").getValue().toString());
                                     user.setBio(snapshot.child("Bio").getValue().toString());
-                                    reference.child("Users").child(user.getUid()).child("Profile Pic").getBytes(4096*4096)
+                                    reference.child("Users").child(user.getUid()).child("Profile Pic")
+                                            .getBytes(1024*1024)
                                             .addOnSuccessListener(new OnSuccessListener<byte[]>() {
                                         @Override
                                         public void onSuccess(byte[] bytes) {

@@ -108,8 +108,13 @@ public class Feed extends Fragment {
             list.set(j, temp);
         }
         Collections.sort(list);
-        adapter = new FeedRecyclerViewAdapter(list, view.getContext());
-        recyclerView.setAdapter(adapter);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                adapter = new FeedRecyclerViewAdapter(list, view.getContext());
+                recyclerView.setAdapter(adapter);
+            }
+        }, 1000);
     }
 
     private void getAllPostsFromFirebase() {

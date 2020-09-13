@@ -92,7 +92,7 @@ public class Wall extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(final String query) {
                 StorageReference storageReference = storage.getReference().child("Users").child(query).child("Profile Pic");
-                storageReference.getBytes(4096 * 4096).addOnCompleteListener(new OnCompleteListener<byte[]>() {
+                storageReference.getBytes(1024 * 1024).addOnCompleteListener(new OnCompleteListener<byte[]>() {
                     @Override
                     public void onComplete(@NonNull Task<byte[]> task) {
                         if (task.isSuccessful()) {
