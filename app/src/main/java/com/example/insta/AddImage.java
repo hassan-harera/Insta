@@ -106,7 +106,8 @@ public class AddImage extends AppCompatActivity {
             if (uri != null) {
                 try {
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                    bitmapImg = Bitmap.createScaledBitmap(bitmap, 512, 512, true);
+                    bitmapImg = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth()/8, bitmap.getHeight()/8,
+                            true);
                     image.setImageBitmap(bitmap);
                 } catch (IOException e) {
                     e.printStackTrace();

@@ -1,9 +1,11 @@
 package com.example.insta;
 
+import android.animation.StateListAnimator;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 
@@ -19,6 +21,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import androidx.annotation.IntegerRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -116,20 +119,21 @@ public class Wall extends AppCompatActivity {
         viewPager = findViewById(R.id.view_pager);
         FragmentAdapter adapter = new FragmentAdapter(this, list);
         viewPager.setAdapter(adapter);
+        viewPager.setStateListAnimator(new StateListAnimator());
+        viewPager.setCurrentItem(0, true);
 
-
-
-        final List<String> l = new ArrayList();
-        l.add("Feed");
-        l.add("Profile");
-        l.add("Notification");
+        final List<Integer> res = new ArrayList();
+        res.add(R.drawable.home);
+        res.add(R.drawable.man);
+        res.add(R.drawable.notification);
 
         tabLayout = findViewById(R.id.tabs);
         new TabLayoutMediator(tabLayout, viewPager, new TabLayoutMediator.TabConfigurationStrategy() {
             @Override
             public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
-                tab.setText(l.get(position));
-          }
+//                tab.setText(l.get(position));
+                tab.setIcon(res.get(position));
+            }
         }).attach();
     }
 

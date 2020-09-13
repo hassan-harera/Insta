@@ -1,5 +1,6 @@
 package com.example.insta;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.content.Context;
@@ -161,17 +162,23 @@ public class Notifications extends Fragment {
         });
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                aapter.notifyDataSetChanged();
+            }
+        }, 10000);
+    }
 
     @Override
     public void onResume() {
         super.onResume();
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                fab.setVisibility(View.INVISIBLE);
-                aapter.notifyDataSetChanged();
-            }
-        }, 4000);
+        if(getActivity() != null){
+            fab.setVisibility(View.INVISIBLE);
+        }
     }
 }

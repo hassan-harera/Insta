@@ -14,7 +14,6 @@
         android:layout_marginTop="45dp"
         android:layout_marginRight="30dp"
         android:onClick="addImageClicked"
-        android:scaleType="centerInside"
         android:src="@drawable/add_image" />
 
 

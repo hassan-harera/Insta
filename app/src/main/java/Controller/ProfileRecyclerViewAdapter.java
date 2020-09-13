@@ -72,7 +72,7 @@ public class ProfileRecyclerViewAdapter extends RecyclerView.Adapter<ProfileRecy
             holder.bar.setVisibility(View.GONE);
             databaseHelper.updatePost(list.get(position));
         } else {
-            final long resolution = 4096 * 4096;
+            final long resolution = 1024 * 1024;
             reference.child("Users").child(user.getUid()).child("Posts").child(id + "").
                     getBytes(resolution).addOnCompleteListener(new OnCompleteListener<byte[]>() {
                 @Override

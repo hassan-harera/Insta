@@ -2,7 +2,8 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="10dp">
+    android:layout_marginTop="10dp"
+    android:background="#FAFAFA">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -43,13 +44,16 @@
                     android:layout_margin="3dp"
                     android:background="@drawable/love"
                     android:gravity="center"
-                    android:maxLines="0" />
+                    android:maxLines="0"
+                    android:layout_gravity="center"
+                    />
 
                 <TextView
                     android:id="@+id/love_list"
                     android:layout_width="wrap_content"
                     android:layout_height="30dp"
                     android:layout_marginLeft="10dp"
+                    android:layout_gravity="center"
                     android:text="0 Love"
                     android:textColor="#000000"
                     android:textSize="20dp" />

@@ -34,6 +34,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -161,7 +162,7 @@ public class ViewProfile extends Fragment {
     }
 
     private void getProfilePic() {
-        reference.child("Profile Pic").getBytes(4096 * 4096).
+        reference.child("Profile Pic").getBytes(1024 * 1024).
                 addOnSuccessListener(new OnSuccessListener<byte[]>() {
                     @Override
                     public void onSuccess(byte[] bytes) {
@@ -196,6 +197,7 @@ public class ViewProfile extends Fragment {
                     p.setUID(auth.getUid());
                     list.add(p);
                 }
+                Collections.sort(list);
                 adapter = new ProfileRecyclerViewAdapter(list, view.getContext());
                 recyclerView.setAdapter(adapter);
             }

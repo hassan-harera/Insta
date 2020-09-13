@@ -142,7 +142,7 @@ public class EditProfile extends AppCompatActivity {
     }
 
     private void getProfilePic() {
-        reference.child("Users").child(user.getUid()).child("Profile Pic").getBytes((4096 * 4096)).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+        reference.child("Users").child(user.getUid()).child("Profile Pic").getBytes((1028 * 1028)).addOnSuccessListener(new OnSuccessListener<byte[]>() {
             @Override
             public void onSuccess(byte[] b) {
                 if (b != null) {
@@ -196,7 +196,7 @@ public class EditProfile extends AppCompatActivity {
             uri = data.getData();
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
-                bitmap1 = Bitmap.createScaledBitmap(bitmap, 512, 512, true);
+                bitmap1 = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth()/8, bitmap.getHeight()/8, true);
                 profilePic.setImageBitmap(bitmap);
             } catch (IOException e) {
                 e.printStackTrace();

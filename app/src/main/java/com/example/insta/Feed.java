@@ -30,6 +30,7 @@ import com.google.firebase.storage.StorageReference;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import Controller.FeedRecyclerViewAdapter;
@@ -106,6 +107,7 @@ public class Feed extends Fragment {
             list.set(i, list.get(j));
             list.set(j, temp);
         }
+        Collections.sort(list);
         adapter = new FeedRecyclerViewAdapter(list, view.getContext());
         recyclerView.setAdapter(adapter);
     }
@@ -123,6 +125,7 @@ public class Feed extends Fragment {
                     list.set(i, list.get(j));
                     list.set(j, temp);
                 }
+                Collections.sort(list);
                 adapter = new FeedRecyclerViewAdapter(list, view.getContext());
                 recyclerView.setAdapter(adapter);
             }

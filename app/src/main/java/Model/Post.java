@@ -5,7 +5,7 @@ import android.graphics.Bitmap;
 import java.util.Date;
 import java.util.List;
 
-public class Post {
+public class Post implements Comparable<Post>{
 
     private String caption, UID, date;;
     private int id;
@@ -72,5 +72,10 @@ public class Post {
 
     public void setUID(String UID) {
         this.UID = UID;
+    }
+
+    @Override
+    public int compareTo(Post o) {
+        return new Date(o.date).compareTo(new Date(date));
     }
 }

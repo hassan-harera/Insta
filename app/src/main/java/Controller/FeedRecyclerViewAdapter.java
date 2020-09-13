@@ -103,7 +103,7 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerVi
             holder.bar.setVisibility(View.GONE);
             databaseHelper.updatePost(list.get(position));
         } else {
-            final long resolution = 4096 * 4096;
+            final long resolution = 1024 * 1024;
             reference.child("Users").child(list.get(position).getUID()).child("Posts").child(list.get(position).getId() + "").
                     getBytes(resolution).addOnCompleteListener(new OnCompleteListener<byte[]>() {
                 @SuppressLint("SetTextI18n")
