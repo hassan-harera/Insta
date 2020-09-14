@@ -16,14 +16,14 @@
             android:layout_width="match_parent"
             android:layout_height="120dp"
             android:scaleType="centerCrop"
-            android:src="@color/colorAccent" />
+            android:src="#363151" />
 
         <ImageView
             android:id="@+id/view_profile_photo"
             android:layout_width="130dp"
             android:layout_height="130dp"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="45dp"
+            android:layout_marginTop="20dp"
             android:elevation="5dp"
             android:padding="20dp"
             android:scaleType="fitCenter"
@@ -35,7 +35,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/header_cover_image"
-            android:background="#ebca0707"
+            android:background="#363151"
             android:orientation="vertical"
             android:weightSum="3">
 
@@ -44,7 +44,7 @@
                 android:layout_width="190dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="70dp"
+                android:layout_marginTop="50dp"
                 android:gravity="center"
                 android:text="Name"
                 android:textColor="#FAFAFA"

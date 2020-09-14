@@ -3,8 +3,8 @@ package Controller;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.text.style.AlignmentSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,13 +14,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.insta.R;
 import com.example.insta.ViewPost;
 import com.example.insta.VisitProfile;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -34,6 +35,8 @@ import com.google.firebase.storage.StorageReference;
 import java.util.List;
 
 import Model.Notification;
+import Model.Post;
+import Model.User;
 
 public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<NotificationsRecyclerViewAdapter.ViewHolder> {
 
@@ -47,6 +50,7 @@ public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<Notif
     FirebaseDatabase db;
     StorageReference sr;
     FirebaseStorage fs;
+    private InstaDatabaseHelper databaseHelper;
 
 
     public NotificationsRecyclerViewAdapter(List<Notification> notifications, Context context) {
@@ -60,6 +64,7 @@ public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<Notif
         dbr = db.getReference();
         fs = FirebaseStorage.getInstance();
         sr = fs.getReference();
+        databaseHelper = new InstaDatabaseHelper(context);
     }
 
     @NonNull
@@ -90,6 +95,15 @@ public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<Notif
         switch (notifications.get(position).getType()) {
             case "Like":
                 final LikeHolder lh = (LikeHolder) holder;
+
+                int postID = Integer.parseInt(notifications.get(position).getPostID());
+                if (databaseHelper.checkPost(auth.getUid(), postID)) {
+                    Bitmap bitmap = databaseHelper.getPost(auth.getUid(), postID).getBitmap();
+                    lh.postIMG.setImageBitmap(bitmap);
+                } else {
+                    getPost(lh, position);
+                }
+
                 lh.ll.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -113,18 +127,6 @@ public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<Notif
 
                             }
                         });
-
-                sr.child("Users").child(auth.getUid()).child("Posts")
-                        .child(notifications.get(position).getPostID())
-                        .getBytes(800 * 800)
-                        .addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                            @Override
-                            public void onSuccess(byte[] b) {
-                                lh.profilePic.setImageBitmap(BitmapFactory.decodeByteArray(b, 0, b.length));
-                            }
-                        });
-
-
                 break;
 
             case "Friend Request":
@@ -168,15 +170,42 @@ public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<Notif
                             }
                         });
 
-                sr.child("Users").child(notifications.get(position).getUID()).child("Profile Pic")
-                        .getBytes(4096 * 4096)
-                        .addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                            @Override
-                            public void onSuccess(byte[] b) {
-                                fh.profilePic.setImageBitmap(BitmapFactory.decodeByteArray(b, 0, b.length));
-                            }
-                        });
+                if (!databaseHelper.checkUser(notifications.get(position).getUID())) {
+                    sr.child("Users").child(notifications.get(position).getUID()).child("Profile Pic")
+                            .getBytes(4096 * 4096)
+                            .addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                                @Override
+                                public void onSuccess(byte[] b) {
+                                    fh.profilePic.setImageBitmap(BitmapFactory.decodeByteArray(b, 0, b.length));
+                                }
+                            });
+                } else {
+                    fh.profilePic.setImageBitmap(databaseHelper.getUser(notifications.get(position).getUID()).getProfilePic());
+                }
         }
+    }
+
+    private void getPost(final LikeHolder holder, final int position) {
+        sr.child("Users").child(auth.getUid()).child("Posts").child(notifications.get(position).getPostID()).
+                getBytes(1024 * 1024).addOnCompleteListener(new OnCompleteListener<byte[]>() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onComplete(@NonNull Task<byte[]> task) {
+                if (task.isSuccessful()) {
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(task.getResult(), 0, task.getResult().length);
+                    holder.postIMG.setImageBitmap(bitmap);
+                    Post post = new Post();
+                    post.setBitmap(bitmap);
+                    post.setUID(auth.getUid());
+                    post.setId(Integer.parseInt(notifications.get(position).getPostID()));
+                    if (!databaseHelper.checkPost(post.getUID(), post.getId())) {
+                        databaseHelper.insertPost(post);
+                    }
+                } else {
+                    Toast.makeText(context, "Failed to load image", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     private void delete(int i) {
@@ -218,13 +247,13 @@ public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<Notif
     }
 
     public class LikeHolder extends ViewHolder {
-        ImageView profilePic;
+        ImageView postIMG;
         TextView message;
         LinearLayout ll;
 
         public LikeHolder(@NonNull View v) {
             super(v);
-            profilePic = v.findViewById(R.id.profile_pic);
+            postIMG = v.findViewById(R.id.profile_pic);
             message = v.findViewById(R.id.request_message);
             ll = v.findViewById(R.id.ll);
         }

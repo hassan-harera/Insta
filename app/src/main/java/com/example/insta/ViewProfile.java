@@ -25,6 +25,7 @@ import android.widget.TextView;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthSettings;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -97,6 +98,33 @@ public class ViewProfile extends Fragment {
         fab.setVisibility(View.INVISIBLE);
 
 
+        helper = new InstaDatabaseHelper(getContext());
+        if(!helper.checkUser(uid)){
+            final User user = new User();
+            user.setUid(uid);
+            databaseReference.child("Users").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    user.setName(snapshot.child("Name").getValue().toString());
+                    user.setBio(snapshot.child("Bio").getValue().toString());
+                    reference.child("Users").child(user.getUid()).child("Profile Pic")
+                            .getBytes(1024*1024)
+                            .addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                                @Override
+                                public void onSuccess(byte[] bytes) {
+                                    user.setProfilePic(BitmapFactory.decodeByteArray(bytes, 0 , bytes.length));
+                                    user.setEmail(auth.getCurrentUser().getEmail());
+                                    helper.insertUser(user);
+                                }
+                            });
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
 
         recyclerView = view.findViewById(R.id.view_profile_posts);
         recyclerView.setHasFixedSize(true);
@@ -115,9 +143,9 @@ public class ViewProfile extends Fragment {
 
 
         if (isConnected) {
-            getProfilePic();
             getName();
             getBio();
+            getProfilePic();
             getProfilePostsFromFirebase();
         } else {
             User user;

@@ -47,7 +47,6 @@ public class Feed extends Fragment {
 
     FirebaseStorage storage;
     FirebaseUser user;
-    StorageReference reference;
     FirebaseAuth auth;
     DatabaseReference dr;
     FirebaseDatabase firebaseDatabase;
@@ -66,7 +65,6 @@ public class Feed extends Fragment {
         firebaseDatabase = FirebaseDatabase.getInstance();
         dr = firebaseDatabase.getReference();
         user = auth.getCurrentUser();
-        reference = storage.getReference(user.getUid());
     }
 
 

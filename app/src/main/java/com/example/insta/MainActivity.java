@@ -50,7 +50,6 @@ public class MainActivity extends AppCompatActivity {
     FirebaseAuth auth;
     FirebaseUser user;
     FirebaseStorage storage;
-    StorageReference reference;
     private InstaDatabaseHelper helper;
 
     @Override
@@ -65,7 +64,6 @@ public class MainActivity extends AppCompatActivity {
         helper = new InstaDatabaseHelper(this);
         database = FirebaseDatabase.getInstance();
         storage = FirebaseStorage.getInstance();
-        reference = storage.getReference();
         databaseReference = database.getReference();
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
@@ -96,33 +94,6 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
-                        user = auth.getCurrentUser();
-                        if(!helper.checkUser(user.getUid())){
-                            final User user = new User();
-                            user.setUid(auth.getCurrentUser().getUid());
-                            databaseReference.child("Users").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                    user.setName(snapshot.child("Name").getValue().toString());
-                                    user.setBio(snapshot.child("Bio").getValue().toString());
-                                    reference.child("Users").child(user.getUid()).child("Profile Pic")
-                                            .getBytes(1024*1024)
-                                            .addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                                        @Override
-                                        public void onSuccess(byte[] bytes) {
-                                            user.setProfilePic(BitmapFactory.decodeByteArray(bytes, 0 , bytes.length));
-                                            user.setEmail(auth.getCurrentUser().getEmail());
-                                            helper.insertUser(user);
-                                        }
-                                    });
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError error) {
-
-                                }
-                            });
-                        }
                         successLogin();
                     } else {
                         failedLogin();
