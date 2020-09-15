@@ -88,7 +88,6 @@ public class ViewPost extends AppCompatActivity {
         boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
 
         if (isConnected) {
-
             databaseReference.child("Users")
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
@@ -110,9 +109,6 @@ public class ViewPost extends AppCompatActivity {
                         public void onCancelled(@NonNull DatabaseError error) {
                         }
                     });
-
-
-
 
             final long resolution = 1024 * 1024;
             reference.child("Users").child(UID).child("Posts").child(postID).

@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="120dp"
             android:scaleType="centerCrop"
-            android:src="#363151" />
+            android:src="@drawable/animated_button3" />
 
         <ImageView
             android:id="@+id/view_profile_photo"
@@ -35,7 +35,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/header_cover_image"
-            android:background="#363151"
+            android:background="@drawable/animated_button3"
             android:orientation="vertical"
             android:weightSum="3">
 

@@ -175,6 +175,7 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerVi
                     holder.date.setText(list.get(position).getDate());
                     Post post = list.get(position);
                     post.setBitmap(bitmap);
+                    post.setDate(list.get(position).getDate());
                     holder.bar.setVisibility(View.GONE);
                     if (!databaseHelper.checkPost(post.getUID(), post.getId())) {
                         databaseHelper.insertPost(post);

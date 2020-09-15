@@ -80,7 +80,7 @@ public class InstaDatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(Info.POST_ID_COLUMN, post.getId());
         contentValues.put(Info.POST_USER_ID_COLUMN, post.getUID());
         contentValues.put(Info.POST_LIKED_COLUMN, post.getLiked() ? 1 : 0);
-        contentValues.put(Info.POST_DATE_COLUMN, post.getDate().toString());
+        contentValues.put(Info.POST_DATE_COLUMN, post.getDate());
         contentValues.put(Info.POST_LIKES_COLUMN, post.getLikes());
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();

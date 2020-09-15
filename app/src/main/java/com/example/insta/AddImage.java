@@ -3,7 +3,9 @@ package com.example.insta;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigator;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.app.MediaRouteButton;
 import android.content.ContentResolver;
@@ -20,7 +22,9 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -50,7 +54,7 @@ import java.util.Date;
 import Controller.InstaDatabaseHelper;
 import Model.Post;
 
-public class AddImage extends AppCompatActivity {
+public class AddImage extends Fragment {
 
     public static final int ADD_IMAGE_REQUEST = 1025;
 
@@ -69,24 +73,44 @@ public class AddImage extends AppCompatActivity {
     String id;
 
     private ProgressBar progressBar;
+    private View view;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_image);
 
-        image = findViewById(R.id.image_add);
-        caption = findViewById(R.id.caption);
-        add = findViewById(R.id.add_add_image);
-
-        progressBar = findViewById(R.id.progress_bar);
+    public AddImage() {
         firebaseAuth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
         storage = FirebaseStorage.getInstance();
         databaseReference = database.getReference();
         storageReference = storage.getReference().child("Users").child(firebaseUser.getUid());
+    }
 
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.activity_add_image, container, false);
+
+        image = view.findViewById(R.id.image_add);
+        caption = view.findViewById(R.id.caption);
+        add = view.findViewById(R.id.add_add_image);
+        progressBar = view.findViewById(R.id.progress_bar);
+
+
+        image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addImageClicked(v);
+            }
+        });
+
+        add.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addClicked(v);
+            }
+        });
+
+        return view;
     }
 
     public void addImageClicked(View view) {
@@ -97,15 +121,15 @@ public class AddImage extends AppCompatActivity {
 
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         image.setEnabled(true);
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (data != null && requestCode == ADD_IMAGE_REQUEST && resultCode == RESULT_OK) {
+        if (data != null && requestCode == ADD_IMAGE_REQUEST && resultCode == -1) {
             uri = data.getData();
             if (uri != null) {
                 try {
-                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
                     bitmapImg = Bitmap.createScaledBitmap(bitmap, 600, 600,
                             true);
                     image.setImageBitmap(bitmap);
@@ -118,35 +142,42 @@ public class AddImage extends AppCompatActivity {
 
     public void addClicked(View view) {
         if (bitmapImg != null) {
+            image.setEnabled(false);
             add.setEnabled(false);
+            caption.setEnabled(false);
         } else {
-            Toast.makeText(this, "Add an image firstly", Toast.LENGTH_LONG).show();
+            Toast.makeText(view.getContext(), "Add an image firstly", Toast.LENGTH_LONG).show();
             return;
         }
+
+        ViewPager2 v = getActivity().findViewById(R.id.view_pager);
+        v.setEnabled(false);
 
         final Post post = new Post();
         databaseReference.child("Users").child(firebaseUser.getUid()).child("Posts").child("Count")
                 .addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                post.setId(Integer.parseInt(snapshot.getValue().toString()));
-                databaseReference.child("Users").child(firebaseUser.getUid()).child("Posts")
-                        .child("Count").setValue(post.getId() + 1);
-            }
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        post.setId(Integer.parseInt(snapshot.getValue().toString()));
+                        databaseReference.child("Users").child(firebaseUser.getUid()).child("Posts")
+                                .child("Count").setValue(post.getId() + 1);
+                    }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
 
-            }
-        });
+                    }
+                });
         databaseReference.child("Users").child(firebaseUser.getUid()).child("Posts")
-                .child(post.getId()+"").child("Likes");
+                .child(post.getId() + "").child("Likes");
 
         post.setCaption(caption.getText().toString());
         post.setDate(new Date().toString());
         post.setLikes(0);
+        post.setLiked(false);
+        post.setUID(firebaseAuth.getUid());
 
-        new  Handler().postDelayed(new Runnable() {
+        new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 progressBar.setVisibility(View.VISIBLE);
@@ -168,7 +199,7 @@ public class AddImage extends AppCompatActivity {
                     }
                 });
             }
-        }, 500);
+        }, 1000);
     }
 
     private void insertPostToFirebase(Post post) {
@@ -180,13 +211,20 @@ public class AddImage extends AppCompatActivity {
     }
 
     private void failedAdd() {
-        Toast.makeText(this, "Failed to upload the image", Toast.LENGTH_LONG).show();
+        Toast.makeText(getContext(), "Failed to upload the image", Toast.LENGTH_LONG).show();
     }
 
     private void successAdd() {
-        Toast.makeText(this, "The image added Successfully", Toast.LENGTH_LONG).show();
-        Intent intent = new Intent(this, Wall.class);
-        startActivity(intent);
-        finish();
+        Toast.makeText(getContext(), "The image added Successfully", Toast.LENGTH_LONG).show();
+        ViewPager2 v = getActivity().findViewById(R.id.view_pager);
+        v.setCurrentItem(2, true);
+
+
+        caption.setText("");
+        image.setImageResource(R.drawable.add_image);
+        image.setEnabled(true);
+        add.setEnabled(true);
+        bitmapImg = null;
+        caption.setEnabled(true);
     }
 }

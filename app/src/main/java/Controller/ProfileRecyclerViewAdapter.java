@@ -107,6 +107,7 @@ public class ProfileRecyclerViewAdapter extends RecyclerView.Adapter<ProfileRecy
                     Post post = list.get(position);
                     post.setBitmap(bitmap);
                     post.setLiked(false);
+                    post.setDate(list.get(position).getDate());
                     if (!databaseHelper.checkPost(post.getUID(), post.getId())) {
                         databaseHelper.insertPost(post);
                     } else {

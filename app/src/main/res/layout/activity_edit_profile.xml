@@ -16,7 +16,7 @@
         android:layout_height="120dp"
         android:onClick="addImageClicked"
         android:scaleType="centerCrop"
-        android:src="@color/colorAccent" />
+        android:src="@drawable/animated_button3" />
 
     <ImageView
         android:id="@+id/EditProfile_profile_Pic"
@@ -34,7 +34,7 @@
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:layout_below="@+id/header_cover_image"
-        android:src="#ebca0707" />
+        android:src="@drawable/animated_button3" />
 
     <EditText
         android:id="@+id/EditProfile_name"

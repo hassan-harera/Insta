@@ -51,8 +51,6 @@ public class Feed extends Fragment {
     DatabaseReference dr;
     FirebaseDatabase firebaseDatabase;
 
-    FloatingActionButton fab;
-
     FeedRecyclerViewAdapter adapter;
 
     List<Post> list;
@@ -87,9 +85,6 @@ public class Feed extends Fragment {
         recyclerView = view.findViewById(R.id.posts);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
-        fab = getActivity().findViewById(R.id.fab);
-        fab.setVisibility(View.VISIBLE);
 
         helper = new InstaDatabaseHelper(getContext());
         list = new ArrayList();
@@ -180,7 +175,6 @@ public class Feed extends Fragment {
         super.onResume();
 
         if (getActivity() != null) {
-            fab.setVisibility(View.VISIBLE);
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {

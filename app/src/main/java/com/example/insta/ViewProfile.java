@@ -18,14 +18,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthSettings;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -37,7 +34,6 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import Controller.InstaDatabaseHelper;
@@ -68,7 +64,6 @@ public class ViewProfile extends Fragment {
     TextView name, bio;
 
     View view;
-    FloatingActionButton fab;
     private ProfileRecyclerViewAdapter adapter;
 
 
@@ -89,53 +84,48 @@ public class ViewProfile extends Fragment {
                              @Nullable Bundle savedInstanceState) {
 
         view = inflater.inflate(R.layout.fragment_view_profile, container, false);
-        adapter = new ProfileRecyclerViewAdapter(new ArrayList<Post>(), view.getContext());
+
         profilePic = view.findViewById(R.id.view_profile_photo);
         name = view.findViewById(R.id.view_profile_user_name);
         bio = view.findViewById(R.id.view_profile_user_bio);
 
-        fab = getActivity().findViewById(R.id.fab);
-        fab.setVisibility(View.INVISIBLE);
-
 
         helper = new InstaDatabaseHelper(getContext());
-        if(!helper.checkUser(uid)){
+        if (!helper.checkUser(uid)) {
             final User user = new User();
             user.setUid(uid);
-            databaseReference.child("Users").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    user.setName(snapshot.child("Name").getValue().toString());
-                    user.setBio(snapshot.child("Bio").getValue().toString());
-                    reference.child("Users").child(user.getUid()).child("Profile Pic")
-                            .getBytes(1024*1024)
-                            .addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                                @Override
-                                public void onSuccess(byte[] bytes) {
-                                    user.setProfilePic(BitmapFactory.decodeByteArray(bytes, 0 , bytes.length));
-                                    user.setEmail(auth.getCurrentUser().getEmail());
-                                    helper.insertUser(user);
-                                }
-                            });
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
-                }
-            });
+            user.setEmail(auth.getCurrentUser().getEmail());
+            reference.child("Profile Pic").getBytes(1024 * 1024)
+                    .addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                        @Override
+                        public void onSuccess(byte[] b) {
+                            user.setProfilePic(BitmapFactory.decodeByteArray(b, 0, b.length));
+                            helper.insertUser(user);
+                        }
+                    });
         }
 
         recyclerView = view.findViewById(R.id.view_profile_posts);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+
         getInfo();
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                adapter.notifyDataSetChanged();
+                view.refreshDrawableState();
+            }
+        }, 15000);
+
         return view;
     }
 
+
     private void getInfo() {
-        list = new ArrayList<>();
-        
+        list = new ArrayList();
+
         helper = new InstaDatabaseHelper(view.getContext());
         ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
@@ -150,7 +140,7 @@ public class ViewProfile extends Fragment {
         } else {
             User user;
             user = helper.getUser(auth.getCurrentUser().getUid());
-            if(user.getProfilePic() != null){
+            if (user.getProfilePic() != null) {
                 profilePic.setImageBitmap(user.getProfilePic());
             }
             name.setText(user.getName());
@@ -214,7 +204,7 @@ public class ViewProfile extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot ds : snapshot.getChildren()) {
-                    if(ds.getKey().equals("Count")){
+                    if (ds.getKey().equals("Count")) {
                         continue;
                     }
                     Post p = new Post();
@@ -226,7 +216,6 @@ public class ViewProfile extends Fragment {
                     p.setUID(auth.getUid());
                     list.add(p);
                 }
-                Collections.sort(list);
                 adapter = new ProfileRecyclerViewAdapter(list, view.getContext());
                 recyclerView.setAdapter(adapter);
             }
@@ -236,20 +225,5 @@ public class ViewProfile extends Fragment {
 
             }
         });
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (getActivity() != null) {
-            fab.setVisibility(View.INVISIBLE);
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    adapter.notifyDataSetChanged();
-                    view.refreshDrawableState();
-                }
-            }, 1000);
-        }
     }
 }

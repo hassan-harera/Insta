@@ -81,16 +81,6 @@ public class Wall extends AppCompatActivity {
         });
         toolbar.setTitle("Insta");
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                addImage();
-            }
-        });
-
-        fab.setVisibility(View.INVISIBLE);
-
 
         final SearchView searchView = findViewById(R.id.search_token);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -117,6 +107,7 @@ public class Wall extends AppCompatActivity {
         });
 
         list = new ArrayList();
+        list.add(new AddImage());
         list.add(new Feed());
         list.add(new ViewProfile());
         list.add(new Notifications());
@@ -128,6 +119,7 @@ public class Wall extends AppCompatActivity {
         viewPager.setCurrentItem(0, true);
 
         final List<Integer> res = new ArrayList();
+        res.add(R.drawable.add_image);
         res.add(R.drawable.home);
         res.add(R.drawable.man);
         res.add(R.drawable.notification);
@@ -146,6 +138,8 @@ public class Wall extends AppCompatActivity {
                 logo.setVisibility(View.INVISIBLE);
             }
         }, 5000);
+
+        viewPager.setCurrentItem(1);
     }
 
     private void addImage() {

@@ -39,7 +39,6 @@ import Model.Notification;
 
 public class Notifications extends Fragment {
 
-    private FloatingActionButton fab;
     private View view;
 
 
@@ -66,6 +65,21 @@ public class Notifications extends Fragment {
         sr = fs.getReference();
     }
 
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.fragment_notifications, container, false);
+
+        recyclerView = view.findViewById(R.id.recycler_view_notifications);
+        recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        recyclerView.setHasFixedSize(true);
+
+        getNotifications();
+
+        return view;
+    }
+
+
     @Override
     public void onStart() {
         super.onStart();
@@ -86,18 +100,7 @@ public class Notifications extends Fragment {
         }, 3000);
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_notifications, container, false);
-        fab = getActivity().findViewById(R.id.fab);
-        fab.setVisibility(View.INVISIBLE);
 
-        recyclerView = view.findViewById(R.id.recycler_view_notifications);
-        recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
-        recyclerView.setHasFixedSize(true);
-        getNotifications();
-        return view;
-    }
 
     private void getNotifications() {
         getFriendRequests(dbr.child("Users").child(user.getUid()).child("Friend Requests"));
@@ -173,12 +176,4 @@ public class Notifications extends Fragment {
         }, 10000);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        if(getActivity() != null){
-            fab.setVisibility(View.INVISIBLE);
-        }
-    }
 }

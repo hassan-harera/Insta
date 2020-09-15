@@ -76,6 +76,6 @@ public class Post implements Comparable<Post>{
 
     @Override
     public int compareTo(Post o) {
-        return new Date(o.date).compareTo(new Date(date));
+        return 0;
     }
 }
