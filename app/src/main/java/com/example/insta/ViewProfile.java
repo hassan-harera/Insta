@@ -89,22 +89,6 @@ public class ViewProfile extends Fragment {
         name = view.findViewById(R.id.view_profile_user_name);
         bio = view.findViewById(R.id.view_profile_user_bio);
 
-
-        helper = new InstaDatabaseHelper(getContext());
-        if (!helper.checkUser(uid)) {
-            final User user = new User();
-            user.setUid(uid);
-            user.setEmail(auth.getCurrentUser().getEmail());
-            reference.child("Profile Pic").getBytes(1024 * 1024)
-                    .addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                        @Override
-                        public void onSuccess(byte[] b) {
-                            user.setProfilePic(BitmapFactory.decodeByteArray(b, 0, b.length));
-                            helper.insertUser(user);
-                        }
-                    });
-        }
-
         recyclerView = view.findViewById(R.id.view_profile_posts);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
@@ -137,6 +121,24 @@ public class ViewProfile extends Fragment {
             getBio();
             getProfilePic();
             getProfilePostsFromFirebase();
+
+            helper = new InstaDatabaseHelper(getContext());
+            if (!helper.checkUser(uid)) {
+                final User user = new User();
+                reference.child("Profile Pic").getBytes(1024 * 1024)
+                        .addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                            @Override
+                            public void onSuccess(byte[] b) {
+                                user.setProfilePic(BitmapFactory.decodeByteArray(b, 0, b.length));
+                                user.setName(name.getText().toString());
+                                user.setBio(bio.getText().toString());
+                                user.setEmail(auth.getCurrentUser().getEmail());
+                                user.setUid(uid);
+                                helper.insertUser(user);
+                            }
+                        });
+            }
+
         } else {
             User user;
             user = helper.getUser(auth.getCurrentUser().getUid());
@@ -154,7 +156,7 @@ public class ViewProfile extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String str = snapshot.getValue().toString();
-                helper.updateUserName(str, auth.getCurrentUser().getUid());
+                helper.updateUserName(str, uid);
                 name.setText(str);
             }
 

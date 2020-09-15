@@ -101,7 +101,6 @@ public class Feed extends Fragment {
             list.set(i, list.get(j));
             list.set(j, temp);
         }
-        Collections.sort(list);
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -124,7 +123,6 @@ public class Feed extends Fragment {
                     list.set(i, list.get(j));
                     list.set(j, temp);
                 }
-                Collections.sort(list);
                 adapter = new FeedRecyclerViewAdapter(list, view.getContext());
                 recyclerView.setAdapter(adapter);
             }

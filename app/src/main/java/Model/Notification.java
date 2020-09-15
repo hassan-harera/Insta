@@ -2,18 +2,18 @@ package Model;
 
 import java.util.Date;
 
-public class Notification implements  Comparable<Notification> {
+public class Notification implements Comparable<Notification>{
     private int id;
     private String UID, message;
     private String type, postID;
-    private Date date;
+    private Date Date;
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setDate(java.util.Date date) {
+        Date = date;
     }
 
-    public Date getDate() {
-        return date;
+    public java.util.Date getDate() {
+        return Date;
     }
 
     public String getPostID() {
@@ -58,6 +58,6 @@ public class Notification implements  Comparable<Notification> {
 
     @Override
     public int compareTo(Notification o) {
-        return o.date.compareTo(date);
+        return o.getDate().compareTo(getDate());
     }
 }

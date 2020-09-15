@@ -81,22 +81,25 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void loginClicked(View view) {
-        login.setEnabled(false);
+
         final String password = this.password.getText().toString(),
                 username = this.email.getText().toString();
 
         if (username.equals("")) {
             this.email.setError("E-mail is required");
         } else if (password.equals("")) {
-            this.email.setError("Password is required");
+            this.password.setError("Password is required");
         } else {
+            login.setEnabled(false);
             auth.signInWithEmailAndPassword(username, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
                         successLogin();
+                        login.setEnabled(true);
                     } else {
                         failedLogin();
+                        login.setEnabled(true);
                     }
                 }
             });

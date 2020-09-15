@@ -50,6 +50,7 @@ public class VisitProfile extends AppCompatActivity {
     ImageView profilePic, addFriend;
     TextView name, bio;
     private VisitProfileRecyclerViewAdapter adapter;
+    private Bitmap bitmap;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -62,6 +63,7 @@ public class VisitProfile extends AppCompatActivity {
         visitedUID = bundle.get("Token").toString();
 
         list = new ArrayList<>();
+
         auth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference().child("Users").child(visitedUID);
@@ -69,10 +71,13 @@ public class VisitProfile extends AppCompatActivity {
         reference = storage.getReference().child("Users").child(visitedUID);
 
         addFriend = findViewById(R.id.add_friend);
+        if (visitedUID.equals(auth.getUid())) {
+            addFriend.setVisibility(View.INVISIBLE);
+        }
         databaseReference.child("Friends").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.child(auth.getUid()).getValue() != null){
+                if (snapshot.child(auth.getUid()).getValue() != null) {
                     addFriend.setVisibility(View.INVISIBLE);
                 }
             }
@@ -83,9 +88,6 @@ public class VisitProfile extends AppCompatActivity {
             }
         });
 
-        if (visitedUID.equals(auth.getUid())) {
-            addFriend.setVisibility(View.INVISIBLE);
-        }
 
         profilePic = findViewById(R.id.user_profile_photo);
         name = findViewById(R.id.user_profile_name);
@@ -98,30 +100,20 @@ public class VisitProfile extends AppCompatActivity {
         recyclerView = findViewById(R.id.profile_posts);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        getAllPostsFromFirebase();
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                adapter = new VisitProfileRecyclerViewAdapter(list, visitedUID, VisitProfile.this);
-                recyclerView.setAdapter(adapter);
-            }
-        }, 2000);
+        getAllPostsFromFirebase();
     }
 
-    private void getBio() {
-        databaseReference.child("Bio").addListenerForSingleValueEvent(new ValueEventListener() {
+    private void getProfilePic() {
+        reference.child("Profile Pic").getBytes(1024 * 1024).addOnSuccessListener(new OnSuccessListener<byte[]>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                bio.setText(snapshot.getValue().toString());
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
+            public void onSuccess(byte[] bytes) {
+                bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                profilePic.setImageBitmap(bitmap);
             }
         });
     }
+
 
     private void getName() {
         databaseReference.child("Name").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -137,22 +129,30 @@ public class VisitProfile extends AppCompatActivity {
         });
     }
 
-    private void getProfilePic() {
-        reference.child("Profile Pic").getBytes(1024 * 1024).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+
+    private void getBio() {
+        databaseReference.child("Bio").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onSuccess(byte[] bytes) {
-                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                profilePic.setImageBitmap(bitmap);
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                bio.setText(snapshot.getValue().toString());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
     }
+
 
     private void getAllPostsFromFirebase() {
         databaseReference.child("Posts").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot ds : snapshot.getChildren()) {
-                    if(ds.getKey().equals("Count")){continue;}
+                    if (ds.getKey().equals("Count")) {
+                        continue;
+                    }
                     final Post p = new Post();
                     p.setId(ds.child("Id").getValue(Integer.class));
                     p.setCaption(ds.child("Caption").getValue(String.class));
@@ -162,11 +162,15 @@ public class VisitProfile extends AppCompatActivity {
                     p.setUID(visitedUID);
                     list.add(p);
                 }
-                for (int i = 0, j = list.size() - 1; i < j; i++, j--) {
-                    Post temp = list.get(i);
-                    list.set(i, list.get(j));
-                    list.set(j, temp);
-                }
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        adapter = new VisitProfileRecyclerViewAdapter(list, visitedUID,
+                                VisitProfile.this, bitmap, name.getText().toString());
+                        recyclerView.setAdapter(adapter);
+
+                    }
+                }, 1000);
             }
 
             @Override

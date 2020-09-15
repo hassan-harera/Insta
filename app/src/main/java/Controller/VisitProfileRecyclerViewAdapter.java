@@ -34,6 +34,8 @@ public class VisitProfileRecyclerViewAdapter extends RecyclerView.Adapter<VisitP
 
     private final Context context;
     private final String visitedUID;
+    private final Bitmap profilePic;
+    private final String name;
     List<Post> list;
     StorageReference reference;
     FirebaseUser user;
@@ -43,10 +45,13 @@ public class VisitProfileRecyclerViewAdapter extends RecyclerView.Adapter<VisitP
     DatabaseReference databaseReference;
 
 
-    public VisitProfileRecyclerViewAdapter(List<Post> list, String visitedUID, Context context) {
+    public VisitProfileRecyclerViewAdapter(List<Post> list, String visitedUID, Context context,
+                                           Bitmap profilePic, String name) {
         this.list = list;
         this.visitedUID = visitedUID;
         this.context = context;
+        this.profilePic = profilePic;
+        this.name = name;
 
         auth = FirebaseAuth.getInstance();
         storage = FirebaseStorage.getInstance();
@@ -74,6 +79,9 @@ public class VisitProfileRecyclerViewAdapter extends RecyclerView.Adapter<VisitP
                             Bitmap bitmap = BitmapFactory.decodeByteArray(task.getResult(), 0, task.getResult().length);
                             holder.recImage.setImageBitmap(bitmap);
                             holder.caption.setText(list.get(position).getCaption());
+                            holder.date.setText(list.get(position).getDate());
+                            holder.name.setText(name);
+                            holder.user_pic.setImageBitmap(profilePic);
                             Post post = list.get(position);
                             holder.bar.setVisibility(View.GONE);
                             post.setBitmap(bitmap);
@@ -90,14 +98,22 @@ public class VisitProfileRecyclerViewAdapter extends RecyclerView.Adapter<VisitP
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
+        TextView name, date;
+        ImageView user_pic;
         public ProgressBar bar;
-        TextView caption;
+        TextView caption, love_list;
         ImageView recImage;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+
             caption = itemView.findViewById(R.id.caption);
             recImage = itemView.findViewById(R.id.rec_image);
+            love_list = itemView.findViewById(R.id.love_list);
             bar = itemView.findViewById(R.id.progress_bar);
+            name = itemView.findViewById(R.id.name);
+            date = itemView.findViewById(R.id.date);
+            user_pic = itemView.findViewById(R.id.user_pic);
         }
     }
 }

@@ -59,7 +59,7 @@ public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<Notif
 
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
-        currentUID = user.getUid();
+        currentUID = auth.getUid();
         db = FirebaseDatabase.getInstance();
         dbr = db.getReference();
         fs = FirebaseStorage.getInstance();
@@ -197,6 +197,8 @@ public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<Notif
                     Post post = new Post();
                     post.setBitmap(bitmap);
                     post.setUID(auth.getUid());
+                    post.setLiked(false);
+                    post.setDate(notifications.get(position).getDate().toString());
                     post.setId(Integer.parseInt(notifications.get(position).getPostID()));
                     if (!databaseHelper.checkPost(post.getUID(), post.getId())) {
                         databaseHelper.insertPost(post);
