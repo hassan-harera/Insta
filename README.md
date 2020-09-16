@@ -43,7 +43,6 @@ The user can like the post and the app will notify the post owner
 <h3>
 The Profile fragment contains the info of that user, his profile pic, name, bio, email, and all his posts and he can edit this info from the menu
 </h3>
-<img src="Images/my profile.jpg" width="300" height="600">
 <div>
 <img src="screenshots/113.jpg" width="300" height="600">
 <img src="screenshots/117.jpg" width="300" height="600">
