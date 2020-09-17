@@ -3,7 +3,7 @@
 
 <h2>Main Activity</h2>
 <h3>
-Within Register Activity, the user can enter his name, username, password, and confirm the password. if the connection is got down there is an alert will be shown and if the username is already found in the firebase authentication there is also an alert will be shown to go login else the app will register and save the user in the firebase and login directly</h3>
+The Main Activity is the launcher activity of the application. firstly checks if there is an account that is already logged in or not. if there is one it goes to Wall Activity to show the user feed. else it shows its UI components to log in or to go sign up.</h3>
 <div>
 <img src="screenshots/122.jpg" width="300" height="600">
 <img src="screenshots/124.jpg" width="300" height="600">
@@ -63,7 +63,7 @@ The Notification Tab contains all the notifications of the user. it shows the no
 
 <h2>Add Image Tab</h2>
 <h3>
-it contains three main components, ImageView, an EditText for caption, and can add a button to add the post. when the user click adds it checks if there is an image that was added or not to start adding the post.
+it contains three main components, ImageView, an EditText for caption, and a button to add the post. when the user clicks the add button, it checks if there is an image was added or not to start adding the post.
 </h3>
 <div>
 <img src="screenshots/110.jpg" width="300" height="600">
@@ -86,8 +86,8 @@ It goes to show when the user clicked on the edit icon in the wall Activity menu
 It goes to show when the user enters a user id in the search bar in Wall Activity and this token must be correct and is already found in the database he can take it from his friend which he can copy it from the menu and this token is the UID of the user in firebase auth.  at last, shows his profile and he can see his posts and his info and he can send a friend request.
 </h3>
 <div>
-<img src="screenshots/103.jpg" width="300" height="600">
-<img src="screenshots/104.jpg" width="300" height="600">
-<img src="screenshots/127.jpg" width="300" height="600">
+<img src="screenshots/103.jpg" width="280" height="600">
+<img src="screenshots/104.jpg" width="280" height="600">
+<img src="screenshots/127.jpg" width="280" height="600">
 </div>
 <br><br>
