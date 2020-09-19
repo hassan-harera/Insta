@@ -8,12 +8,16 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".ViewPost"></activity>
+        <activity
+            android:name=".Chat"
+            android:label="@string/title_activity_chat"
+            android:theme="@style/AppTheme.NoActionBar.NoActionBar"></activity>
+        <activity android:name=".ViewPost" />
         <activity
             android:name=".Wall"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".VisitProfile"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".VisitProfile" />
         <activity android:name=".EditProfile" />
         <activity android:name=".Register" />
         <activity android:name=".MainActivity">

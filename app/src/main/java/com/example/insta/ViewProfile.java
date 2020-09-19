@@ -95,14 +95,6 @@ public class ViewProfile extends Fragment {
 
         getInfo();
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                adapter.notifyDataSetChanged();
-                view.refreshDrawableState();
-            }
-        }, 15000);
-
         return view;
     }
 

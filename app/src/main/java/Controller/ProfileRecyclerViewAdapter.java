@@ -52,6 +52,11 @@ public class ProfileRecyclerViewAdapter extends RecyclerView.Adapter<ProfileRecy
         this.list = list;
         this.context = context;
 
+
+        if (list.isEmpty()) {
+            Toast.makeText(context, "No Posts To View", Toast.LENGTH_SHORT).show();
+        }
+
         auth = FirebaseAuth.getInstance();
         storage = FirebaseStorage.getInstance();
         user = auth.getCurrentUser();

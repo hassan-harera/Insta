@@ -57,6 +57,11 @@ public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<Notif
         this.notifications = notifications;
         this.context = context;
 
+
+        if (notifications.isEmpty()) {
+            Toast.makeText(context, "No Notifications To View", Toast.LENGTH_SHORT).show();
+        }
+
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
         currentUID = auth.getUid();

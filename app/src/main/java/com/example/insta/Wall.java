@@ -111,6 +111,7 @@ public class Wall extends AppCompatActivity {
         list.add(new Feed());
         list.add(new ViewProfile());
         list.add(new Notifications());
+        list.add(new Chats());
 
         viewPager = findViewById(R.id.view_pager);
         FragmentAdapter adapter = new FragmentAdapter(this, list);
@@ -123,6 +124,7 @@ public class Wall extends AppCompatActivity {
         res.add(R.drawable.home);
         res.add(R.drawable.man);
         res.add(R.drawable.notification);
+        res.add(R.drawable.chats);
 
         tabLayout = findViewById(R.id.tabs);
         new TabLayoutMediator(tabLayout, viewPager, new TabLayoutMediator.TabConfigurationStrategy() {

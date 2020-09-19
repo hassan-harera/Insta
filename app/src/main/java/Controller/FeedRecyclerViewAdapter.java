@@ -63,6 +63,11 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerVi
         this.list = list;
         this.context = context;
 
+        if (list.isEmpty()) {
+            Toast.makeText(context, "No Posts Added", Toast.LENGTH_SHORT).show();
+        }
+
+
         auth = FirebaseAuth.getInstance();
         storage = FirebaseStorage.getInstance();
         user = auth.getCurrentUser();
@@ -121,8 +126,8 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerVi
         }
 
 
-
     }
+
 
     private void getUser(final FeedRecyclerViewAdapter.ViewHolder holder, final int position) {
         if (!databaseHelper.checkUser(list.get(position).getUID())) {
