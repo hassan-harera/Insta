@@ -8,74 +8,67 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
-import Controller.InstaDatabaseHelper;
-import Controller.ProfileRecyclerViewAdapter;
+import Controller.PostsRecyclerViewAdapter;
 import Model.Post;
-import Model.User;
+
+import static android.content.ContentValues.TAG;
 
 
 public class ViewProfile extends Fragment {
 
-    List<Post> list;
 
-    private String uid;
+    private String UID;
+    FirebaseAuth auth;
 
     RecyclerView recyclerView;
+    PostsRecyclerViewAdapter adapter;
+    List<Post> posts;
 
-    InstaDatabaseHelper helper;
-
-    FirebaseStorage storage;
-    FirebaseDatabase firebaseDatabase;
-    DatabaseReference databaseReference;
-    StorageReference reference;
-    FirebaseAuth auth;
-    FirebaseUser user;
-
-
-    ImageView profilePic;
+    ImageView profileImage;
     TextView name, bio;
 
-    View view;
-    private ProfileRecyclerViewAdapter adapter;
+    private FirebaseFirestore fStore;
 
 
     public ViewProfile() {
-        list = new ArrayList();
-        firebaseDatabase = FirebaseDatabase.getInstance();
+        posts = new ArrayList();
+
         auth = FirebaseAuth.getInstance();
-        user = auth.getCurrentUser();
-        uid = user.getUid();
-        databaseReference = firebaseDatabase.getReference().child("Users").child(uid);
-        storage = FirebaseStorage.getInstance();
-        reference = storage.getReference().child("Users").child(uid);
+        fStore = FirebaseFirestore.getInstance();
+        fStore.setFirestoreSettings(new FirebaseFirestoreSettings
+                .Builder().setPersistenceEnabled(true)
+                .setCacheSizeBytes(50000000).build());
+        UID = auth.getUid();
     }
 
     @Override
@@ -83,141 +76,91 @@ public class ViewProfile extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        view = inflater.inflate(R.layout.fragment_view_profile, container, false);
+        View view = inflater.inflate(R.layout.fragment_view_profile, container, false);
 
-        profilePic = view.findViewById(R.id.view_profile_photo);
+        profileImage = view.findViewById(R.id.view_profile_photo);
         name = view.findViewById(R.id.view_profile_user_name);
         bio = view.findViewById(R.id.view_profile_user_bio);
 
         recyclerView = view.findViewById(R.id.view_profile_posts);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        adapter = new PostsRecyclerViewAdapter(posts, getContext());
+        recyclerView.setAdapter(adapter);
 
         getInfo();
+        getProfilePostsFromFirebaseFireStore();
 
         return view;
     }
 
 
     private void getInfo() {
-        list = new ArrayList();
-
-        helper = new InstaDatabaseHelper(view.getContext());
         ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
 
 
-        if (isConnected) {
-            getName();
-            getBio();
-            getProfilePic();
-            getProfilePostsFromFirebase();
+        if (!isConnected) {
 
-            helper = new InstaDatabaseHelper(getContext());
-            if (!helper.checkUser(uid)) {
-                final User user = new User();
-                reference.child("Profile Pic").getBytes(1024 * 1024)
-                        .addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                            @Override
-                            public void onSuccess(byte[] b) {
-                                user.setProfilePic(BitmapFactory.decodeByteArray(b, 0, b.length));
-                                user.setName(name.getText().toString());
-                                user.setBio(bio.getText().toString());
-                                user.setEmail(auth.getCurrentUser().getEmail());
-                                user.setUid(uid);
-                                helper.insertUser(user);
-                            }
-                        });
-            }
-
-        } else {
-            User user;
-            user = helper.getUser(auth.getCurrentUser().getUid());
-            if (user.getProfilePic() != null) {
-                profilePic.setImageBitmap(user.getProfilePic());
-            }
-            name.setText(user.getName());
-            bio.setText(user.getBio());
-            getProfilePostsFromLocalDatabase();
         }
-    }
 
-    private void getName() {
-        databaseReference.child("Name").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String str = snapshot.getValue().toString();
-                helper.updateUserName(str, uid);
-                name.setText(str);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-            }
-        });
-    }
-
-    private void getBio() {
-        databaseReference.child("Bio").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String s = snapshot.getValue().toString();
-                helper.updateUserBio(s, auth.getCurrentUser().getUid());
-                bio.setText(s);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
-
-    private void getProfilePic() {
-        reference.child("Profile Pic").getBytes(1024 * 1024).
-                addOnSuccessListener(new OnSuccessListener<byte[]>() {
+        fStore.collection("Users")
+                .document(UID)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
-                    public void onSuccess(byte[] bytes) {
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                        profilePic.setImageBitmap(bitmap);
-                        helper.updateUserProfilePic(bytes, user.getUid());
+                    public void onSuccess(DocumentSnapshot ds) {
+                        byte[] bytes = ds.getBlob("Profile Pic").toBytes();
+                        profileImage.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+                        name.setText(ds.getString("Name"));
+                        bio.setText(ds.getString("Bio"));
                     }
                 });
     }
 
-    private void getProfilePostsFromLocalDatabase() {
-        list = helper.getUserPosts(user.getUid());
-        adapter = new ProfileRecyclerViewAdapter(list, view.getContext());
-        recyclerView.setAdapter(adapter);
-    }
+    private void getProfilePostsFromFirebaseFireStore() {
+        fStore.collection("Users")
+                .document(UID)
+                .collection("Posts")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (!task.isSuccessful()) {
+                            Log.e(TAG, "Error happened while download posts");
+                            Log.e(TAG, task.getException().getStackTrace().toString());
+                        } else {
+                            if (!task.getResult().isEmpty()) {
+                                for (DocumentSnapshot ds : task.getResult().getDocuments()) {
+                                    final Post p = ds.toObject(Post.class);
+                                    FirebaseDatabase.getInstance().getReference()
+                                            .child("Users")
+                                            .child(p.getUID())
+                                            .child("Posts")
+                                            .child(p.getID() + "")
+                                            .child("Likes")
+                                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot s) {
+                                            p.setLiked(s.child(Objects.requireNonNull(auth.getUid())).exists());
+                                            p.likesNumber = s.getChildrenCount();
+                                            posts.add(p);
+                                            adapter.notifyDataSetChanged();
+                                        }
 
-    private void getProfilePostsFromFirebase() {
-        final DatabaseReference postsReference = databaseReference.child("Posts");
-        postsReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot ds : snapshot.getChildren()) {
-                    if (ds.getKey().equals("Count")) {
-                        continue;
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+
+                                        }
+                                    });
+
+                                }
+                            } else {
+                                Toast.makeText(getContext(), "No Posts", Toast.LENGTH_SHORT).show();
+                            }
+                        }
                     }
-                    Post p = new Post();
-                    p.setId(ds.child("Id").getValue(Integer.class));
-                    p.setCaption(ds.child("Caption").getValue(String.class));
-                    p.setDate(ds.child("Date").getValue(String.class));
-                    p.setLikes((int) ds.child("Likes").getChildrenCount());
-                    p.setLiked(false);
-                    p.setUID(auth.getUid());
-                    list.add(p);
-                }
-                adapter = new ProfileRecyclerViewAdapter(list, view.getContext());
-                recyclerView.setAdapter(adapter);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+                });
     }
 }

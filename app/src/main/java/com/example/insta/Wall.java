@@ -40,7 +40,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Controller.FragmentAdapter;
-import Controller.InstaDatabaseHelper;
 
 
 public class Wall extends AppCompatActivity {
@@ -185,8 +184,6 @@ public class Wall extends AppCompatActivity {
 
     private void logout() {
         Intent intent = new Intent(this, MainActivity.class);
-        InstaDatabaseHelper helper = new InstaDatabaseHelper(this);
-        helper.resetDatabase();
         startActivity(intent);
         this.finish();
         auth.signOut();

@@ -1,12 +1,9 @@
 package Controller;
 
-import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Build;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +12,6 @@ import android.widget.QuickContactBadge;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.insta.Chat;
@@ -31,7 +27,6 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.List;
 import java.util.Timer;
-import java.util.TimerTask;
 
 import Model.User;
 
@@ -39,7 +34,6 @@ public class ChatsRecyclerViewAdapter extends RecyclerView.Adapter<ChatsRecycler
 
     Context context;
     List<String> list;
-    private InstaDatabaseHelper databaseHelper;
     private StorageReference reference;
     private DatabaseReference databaseReference;
     Timer timer;
@@ -47,7 +41,6 @@ public class ChatsRecyclerViewAdapter extends RecyclerView.Adapter<ChatsRecycler
     public ChatsRecyclerViewAdapter(final Context context, List<String> list) {
         this.context = context;
         this.list = list;
-        databaseHelper = new InstaDatabaseHelper(context);
         reference = FirebaseStorage.getInstance().getReference();
         databaseReference = FirebaseDatabase.getInstance().getReference();
     }
@@ -73,38 +66,31 @@ public class ChatsRecyclerViewAdapter extends RecyclerView.Adapter<ChatsRecycler
     }
 
     private void getFriend(final ChatsRecyclerViewAdapter.ViewHolder holder, final int position) {
-        if (!databaseHelper.checkUser(list.get(position))) {
-            final User user = new User();
-            user.setUid(list.get(position));
-            reference.child("Users").child(list.get(position))
-                    .child("Profile Pic").getBytes(1024 * 1024).
-                    addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                        @Override
-                        public void onSuccess(byte[] bytes) {
-                            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                            holder.badge.setImageBitmap(bitmap);
-                            user.setProfilePic(bitmap);
+        final User user = new User();
+        user.setUid(list.get(position));
+        reference.child("Users").child(list.get(position))
+                .child("Profile Pic").getBytes(1024 * 1024).
+                addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        holder.badge.setImageBitmap(bitmap);
+                        user.setProfilePic(bitmap);
 
-                            databaseReference.child("Users").child(list.get(position))
-                                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot ds) {
-                                            user.setName(ds.child("Name").getValue(String.class));
-                                            holder.name.setText(user.getName());
-                                            databaseHelper.insertUser(user);
-                                        }
+                        databaseReference.child("Users").child(list.get(position))
+                                .addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot ds) {
+                                        user.setName(ds.child("Name").getValue(String.class));
+                                        holder.name.setText(user.getName());
+                                    }
 
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError error) {
-                                        }
-                                    });
-                        }
-                    });
-        } else {
-            User user = databaseHelper.getUser(list.get(position));
-            holder.badge.setImageBitmap(user.getProfilePic());
-            holder.name.setText(user.getName());
-        }
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+                                    }
+                                });
+                    }
+                });
     }
 
 
@@ -121,7 +107,7 @@ public class ChatsRecyclerViewAdapter extends RecyclerView.Adapter<ChatsRecycler
         public ViewHolder(@NonNull View v) {
             super(v);
 
-            badge = v.findViewById(R.id.user_pic);
+            badge = v.findViewById(R.id.profile_image);
             name = v.findViewById(R.id.name);
             ll = v.findViewById(R.id.ll);
         }

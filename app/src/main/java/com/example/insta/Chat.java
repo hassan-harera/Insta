@@ -24,11 +24,9 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.QuickContactBadge;
 import android.widget.TextView;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -36,10 +34,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import Controller.ChatRecyclerViewAdapter;
-import Controller.ChatsRecyclerViewAdapter;
-import Controller.InstaDatabaseHelper;
 import Model.Message;
-import Model.User;
 
 public class Chat extends AppCompatActivity {
 
@@ -60,7 +55,7 @@ public class Chat extends AppCompatActivity {
     FirebaseAuth auth;
     DatabaseReference dRef;
     StorageReference sRef;
-    private InstaDatabaseHelper databaseHelper;
+//    private InstaDatabaseHelper databaseHelper;
 
 
     @Override
@@ -76,13 +71,13 @@ public class Chat extends AppCompatActivity {
         send = findViewById(R.id.send);
         message_send = findViewById(R.id.message_send);
         recycler_view = findViewById(R.id.recycler_view);
-        badge = findViewById(R.id.user_pic);
+        badge = findViewById(R.id.profile_image);
         name = findViewById(R.id.name);
 
         auth = FirebaseAuth.getInstance();
         sRef = FirebaseStorage.getInstance().getReference();
         dRef = FirebaseDatabase.getInstance().getReference();
-        databaseHelper = new InstaDatabaseHelper(this);
+//        databaseHelper = new InstaDatabaseHelper(this);
 
         recycler_view.setHasFixedSize(true);
         recycler_view.setLayoutManager(new LinearLayoutManager(this));
@@ -132,38 +127,38 @@ public class Chat extends AppCompatActivity {
     }
 
     private void getInfo() {
-        if (!databaseHelper.checkUser(UID)) {
-            final User user = new User();
-            user.setUid(UID);
-            sRef.child("Users").child(UID)
-                    .child("Profile Pic").getBytes(1024 * 1024).
-                    addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                        @Override
-                        public void onSuccess(byte[] bytes) {
-                            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                            badge.setImageBitmap(bitmap);
-                            user.setProfilePic(bitmap);
-
-                            dRef.child("Users").child(UID)
-                                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot ds) {
-                                            user.setName(ds.child("Name").getValue(String.class));
-                                            name.setText(user.getName());
-                                            databaseHelper.insertUser(user);
-                                        }
-
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError error) {
-                                        }
-                                    });
-                        }
-                    });
-        } else {
-            User user = databaseHelper.getUser(UID);
-            badge.setImageBitmap(user.getProfilePic());
-            name.setText(user.getName());
-        }
+//        if (!databaseHelper.checkUser(UID)) {
+//            final User user = new User();
+//            user.setUid(UID);
+//            sRef.child("Users").child(UID)
+//                    .child("Profile Pic").getBytes(1024 * 1024).
+//                    addOnSuccessListener(new OnSuccessListener<byte[]>() {
+//                        @Override
+//                        public void onSuccess(byte[] bytes) {
+//                            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+//                            badge.setImageBitmap(bitmap);
+//                            user.setProfilePic(bitmap);
+//
+//                            dRef.child("Users").child(UID)
+//                                    .addListenerForSingleValueEvent(new ValueEventListener() {
+//                                        @Override
+//                                        public void onDataChange(@NonNull DataSnapshot ds) {
+//                                            user.setName(ds.child("Name").getValue(String.class));
+//                                            name.setText(user.getName());
+//                                            databaseHelper.insertUser(user);
+//                                        }
+//
+//                                        @Override
+//                                        public void onCancelled(@NonNull DatabaseError error) {
+//                                        }
+//                                    });
+//                        }
+//                    });
+//        } else {
+//            User user = databaseHelper.getUser(UID);
+//            badge.setImageBitmap(user.getProfilePic());
+//            name.setText(user.getName());
+//        }
     }
 
     public void sendClicked(View view) {

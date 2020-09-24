@@ -23,7 +23,7 @@
 
 
             <QuickContactBadge
-                android:id="@+id/user_pic"
+                android:id="@+id/profile_image"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_margin="5sp" />

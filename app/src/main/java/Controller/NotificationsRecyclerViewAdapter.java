@@ -19,24 +19,20 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.insta.R;
 import com.example.insta.ViewPost;
 import com.example.insta.VisitProfile;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
 import java.util.List;
 
 import Model.Notification;
-import Model.Post;
-import Model.User;
 
 public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<NotificationsRecyclerViewAdapter.ViewHolder> {
 
@@ -44,32 +40,28 @@ public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<Notif
     Context context;
 
     FirebaseAuth auth;
-    FirebaseUser user;
+    FirebaseFirestore fStore;
+
     String currentUID;
-    DatabaseReference dbr;
-    FirebaseDatabase db;
-    StorageReference sr;
-    FirebaseStorage fs;
-    private InstaDatabaseHelper databaseHelper;
+    private DatabaseReference dbr;
 
 
     public NotificationsRecyclerViewAdapter(List<Notification> notifications, Context context) {
         this.notifications = notifications;
         this.context = context;
 
-
         if (notifications.isEmpty()) {
             Toast.makeText(context, "No Notifications To View", Toast.LENGTH_SHORT).show();
         }
 
+        dbr = FirebaseDatabase.getInstance().getReference();
         auth = FirebaseAuth.getInstance();
-        user = auth.getCurrentUser();
+        fStore = FirebaseFirestore.getInstance();
+        fStore.setFirestoreSettings(new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(true)
+                .setCacheSizeBytes(50000000).build());
+
         currentUID = auth.getUid();
-        db = FirebaseDatabase.getInstance();
-        dbr = db.getReference();
-        fs = FirebaseStorage.getInstance();
-        sr = fs.getReference();
-        databaseHelper = new InstaDatabaseHelper(context);
     }
 
     @NonNull
@@ -94,21 +86,13 @@ public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<Notif
         return 0;
     }
 
+
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
 
         switch (notifications.get(position).getType()) {
             case "Like":
                 final LikeHolder lh = (LikeHolder) holder;
-
-                int postID = Integer.parseInt(notifications.get(position).getPostID());
-                if (databaseHelper.checkPost(auth.getUid(), postID)) {
-                    Bitmap bitmap = databaseHelper.getPost(auth.getUid(), postID).getBitmap();
-                    lh.postIMG.setImageBitmap(bitmap);
-                } else {
-                    getPost(lh, position);
-                }
-
                 lh.ll.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -119,23 +103,34 @@ public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<Notif
                     }
                 });
 
-                dbr.child("Users").child(notifications.get(position).getUID()).child("Name")
-                        .addListenerForSingleValueEvent(new ValueEventListener() {
-                            @SuppressLint("SetTextI18n")
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                lh.message.setText(snapshot.getValue().toString() + " Liked your picture");
-                            }
+                fStore.collection("Users")
+                        .document(notifications.get(position).getUID())
+                        .collection("Posts")
+                        .document(notifications.get(position).getPostID())
+                        .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot ds) {
+                        byte[] bytes = ds.getBlob("postImage").toBytes();
+                        lh.postIMG.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+                    }
+                });
 
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
+                fStore.collection("Users")
+                        .document(notifications.get(position).getUID())
+                        .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @SuppressLint("SetTextI18n")
+                    @Override
+                    public void onSuccess(DocumentSnapshot ds) {
+                        lh.message.setText(ds.getString("Name"));
+                        lh.message.append(" Liked your picture");
+                    }
+                });
 
-                            }
-                        });
                 break;
 
             case "Friend Request":
                 final FriendRequestHolder fh = (FriendRequestHolder) holder;
+
                 fh.ll.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -161,58 +156,26 @@ public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<Notif
                     }
                 });
 
-                dbr.child("Users").child(notifications.get(position).getUID()).child("Name")
-                        .addListenerForSingleValueEvent(new ValueEventListener() {
-                            @SuppressLint("SetTextI18n")
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                fh.message.setText(snapshot.getValue().toString() + "\nSent you a friend request");
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
-
-                            }
-                        });
-
-                if (!databaseHelper.checkUser(notifications.get(position).getUID())) {
-                    sr.child("Users").child(notifications.get(position).getUID()).child("Profile Pic")
-                            .getBytes(4096 * 4096)
-                            .addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                                @Override
-                                public void onSuccess(byte[] b) {
-                                    fh.profilePic.setImageBitmap(BitmapFactory.decodeByteArray(b, 0, b.length));
-                                }
-                            });
-                } else {
-                    fh.profilePic.setImageBitmap(databaseHelper.getUser(notifications.get(position).getUID()).getProfilePic());
-                }
-        }
-    }
-
-    private void getPost(final LikeHolder holder, final int position) {
-        sr.child("Users").child(auth.getUid()).child("Posts").child(notifications.get(position).getPostID()).
-                getBytes(1024 * 1024).addOnCompleteListener(new OnCompleteListener<byte[]>() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onComplete(@NonNull Task<byte[]> task) {
-                if (task.isSuccessful()) {
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(task.getResult(), 0, task.getResult().length);
-                    holder.postIMG.setImageBitmap(bitmap);
-                    Post post = new Post();
-                    post.setBitmap(bitmap);
-                    post.setUID(auth.getUid());
-                    post.setLiked(false);
-                    post.setDate(notifications.get(position).getDate().toString());
-                    post.setId(Integer.parseInt(notifications.get(position).getPostID()));
-                    if (!databaseHelper.checkPost(post.getUID(), post.getId())) {
-                        databaseHelper.insertPost(post);
+                fStore.collection("Users")
+                        .document(notifications.get(position).getUID())
+                        .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot ds) {
+                        fh.message.setText(ds.getString("Name"));
+                        fh.message.append(" Liked your picture");
                     }
-                } else {
-                    Toast.makeText(context, "Failed to load image", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+                });
+
+                fStore.collection("Users")
+                        .document(notifications.get(position).getUID())
+                        .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot ds) {
+                        byte[] bytes = ds.getBlob("postImage").toBytes();
+                        fh.profilePic.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+                    }
+                });
+        }
     }
 
     private void delete(int i) {
@@ -260,7 +223,7 @@ public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<Notif
 
         public LikeHolder(@NonNull View v) {
             super(v);
-            postIMG = v.findViewById(R.id.profile_pic);
+            postIMG = v.findViewById(R.id.profile_image);
             message = v.findViewById(R.id.request_message);
             ll = v.findViewById(R.id.ll);
         }
@@ -273,13 +236,13 @@ public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<Notif
 
         public FriendRequestHolder(@NonNull View v) {
             super(v);
-            profilePic = v.findViewById(R.id.profile_pic);
+            profilePic = v.findViewById(R.id.profile_image);
             message = v.findViewById(R.id.request_message);
             ll = v.findViewById(R.id.ll);
             confirm = v.findViewById(R.id.confirm);
             delete = v.findViewById(R.id.delete);
         }
     }
-
-
 }
+
+

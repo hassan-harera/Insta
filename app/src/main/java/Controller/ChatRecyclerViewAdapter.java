@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,7 +30,6 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter<ChatRecyclerVi
     String currentUID;
     DatabaseReference dRef;
     StorageReference sRef;
-    InstaDatabaseHelper databaseHelper;
 
 
     public ChatRecyclerViewAdapter(List<Model.Message> messages, Context context) {
@@ -42,7 +42,6 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter<ChatRecyclerVi
         currentUID = auth.getUid();
         dRef = FirebaseDatabase.getInstance().getReference();
         sRef = FirebaseStorage.getInstance().getReference();
-        databaseHelper = new InstaDatabaseHelper(context);
     }
 
     public  void update (List<Model.Message> messages){
@@ -88,9 +87,9 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter<ChatRecyclerVi
 
     @Override
     public int getItemCount() {
-//        if (messages.isEmpty()) {
-//            Toast.makeText(context, "No Messages", Toast.LENGTH_SHORT).show();
-//        }
+        if (messages.isEmpty()) {
+            Toast.makeText(context, "No Messages", Toast.LENGTH_SHORT).show();
+        }
         return messages.size();
     }
 

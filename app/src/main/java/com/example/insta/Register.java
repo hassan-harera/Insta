@@ -7,9 +7,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -20,27 +21,22 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
+import com.google.firebase.firestore.Blob;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 
-import Controller.InstaDatabaseHelper;
-import Model.User;
+import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class Register extends AppCompatActivity {
 
     EditText password, email, repassword, name;
     Button register;
 
-    FirebaseDatabase firebaseDatabase;
-    FirebaseStorage storage;
-    StorageReference reference;
     FirebaseAuth auth;
-    DatabaseReference dbRef;
-    FirebaseUser user;
-    private InstaDatabaseHelper helper;
+    FirebaseFirestore fStore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,13 +47,9 @@ public class Register extends AppCompatActivity {
         email = findViewById(R.id.email);
         password = findViewById(R.id.password_register);
         repassword = findViewById(R.id.confirm_password_register);
-        helper = new InstaDatabaseHelper(this);
+        fStore = FirebaseFirestore.getInstance();
         register = findViewById(R.id.register_signup);
         auth = FirebaseAuth.getInstance();
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        storage = FirebaseStorage.getInstance();
-        dbRef = firebaseDatabase.getReference();
-        reference = storage.getReference();
 
     }
 
@@ -95,24 +87,21 @@ public class Register extends AppCompatActivity {
 
 
     private void addUserToDatabase() {
-        user = auth.getCurrentUser();
-        DatabaseReference userRef = dbRef.child("Users").child(user.getUid());
-        userRef.child("Name").setValue(name.getText().toString());
-        userRef.child("Username").setValue(email.getText().toString());
-        userRef.child("Bio").setValue("Bio");
-        userRef.child("Posts").child("Count").setValue(1);
-        userRef.child("Notifications").child("Count").setValue(1);
+        Map<String, Object> map = new HashMap<>();
 
-        Uri uri = Uri.parse("android.resource://com.example.insta/drawable/profile");
-        reference.child("Users").child(user.getUid()).child("Profile Pic").putFile(uri);
-        if(!helper.checkUser(user.getUid())){
-            User user = new User();
-            user.setName(name.getText().toString());
-            user.setBio("Bio");
-            user.setEmail(auth.getCurrentUser().getEmail());
-            user.setUid(auth.getCurrentUser().getUid());
-            helper.insertUser(user);
-        }
+        map.put("Name", name.getText().toString());
+        map.put("Bio", "Bio");
+        map.put("Email", auth.getCurrentUser().getEmail());
+
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.profile);
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 50, stream);
+        map.put("Profile Pic", Blob.fromBytes(stream.toByteArray()));
+
+
+        fStore.collection("Users")
+                .document(auth.getUid())
+                .set(map, SetOptions.merge());
     }
 
     private void failedRegister() {

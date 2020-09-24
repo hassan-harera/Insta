@@ -23,7 +23,7 @@
             android:textSize="16dp" />
 
         <ImageView
-            android:id="@+id/rec_image"
+            android:id="@+id/post_image"
             android:layout_width="match_parent"
             android:layout_height="250dp"
             android:padding="3dp" />

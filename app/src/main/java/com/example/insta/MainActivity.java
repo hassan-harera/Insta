@@ -30,14 +30,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
-import java.util.HashMap;
-
-import Controller.InstaDatabaseHelper;
-import Model.User;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -50,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
     FirebaseAuth auth;
     FirebaseUser user;
     FirebaseStorage storage;
-    private InstaDatabaseHelper helper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
         password = findViewById(R.id.password);
         login = findViewById(R.id.login);
         register = findViewById(R.id.register_text);
-        helper = new InstaDatabaseHelper(this);
         database = FirebaseDatabase.getInstance();
         storage = FirebaseStorage.getInstance();
         databaseReference = database.getReference();

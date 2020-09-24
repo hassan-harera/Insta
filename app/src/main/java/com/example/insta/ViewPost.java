@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
@@ -13,7 +12,6 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -23,7 +21,6 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -34,9 +31,6 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import Controller.InstaDatabaseHelper;
-import Model.Post;
 
 public class ViewPost extends AppCompatActivity {
 
@@ -72,7 +66,7 @@ public class ViewPost extends AppCompatActivity {
         postID = bundle.getString("Post ID");
 
         caption = findViewById(R.id.caption);
-        recImage = findViewById(R.id.rec_image);
+        recImage = findViewById(R.id.post_image);
         likesNumber = findViewById(R.id.likes_number);
         bar = findViewById(R.id.progress_bar);
         likes_list = findViewById(R.id.likes_list);

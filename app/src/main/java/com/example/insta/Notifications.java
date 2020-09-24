@@ -1,6 +1,5 @@
 package com.example.insta;
 
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.content.Context;
@@ -11,14 +10,13 @@ import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -31,7 +29,6 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import Controller.NotificationsRecyclerViewAdapter;
@@ -52,7 +49,7 @@ public class Notifications extends Fragment {
     FirebaseStorage fs;
 
     RecyclerView recyclerView;
-    private NotificationsRecyclerViewAdapter aapter;
+    private NotificationsRecyclerViewAdapter adapter;
 
     public Notifications() {
         this.notifications = new ArrayList();
@@ -73,6 +70,8 @@ public class Notifications extends Fragment {
         recyclerView = view.findViewById(R.id.recycler_view_notifications);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         recyclerView.setHasFixedSize(true);
+        adapter = new NotificationsRecyclerViewAdapter(notifications, view.getContext());
+        recyclerView.setAdapter(adapter);
 
         getNotifications();
 
@@ -91,15 +90,8 @@ public class Notifications extends Fragment {
             Toast.makeText(getContext(), "No Internet Connection", Toast.LENGTH_SHORT).show();
         }
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                aapter = new NotificationsRecyclerViewAdapter(notifications, view.getContext());
-                recyclerView.setAdapter(aapter);
-            }
-        }, 3000);
-    }
 
+    }
 
 
     private void getNotifications() {
@@ -116,8 +108,9 @@ public class Notifications extends Fragment {
                     Notification n = new Notification();
                     n.setType("Friend Request");
                     n.setUID(s.child("UID").getValue().toString());
-                    n.setDate(new Date(s.child("Date").getValue().toString()));
+//                    n.setDate(s.child("Date").getValue(Timestamp.class));
                     notifications.add(n);
+                    adapter.notifyDataSetChanged();
                 }
             }
 
@@ -144,8 +137,9 @@ public class Notifications extends Fragment {
                                 n.setType("Like");
                                 n.setPostID(s.child("Post ID").getValue().toString());
                                 n.setUID(s.child("UID").getValue().toString());
-                                n.setDate(new Date(s.child("Date").getValue().toString()));
+//                                n.setDate(s.child("Date").getValue(Timestamp.class));
                                 notifications.add(n);
+                                adapter.notifyDataSetChanged();
                             }
                         }
 
@@ -155,7 +149,6 @@ public class Notifications extends Fragment {
                         }
                     });
                 }
-
             }
 
             @Override
@@ -164,16 +157,4 @@ public class Notifications extends Fragment {
             }
         });
     }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                aapter.notifyDataSetChanged();
-            }
-        }, 10000);
-    }
-
 }

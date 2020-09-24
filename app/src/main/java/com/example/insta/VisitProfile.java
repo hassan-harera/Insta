@@ -5,185 +5,145 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.signature.ObjectKey;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
-import Controller.VisitProfileRecyclerViewAdapter;
+import Controller.PostsRecyclerViewAdapter;
 import Model.Post;
+
+import static android.content.ContentValues.TAG;
 
 public class VisitProfile extends AppCompatActivity {
 
 
-    List<Post> list;
-
-    private String visitedUID;
-
-    RecyclerView recyclerView;
-    FirebaseStorage storage;
-    FirebaseDatabase firebaseDatabase;
-    DatabaseReference databaseReference;
-    StorageReference reference;
+    private String UID;
     FirebaseAuth auth;
 
-    ImageView profilePic, addFriend;
+    RecyclerView recyclerView;
+    PostsRecyclerViewAdapter adapter;
+    List<Post> posts;
+
+    ImageView profileImage;
     TextView name, bio;
-    private VisitProfileRecyclerViewAdapter adapter;
-    private Bitmap bitmap;
+    private ImageView addFriend;
+    private FirebaseFirestore fStore;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_visit_profile);
 
-
-        Intent intent = getIntent();
-        Bundle bundle = intent.getExtras();
-        visitedUID = bundle.get("Token").toString();
-
-        list = new ArrayList<>();
-
         auth = FirebaseAuth.getInstance();
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference().child("Users").child(visitedUID);
-        storage = FirebaseStorage.getInstance();
-        reference = storage.getReference().child("Users").child(visitedUID);
-
-        addFriend = findViewById(R.id.add_friend);
-        if (visitedUID.equals(auth.getUid())) {
-            addFriend.setVisibility(View.INVISIBLE);
-        }
-        databaseReference.child("Friends").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.child(auth.getUid()).getValue() != null) {
-                    addFriend.setVisibility(View.INVISIBLE);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
-
-        profilePic = findViewById(R.id.user_profile_photo);
-        name = findViewById(R.id.user_profile_name);
-        bio = findViewById(R.id.user_profile_short_bio);
-
-        getProfilePic();
-        getName();
-        getBio();
+        fStore = FirebaseFirestore.getInstance();
 
         recyclerView = findViewById(R.id.profile_posts);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        posts = new ArrayList<>();
+        adapter = new PostsRecyclerViewAdapter(posts, this);
+        recyclerView.setAdapter(adapter);
 
-        getAllPostsFromFirebase();
+        Intent intent = getIntent();
+        Bundle bundle = intent.getExtras();
+        UID = bundle.get("Token").toString();
+
+        addFriend = findViewById(R.id.add_friend);
+        if (UID.equals(auth.getUid())) {
+            addFriend.setVisibility(View.INVISIBLE);
+        }
+
+        profileImage = findViewById(R.id.user_profile_photo);
+        name = findViewById(R.id.user_profile_name);
+        bio = findViewById(R.id.user_profile_short_bio);
+
+        getInfo();
+        getProfilePostsFromFirebaseFireStore();
     }
 
-    private void getProfilePic() {
-        reference.child("Profile Pic").getBytes(1024 * 1024).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-            @Override
-            public void onSuccess(byte[] bytes) {
-                bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                profilePic.setImageBitmap(bitmap);
-            }
-        });
-    }
+    private void getInfo() {
+        ConnectivityManager cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
 
 
-    private void getName() {
-        databaseReference.child("Name").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                name.setText(snapshot.getValue().toString());
-            }
+        if (!isConnected) {
+            Toast.makeText(this, "No Internet Connection", Toast.LENGTH_SHORT).show();
+        }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
-
-
-    private void getBio() {
-        databaseReference.child("Bio").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                bio.setText(snapshot.getValue().toString());
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
-
-
-    private void getAllPostsFromFirebase() {
-        databaseReference.child("Posts").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot ds : snapshot.getChildren()) {
-                    if (ds.getKey().equals("Count")) {
-                        continue;
-                    }
-                    final Post p = new Post();
-                    p.setId(ds.child("Id").getValue(Integer.class));
-                    p.setCaption(ds.child("Caption").getValue(String.class));
-                    p.setLikes((int) ds.child("Likes").getChildrenCount());
-                    p.setDate(ds.child("Date").getValue(String.class));
-                    p.setLiked(ds.child("Likes").child(auth.getUid()) != null);
-                    p.setUID(visitedUID);
-                    list.add(p);
-                }
-                new Handler().postDelayed(new Runnable() {
+        fStore.collection("Users")
+                .document(UID)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
-                    public void run() {
-                        adapter = new VisitProfileRecyclerViewAdapter(list, visitedUID,
-                                VisitProfile.this, bitmap, name.getText().toString());
-                        recyclerView.setAdapter(adapter);
-
+                    public void onSuccess(DocumentSnapshot ds) {
+                        byte[] bytes = ds.getBlob("Profile Pic").toBytes();
+                        profileImage.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+                        name.setText(ds.getString("Name"));
+                        bio.setText(ds.getString("Bio"));
                     }
-                }, 1000);
-            }
+                });
+    }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-            }
-        });
+    private void getProfilePostsFromFirebaseFireStore() {
+        fStore.collection("Users")
+                .document(UID)
+                .collection("Posts")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (!task.isSuccessful()) {
+                            Log.e(TAG, "Error happened while download posts");
+                            Log.e(TAG, task.getException().getStackTrace().toString());
+                        } else {
+                            if (!task.getResult().isEmpty()) {
+                                for (DocumentSnapshot ds : task.getResult().getDocuments()) {
+                                    Post p = ds.toObject(Post.class);
+                                    posts.add(p);
+                                    adapter.notifyDataSetChanged();
+                                }
+                            } else {
+                                Toast.makeText(VisitProfile.this, "No Posts", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+                });
     }
 
     public void addFriendClicked(View view) {
-        //                n.setUID(s.child("UID").getValue().toString());
-        //                n.setDate(new Date(s.child("Date").getValue().toString()));
         addFriend.setEnabled(false);
-        DatabaseReference dbr = FirebaseDatabase.getInstance().getReference().child("Users").child(visitedUID)
+        DatabaseReference dbr = FirebaseDatabase.getInstance().getReference().child("Users").child(UID)
                 .child("Friend Requests");
         dbr.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -203,16 +163,6 @@ public class VisitProfile extends AppCompatActivity {
 
             }
         });
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                adapter.notifyDataSetChanged();
-            }
-        }, 2000);
     }
 }

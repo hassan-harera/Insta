@@ -2,11 +2,9 @@ package com.example.insta;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -27,58 +25,41 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
+import com.google.firebase.firestore.Blob;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
-import Controller.InstaDatabaseHelper;
-import Model.User;
+import Controller.Image;
 
 public class EditProfile extends AppCompatActivity {
 
-
-    InstaDatabaseHelper helper;
-
-    FirebaseStorage storage;
-    FirebaseDatabase firebaseDatabase;
-    DatabaseReference databaseReference;
-    FirebaseUser user;
-    StorageReference reference;
     FirebaseAuth auth;
+    FirebaseFirestore fStore;
 
-    ImageView profilePic;
+    ImageView profileImage;
     EditText name, bio;
     TextView email;
     Button edit;
     Uri uri;
-    Bitmap bitmap1;
 
     ProgressBar progressBar;
+    private Bitmap bitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
 
-        helper = new InstaDatabaseHelper(this);
 
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference();
-        storage = FirebaseStorage.getInstance();
-        reference = storage.getReference();
         auth = FirebaseAuth.getInstance();
-        user = auth.getCurrentUser();
+        fStore = FirebaseFirestore.getInstance();
 
-        profilePic = findViewById(R.id.EditProfile_profile_Pic);
+        profileImage = findViewById(R.id.profile_image);
         edit = findViewById(R.id.EditProfile_edit);
         name = findViewById(R.id.EditProfile_name);
         bio = findViewById(R.id.EditProfile_bio);
@@ -86,7 +67,7 @@ public class EditProfile extends AppCompatActivity {
         progressBar = findViewById(R.id.progress_bar);
 
         getInfo();
-        email.setText(user.getEmail());
+        email.setText(auth.getCurrentUser().getEmail());
 
     }
 
@@ -95,99 +76,58 @@ public class EditProfile extends AppCompatActivity {
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
 
-        if (isConnected) {
-            getProfilePic();
-            getName();
-            getBio();
-        } else {
-            User user;
-            user = helper.getUser(auth.getCurrentUser().getUid());
-            if (user.getProfilePic() != null) {
-                profilePic.setImageBitmap(user.getProfilePic());
-            }
-            name.setText(user.getName());
-            bio.setText(user.getBio());
-        }
-    }
 
-    private void getName() {
-        databaseReference.child("Users").child(user.getUid()).child("Name").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                name.setText(snapshot.getValue(String.class));
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-            }
-        });
-    }
-
-    private void getBio() {
-        databaseReference.child("Users").child(user.getUid()).child("Bio").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String b = snapshot.getValue(String.class);
-                if (b.equals("")) {
-                    bio.setText("Bio");
-                } else {
-                    bio.setText(snapshot.getValue(String.class));
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-            }
-        });
-    }
-
-    private void getProfilePic() {
-        if(helper.checkUser(auth.getUid())){
-            profilePic.setImageBitmap(helper.getUser(auth.getUid()).getProfilePic());
-        }else {
-            reference.child("Users").child(user.getUid()).child("Profile Pic").getBytes((1024 * 1024)).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                @Override
-                public void onSuccess(byte[] b) {
-                    if (b != null) {
-                        profilePic.setImageBitmap(BitmapFactory.decodeByteArray(b, 0, b.length));
+        fStore.collection("Users")
+                .document(auth.getUid())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot ds) {
+                        byte[] bytes = ds.getBlob("Profile Pic").toBytes();
+                        profileImage.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+                        name.setText(ds.getString("Name"));
+                        bio.setText(ds.getString("Bio"));
+                        email.setText(ds.getString("Email"));
                     }
-                }
-            });
-        }
+                });
     }
 
     public void editClicked(final View view) {
-        edit.setEnabled(false);
-        ConnectivityManager cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        Map<String, Object> map = new HashMap();
+        map.put("Name", name.getText().toString());
+        map.put("Bio", bio.getText().toString());
 
-        if (!isConnected) {
-            Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        fStore.collection("Users")
+                .document(auth.getUid())
+                .update(map)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(EditProfile.this, "Successfully Edited", Toast.LENGTH_SHORT).show();
+                            progressBar.setVisibility(View.GONE);
+                            finish();
+                        } else {
+                            Toast.makeText(EditProfile.this, "Cannot edit", Toast.LENGTH_SHORT).show();
+                        }
 
-        databaseReference.child("Users").child(user.getUid()).child("Name").setValue(name.getText().toString());
-        databaseReference.child("Users").child(user.getUid()).child("Bio").setValue(bio.getText().toString());
+                    }
+                });
 
         if (uri != null) {
             progressBar.setVisibility(View.VISIBLE);
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            bitmap1.compress(Bitmap.CompressFormat.PNG, 100, bos);
-            reference.child("Users").child(user.getUid()).child("Profile Pic").putBytes(bos.toByteArray())
-                    .addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                            finish();
-                        }
-                    });
+            Image.getReducedBitmap(bitmap, 512).compress(Bitmap.CompressFormat.PNG, 50, bos);
+            fStore.collection("Users")
+                    .document(auth.getUid())
+                    .update("Profile Pic", Blob.fromBytes(bos.toByteArray()));
         } else {
             finish();
         }
     }
 
     public void addImageClicked(View view) {
-        profilePic.setEnabled(false);
+        profileImage.setEnabled(false);
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, 123);
     }
@@ -195,13 +135,12 @@ public class EditProfile extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        profilePic.setEnabled(true);
+        profileImage.setEnabled(true);
         if (data != null && requestCode == 123 && resultCode == RESULT_OK) {
             uri = data.getData();
             try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
-                bitmap1 = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth()/8, bitmap.getHeight()/8, true);
-                profilePic.setImageBitmap(bitmap);
+                bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+                profileImage.setImageBitmap(bitmap);
             } catch (IOException e) {
                 e.printStackTrace();
             }

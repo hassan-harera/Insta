@@ -2,26 +2,14 @@ package com.example.insta;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigator;
-import androidx.viewpager2.widget.ViewPager2;
 
-import android.app.MediaRouteButton;
-import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,25 +21,19 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
+import com.google.firebase.firestore.Blob;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Objects;
 
-import Controller.InstaDatabaseHelper;
+import Controller.Image;
 import Model.Post;
 
 public class AddImage extends Fragment {
@@ -62,27 +44,16 @@ public class AddImage extends Fragment {
     EditText caption;
     Button add;
 
-    FirebaseDatabase database;
-    DatabaseReference databaseReference;
-    FirebaseStorage storage;
-    StorageReference storageReference;
-    FirebaseAuth firebaseAuth;
-    FirebaseUser firebaseUser;
-    Bitmap bitmapImg;
+    FirebaseAuth auth;
     Uri uri;
-    String id;
 
     private ProgressBar progressBar;
     private View view;
+    private Bitmap reducedBitmap;
 
 
     public AddImage() {
-        firebaseAuth = FirebaseAuth.getInstance();
-        database = FirebaseDatabase.getInstance();
-        firebaseUser = firebaseAuth.getCurrentUser();
-        storage = FirebaseStorage.getInstance();
-        databaseReference = database.getReference();
-        storageReference = storage.getReference().child("Users").child(firebaseUser.getUid());
+        auth = FirebaseAuth.getInstance();
     }
 
     @Nullable
@@ -130,8 +101,8 @@ public class AddImage extends Fragment {
             if (uri != null) {
                 try {
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
-                    bitmapImg = Bitmap.createScaledBitmap(bitmap, 600, 600,
-                            true);
+                    reducedBitmap = Image.getReducedBitmap(bitmap, 512);
+                    Log.d("Image Uploaded", String.valueOf(reducedBitmap.getByteCount()));
                     image.setImageBitmap(bitmap);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -141,7 +112,7 @@ public class AddImage extends Fragment {
     }
 
     public void addClicked(View view) {
-        if (bitmapImg != null) {
+        if (reducedBitmap != null) {
             image.setEnabled(false);
             add.setEnabled(false);
             caption.setEnabled(false);
@@ -150,81 +121,42 @@ public class AddImage extends Fragment {
             return;
         }
 
-        ViewPager2 v = getActivity().findViewById(R.id.view_pager);
-        v.setEnabled(false);
+        progressBar.setVisibility(View.VISIBLE);
 
-        final Post post = new Post();
-        databaseReference.child("Users").child(firebaseUser.getUid()).child("Posts").child("Count")
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        post.setId(Integer.parseInt(snapshot.getValue().toString()));
-                        databaseReference.child("Users").child(firebaseUser.getUid()).child("Posts")
-                                .child("Count").setValue(post.getId() + 1);
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
-        databaseReference.child("Users").child(firebaseUser.getUid()).child("Posts")
-                .child(post.getId() + "").child("Likes");
-
+        Post post = new Post();
         post.setCaption(caption.getText().toString());
-        post.setDate(new Date().toString());
-        post.setLikes(0);
+        post.setTime(Timestamp.now());
+        post.setLikes(new HashMap());
         post.setLiked(false);
-        post.setUID(firebaseAuth.getUid());
+        post.setUID(auth.getUid());
+        post.setID(String.valueOf(Timestamp.now().getSeconds()));
 
-        new Handler().postDelayed(new Runnable() {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        reducedBitmap.compress(Bitmap.CompressFormat.PNG, 50, stream);
+        byte[] byteArray = stream.toByteArray();
+        post.setPostImage(Blob.fromBytes(byteArray));
+
+        FirebaseFirestore.getInstance()
+                .collection("Users")
+                .document(Objects.requireNonNull(auth.getUid()))
+                .collection("Posts")
+                .document().set(post).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
-            public void run() {
-                progressBar.setVisibility(View.VISIBLE);
-                add.setEnabled(false);
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                bitmapImg.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                byte[] byteArray = stream.toByteArray();
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    Toast.makeText(getContext(), "The image added Successfully", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getContext(), "Failed to upload the image", Toast.LENGTH_LONG).show();
+                }
 
-                storageReference.child("Posts").child(post.getId() + "").putBytes(byteArray).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                        if (task.isSuccessful()) {
-                            insertPostToFirebase(post);
-                            progressBar.setVisibility(View.GONE);
-                            successAdd();
-                        } else {
-                            failedAdd();
-                        }
-                    }
-                });
+                caption.setText("");
+                image.setImageResource(R.drawable.add_image);
+                image.setEnabled(true);
+                add.setEnabled(true);
+                reducedBitmap = null;
+                caption.setEnabled(true);
+                progressBar.setVisibility(View.GONE);
             }
-        }, 1000);
-    }
-
-    private void insertPostToFirebase(Post post) {
-        DatabaseReference dr = databaseReference.child("Users").child(firebaseUser.getUid()).child("Posts").child(post.getId() + "");
-        dr.child("Id").setValue(post.getId());
-        dr.child("Caption").setValue(post.getCaption());
-        dr.child("Date").setValue(post.getDate());
-        dr.child("Likes");
-    }
-
-    private void failedAdd() {
-        Toast.makeText(getContext(), "Failed to upload the image", Toast.LENGTH_LONG).show();
-    }
-
-    private void successAdd() {
-        Toast.makeText(getContext(), "The image added Successfully", Toast.LENGTH_LONG).show();
-        ViewPager2 v = getActivity().findViewById(R.id.view_pager);
-        v.setCurrentItem(2, true);
-
-
-        caption.setText("");
-        image.setImageResource(R.drawable.add_image);
-        image.setEnabled(true);
-        add.setEnabled(true);
-        bitmapImg = null;
-        caption.setEnabled(true);
+        });
     }
 }

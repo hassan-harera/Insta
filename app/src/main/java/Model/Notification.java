@@ -1,19 +1,21 @@
 package Model;
 
+import com.google.firebase.Timestamp;
+
 import java.util.Date;
 
 public class Notification implements Comparable<Notification>{
     private int id;
     private String UID, message;
     private String type, postID;
-    private Date Date;
+    private Timestamp Date;
 
-    public void setDate(java.util.Date date) {
-        Date = date;
+    public Timestamp getDate() {
+        return Date;
     }
 
-    public java.util.Date getDate() {
-        return Date;
+    public void setDate(Timestamp date) {
+        Date = date;
     }
 
     public String getPostID() {
