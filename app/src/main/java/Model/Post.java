@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.Blob;
 
+import java.sql.Time;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,7 @@ public class Post implements Comparable<Post> {
     private Timestamp time;
     private Boolean isLiked;
     private Blob postImage;
-    private Map<String, String> likes;
+    private Map<String, Timestamp> likes;
     private Map<String, Comment> comments;
     private Map<String, Share> shares;
 
@@ -64,16 +65,12 @@ public class Post implements Comparable<Post> {
         return isLiked;
     }
 
-    public Map<String, String> getLikes() {
+    public Map<String, Timestamp> getLikes() {
         return likes;
     }
 
-    public void setLikes(Map<String, String> likes) {
+    public void setLikes(Map<String, Timestamp> likes) {
         this.likes = likes;
-    }
-
-    public void addLike(String UID) {
-        likes.put(UID, Timestamp.now().toString());
     }
 
     public void removeLike(String UID) {

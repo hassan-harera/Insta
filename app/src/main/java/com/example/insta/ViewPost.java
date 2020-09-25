@@ -1,11 +1,13 @@
 package com.example.insta;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Adapter;
 import android.widget.ArrayAdapter;
@@ -21,12 +23,17 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import Model.Post;
+import Model.Profile;
+
+import static android.content.ContentValues.TAG;
 
 public class ViewPost extends AppCompatActivity {
 
@@ -43,6 +50,8 @@ public class ViewPost extends AppCompatActivity {
     List<String> names;
     ListView listView;
     ArrayAdapter adapter;
+    private Post post;
+    private Profile profile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,39 +87,48 @@ public class ViewPost extends AppCompatActivity {
         getPost();
     }
 
+
     @SuppressLint("SetTextI18n")
     private void getPost() {
         fStore.collection("Users")
                 .document(UID)
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @SuppressLint("SetTextI18n")
+                .collection("Users")
+                .document(postID)
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
-                    public void onSuccess(DocumentSnapshot ds) {
-                        byte[] bytes = ds.getBlob("Profile Pic").toBytes();
-                        profileImage.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
-                        profileName.setText(ds.getString("Name"));
+                    public void onEvent(@Nullable DocumentSnapshot ds, @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Log.e(TAG, e.getStackTrace().toString());
+                        } else if (ds.exists()) {
+                            Post post = ds.toObject(Post.class);
+                            postImage.setImageBitmap(BitmapFactory.decodeByteArray(post.getPostImage()
+                                    .toBytes(), 0, post.getPostImage().toBytes().length));
+                            date.setText(post.getTime().toDate().toString());
+                            caption.setText(post.getCaption());
+                            love_number.setText(String.valueOf(post.getLikes().size()));
+                            love.setImageResource(post.getLiked() ? R.drawable.loved : R.drawable.love);
+                            bar.setVisibility(View.GONE);
+                        }
                     }
                 });
 
         fStore.collection("Users")
                 .document(UID)
-                .collection("Posts")
-                .document(postID)
-                .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot ds) {
-                Post post = ds.toObject(Post.class);
-                postImage.setImageBitmap(BitmapFactory.decodeByteArray(post.getPostImage()
-                        .toBytes(), 0, post.getPostImage().toBytes().length));
-                date.setText(post.getTime().toDate().toString());
-                caption.setText(post.getCaption());
-                love_number.setText(String.valueOf(post.getLikes().size()));
-                love_number.append(" Loves");
-                love.setImageResource(post.getLiked() ? R.drawable.loved : R.drawable.love);
-                bar.setVisibility(View.GONE);
-            }
-        });
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable DocumentSnapshot ds,
+                                        @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Log.e(TAG, e.getStackTrace().toString());
+                        } else if (ds.exists()) {
+                            byte[] bytes = ds.getBlob("profilePic").toBytes();
+                            profileImage.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+                            profileName.setText(ds.getString("name"));
+                        }
+                    }
+                });
+
+
 
     }
 }

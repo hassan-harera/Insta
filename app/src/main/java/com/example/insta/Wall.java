@@ -142,7 +142,6 @@ public class Wall extends AppCompatActivity {
         Intent intent = new Intent(this, VisitProfile.class);
         intent.putExtra("UID", UID);
         startActivity(intent);
-        finish();
     }
 
     @Override

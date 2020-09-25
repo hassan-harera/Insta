@@ -22,12 +22,15 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import Controller.PostsRecyclerViewAdapter;
 import Model.Post;
@@ -87,20 +90,22 @@ public class ViewProfile extends Fragment {
         return view;
     }
 
-
     private void getInfo() {
         fStore.collection("Users")
                 .document(UID)
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
-                    public void onSuccess(DocumentSnapshot ds) {
-                        profile = new Profile();
-                        profile = ds.toObject(Profile.class);
-                        byte[] bytes = profile.getProfilePic().toBytes();
-                        profileImage.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
-                        name.setText(profile.getName());
-                        bio.setText(profile.getBio());
+                    public void onEvent(@Nullable DocumentSnapshot ds, @Nullable FirebaseFirestoreException e) {
+                        try {
+                            profile = new Profile();
+                            profile = ds.toObject(Profile.class);
+                            byte[] bytes = profile.getProfilePic().toBytes();
+                            profileImage.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+                            name.setText(profile.getName());
+                            bio.setText(profile.getBio());
+                        } catch (Exception e1) {
+                            Log.d(TAG, "onEvent: ", e1);
+                        }
                     }
                 });
     }
@@ -109,16 +114,14 @@ public class ViewProfile extends Fragment {
         fStore.collection("Users")
                 .document(UID)
                 .collection("Posts")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (!task.isSuccessful()) {
-                            Log.e(TAG, "Error happened while download posts");
-                            Log.e(TAG, task.getException().getStackTrace().toString());
+                    public void onEvent(@Nullable QuerySnapshot qs, @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Log.e(TAG, e.getStackTrace().toString());
                         } else {
-                            if (!task.getResult().isEmpty()) {
-                                for (DocumentSnapshot ds : task.getResult().getDocuments()) {
+                            if (!qs.getDocuments().isEmpty()) {
+                                for (DocumentSnapshot ds : qs.getDocuments()) {
                                     final Post p = ds.toObject(Post.class);
                                     p.setLiked(p.getLikes().containsKey(auth.getUid()));
                                     posts.add(p);

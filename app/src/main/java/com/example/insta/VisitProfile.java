@@ -1,6 +1,7 @@
 package com.example.insta;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,7 +30,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -95,11 +98,17 @@ public class VisitProfile extends AppCompatActivity {
         getProfilePostsFromFirebaseFireStore();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+    }
+
     private void getInfo() {
         fStore.collection("Users")
                 .document(UID)
                 .get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                .addOnSuccessListener(this, new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot ds) {
                         profile = ds.toObject(Profile.class);
@@ -116,7 +125,7 @@ public class VisitProfile extends AppCompatActivity {
                 .document(UID)
                 .collection("Posts")
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                .addOnCompleteListener(this, new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (!task.isSuccessful()) {
@@ -140,11 +149,15 @@ public class VisitProfile extends AppCompatActivity {
     public void addFriendClicked(View view) {
         profile.addFriendRequest(auth.getUid());
 
-
         FirebaseFirestore.getInstance()
                 .collection("Users")
                 .document(Objects.requireNonNull(UID))
-                .update("friendRequests", profile.getFriendRequests());
+                .update("friendRequests", profile.getFriendRequests())
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
 
+                    }
+                });
     }
 }

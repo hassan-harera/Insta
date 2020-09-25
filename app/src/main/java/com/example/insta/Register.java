@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.Blob;
@@ -26,6 +27,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -94,6 +96,8 @@ public class Register extends AppCompatActivity {
         profile.setName(name.getText().toString());
         profile.setBio("Bio");
         profile.setEmail(auth.getCurrentUser().getEmail());
+        profile.setFriends(new ArrayList());
+        profile.setFriendRequests(new HashMap());
 
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.profile);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -104,7 +108,7 @@ public class Register extends AppCompatActivity {
 
         fStore.collection("Users")
                 .document(auth.getUid())
-                .set(profile, SetOptions.merge());
+                .set(profile);
     }
 
     private void failedRegister() {

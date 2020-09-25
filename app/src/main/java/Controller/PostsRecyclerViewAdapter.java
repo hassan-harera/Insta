@@ -12,6 +12,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.insta.R;
@@ -19,11 +20,15 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.Blob;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
+
 import java.util.List;
 
 import Model.Post;
+import Model.Profile;
 
 public class PostsRecyclerViewAdapter extends RecyclerView.Adapter<PostsRecyclerViewAdapter.ViewHolder> {
 
@@ -56,22 +61,22 @@ public class PostsRecyclerViewAdapter extends RecyclerView.Adapter<PostsRecycler
         final Post post = posts.get(position);
         fStore.collection("Users")
                 .document(post.getUID())
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @SuppressLint("SetTextI18n")
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
-                    public void onSuccess(DocumentSnapshot ds) {
-                        byte[] bytes = ds.getBlob("Profile Pic").toBytes();
-                        holder.profileImage.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
-                        holder.profileName.setText(ds.getString("Name"));
+                    public void onEvent(@Nullable DocumentSnapshot ds, @Nullable FirebaseFirestoreException e) {
+                        Profile profile = ds.toObject(Profile.class);
+                        holder.profileImage.setImageBitmap(BitmapFactory.decodeByteArray(profile.getProfilePic().toBytes(),
+                                0, profile.getProfilePic().toBytes().length));
+                        holder.profileName.setText(profile.getName());
                         holder.postImage.setImageBitmap(getPostImageAsBitmap(post.getPostImage()));
                         holder.date.setText(post.getTime().toDate().toString());
                         holder.caption.setText(post.getCaption());
-                        holder.love_number.setText(posts.get(position).getLikes().size() + " Loves");
+                        holder.love_number.setText(String.valueOf(post.getLikes().size()));
                         holder.love.setImageResource(post.getLiked() ? R.drawable.loved : R.drawable.love);
                         holder.bar.setVisibility(View.GONE);
                     }
                 });
+
 
         holder.love.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("SetTextI18n")
@@ -81,14 +86,14 @@ public class PostsRecyclerViewAdapter extends RecyclerView.Adapter<PostsRecycler
                 if (!posts.get(position).getLiked()) {
                     posts.get(position).setLiked(true);
                     posts.get(position).addLike(auth.getUid());
-                    holder.love_number.setText((posts.get(position).getLikes().size()) + " Loves");
+                    holder.love_number.setText(String.valueOf(posts.get(position).getLikes().size()));
                     holder.love.setImageResource(R.drawable.loved);
                     setLike(posts.get(position));
                     holder.love.setEnabled(true);
                 } else {
                     posts.get(position).setLiked(false);
                     posts.get(position).removeLike(auth.getUid());
-                    holder.love_number.setText((posts.get(position).getLikes().size()) + " Loves");
+                    holder.love_number.setText(String.valueOf(posts.get(position).getLikes().size()));
                     holder.love.setImageResource(R.drawable.love);
                     removeLike(posts.get(position));
                     holder.love.setEnabled(true);

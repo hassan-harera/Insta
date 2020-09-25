@@ -3,8 +3,8 @@ package Controller;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.insta.R;
@@ -21,18 +22,23 @@ import com.example.insta.ViewPost;
 import com.example.insta.VisitProfile;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
 import java.util.List;
 
-import Model.Notification;
+import Model.Notifications.FriendRequestNotification;
+import Model.Notifications.LikeNotification;
+import Model.Notifications.Notification;
+import Model.Post;
+
+import static android.content.ContentValues.TAG;
 
 public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<NotificationsRecyclerViewAdapter.ViewHolder> {
 
@@ -40,10 +46,7 @@ public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<Notif
     Context context;
 
     FirebaseAuth auth;
-    FirebaseFirestore fStore;
-
-    String currentUID;
-    private DatabaseReference dbr;
+    private FirebaseFirestore fStore;
 
 
     public NotificationsRecyclerViewAdapter(List<Notification> notifications, Context context) {
@@ -54,36 +57,30 @@ public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<Notif
             Toast.makeText(context, "No Notifications To View", Toast.LENGTH_SHORT).show();
         }
 
-        dbr = FirebaseDatabase.getInstance().getReference();
         auth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
         fStore.setFirestoreSettings(new FirebaseFirestoreSettings.Builder()
                 .setPersistenceEnabled(true)
                 .setCacheSizeBytes(50000000).build());
 
-        currentUID = auth.getUid();
     }
 
     @NonNull
     @Override
     public NotificationsRecyclerViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == 1) {
-            return new LikeHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.like_view_card, parent, false));
-        } else if (viewType == 2) {
-            return new FriendRequestHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.friend_request_view_card, parent, false));
+            return new LikeHolder(LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.like_view_card, parent, false));
+        } else {
+            return new FriendRequestHolder(LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.friend_request_view_card, parent, false));
         }
-        return null;
     }
 
 
     @Override
     public int getItemViewType(int position) {
-        if (notifications.get(position).getType().equals("Like")) {
-            return 1;
-        } else if (notifications.get(position).getType().equals("Friend Request")) {
-            return 2;
-        }
-        return 0;
+        return notifications.get(position).getType();
     }
 
 
@@ -91,55 +88,56 @@ public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<Notif
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
 
         switch (notifications.get(position).getType()) {
-            case "Like":
+            case 1:
                 final LikeHolder lh = (LikeHolder) holder;
+                final LikeNotification ln = (LikeNotification) notifications.get(position);
+
                 lh.ll.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(context, ViewPost.class);
-                        intent.putExtra("Post ID", notifications.get(position).getPostID());
-                        intent.putExtra("UID", notifications.get(position).getUID());
+                        intent.putExtra("Post ID", ln.getPostID());
+                        intent.putExtra("UID", auth.getUid());
                         context.startActivity(intent);
                     }
                 });
 
-                fStore.collection("Users")
-                        .document(notifications.get(position).getUID())
-                        .collection("Posts")
-                        .document(notifications.get(position).getPostID())
-                        .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot ds) {
-                        byte[] bytes = ds.getBlob("postImage").toBytes();
-                        lh.postIMG.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
-                    }
-                });
 
                 fStore.collection("Users")
-                        .document(notifications.get(position).getUID())
-                        .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @SuppressLint("SetTextI18n")
-                    @Override
-                    public void onSuccess(DocumentSnapshot ds) {
-                        lh.date.setText(ds.getString(notifications.get(position).getDate().toDate().toString()));
-                        lh.message.setText(ds.getString("Name"));
-                        lh.message.append(" Liked your picture");
-                    }
-                });
+                        .document(auth.getUid())
+                        .collection("Posts")
+                        .document(ln.getPostID())
+                        .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                            @Override
+                            public void onEvent(@Nullable DocumentSnapshot ds, @Nullable FirebaseFirestoreException e) {
+                                if (e != null) {
+                                    Log.e(TAG, e.getStackTrace().toString());
+                                } else if (ds.exists()) {
+                                    Post post = ds.toObject(Post.class);
+                                    lh.postIMG.setImageBitmap(BitmapFactory.decodeByteArray(post.getPostImage().toBytes()
+                                            , 0, post.getPostImage().toBytes().length));
+                                    lh.date.setText(ln.getDate().toDate().toString());
+                                    lh.message.setText(ln.getLikeNumbers() + " Liked your picture");
+                                }
+                            }
+                        });
+
 
                 break;
 
-            case "Friend Request":
+            case 2:
                 final FriendRequestHolder fh = (FriendRequestHolder) holder;
+                final FriendRequestNotification frn = (FriendRequestNotification) notifications.get(position);
 
                 fh.ll.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(context, VisitProfile.class);
-                        intent.putExtra("Token", notifications.get(position).getUID());
+                        intent.putExtra("Token", frn.getUID());
                         context.startActivity(intent);
                     }
                 });
+
                 fh.confirm.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -148,6 +146,7 @@ public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<Notif
                         notifyDataSetChanged();
                     }
                 });
+
                 fh.delete.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -158,17 +157,8 @@ public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<Notif
                 });
 
                 fStore.collection("Users")
-                        .document(notifications.get(position).getUID())
-                        .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot ds) {
-                        fh.message.setText(ds.getString("Name"));
-                        fh.message.append(" Liked your picture");
-                    }
-                });
-
-                fStore.collection("Users")
-                        .document(notifications.get(position).getUID())
+                        .document(frn.getUID())
+                        .get(position).getUID())
                         .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot ds) {
