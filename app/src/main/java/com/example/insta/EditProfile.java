@@ -28,6 +28,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.Blob;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -35,6 +36,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import Controller.Image;
+import Model.Profile;
 
 public class EditProfile extends AppCompatActivity {
 
@@ -45,10 +47,9 @@ public class EditProfile extends AppCompatActivity {
     EditText name, bio;
     TextView email;
     Button edit;
-    Uri uri;
 
     ProgressBar progressBar;
-    private Bitmap bitmap;
+    private Profile profile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,58 +73,39 @@ public class EditProfile extends AppCompatActivity {
     }
 
     private void getInfo() {
-        ConnectivityManager cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
-
-
         fStore.collection("Users")
                 .document(auth.getUid())
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot ds) {
-                        byte[] bytes = ds.getBlob("Profile Pic").toBytes();
+                        profile = new Profile();
+                        profile = ds.toObject(Profile.class);
+                        byte[] bytes = profile.getProfilePic().toBytes();
                         profileImage.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
-                        name.setText(ds.getString("Name"));
-                        bio.setText(ds.getString("Bio"));
+                        name.setText(profile.getName());
+                        bio.setText(profile.getBio());
                         email.setText(ds.getString("Email"));
                     }
                 });
     }
 
     public void editClicked(final View view) {
-        Map<String, Object> map = new HashMap();
-        map.put("Name", name.getText().toString());
-        map.put("Bio", bio.getText().toString());
+        progressBar.setVisibility(View.VISIBLE);
+
+
+        profile.setName(name.getText().toString());
+        profile.setBio(bio.getText().toString());
 
         fStore.collection("Users")
                 .document(auth.getUid())
-                .update(map)
+                .set(profile, SetOptions.merge())
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(EditProfile.this, "Successfully Edited", Toast.LENGTH_SHORT).show();
-                            progressBar.setVisibility(View.GONE);
-                            finish();
-                        } else {
-                            Toast.makeText(EditProfile.this, "Cannot edit", Toast.LENGTH_SHORT).show();
-                        }
-
-                    }
+                        Toast.makeText(EditProfile.this, "Successfully Edited", Toast.LENGTH_SHORT).show();
+                        finish();                    }
                 });
-
-        if (uri != null) {
-            progressBar.setVisibility(View.VISIBLE);
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            Image.getReducedBitmap(bitmap, 512).compress(Bitmap.CompressFormat.PNG, 50, bos);
-            fStore.collection("Users")
-                    .document(auth.getUid())
-                    .update("Profile Pic", Blob.fromBytes(bos.toByteArray()));
-        } else {
-            finish();
-        }
     }
 
     public void addImageClicked(View view) {
@@ -137,10 +119,15 @@ public class EditProfile extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         profileImage.setEnabled(true);
         if (data != null && requestCode == 123 && resultCode == RESULT_OK) {
-            uri = data.getData();
+            Uri uri = data.getData();
             try {
-                bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
                 profileImage.setImageBitmap(bitmap);
+
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                Image.getReducedBitmap(bitmap, 512).compress(Bitmap.CompressFormat.PNG, 50, stream);
+
+                profile.setProfilePic(Blob.fromBytes(stream.toByteArray()));
             } catch (IOException e) {
                 e.printStackTrace();
             }

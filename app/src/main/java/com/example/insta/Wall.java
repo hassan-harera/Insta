@@ -19,6 +19,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -48,12 +50,8 @@ public class Wall extends AppCompatActivity {
     TabLayout tabLayout;
     ViewPager2 viewPager;
 
-    FirebaseStorage storage;
-    FirebaseUser user;
-    StorageReference reference;
     FirebaseAuth auth;
-    DatabaseReference dr;
-    FirebaseDatabase firebaseDatabase;
+    FirebaseFirestore fStore;
 
     Toolbar toolbar;
     private RelativeLayout logo;
@@ -64,11 +62,7 @@ public class Wall extends AppCompatActivity {
         setContentView(R.layout.activity_wall);
 
         auth = FirebaseAuth.getInstance();
-        storage = FirebaseStorage.getInstance();
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        dr = firebaseDatabase.getReference();
-        user = auth.getCurrentUser();
-        reference = storage.getReference(user.getEmail());
+        fStore = FirebaseFirestore.getInstance();
 
         toolbar = findViewById(R.id.toolbar);
         logo = findViewById(R.id.logo);
@@ -84,19 +78,20 @@ public class Wall extends AppCompatActivity {
         final SearchView searchView = findViewById(R.id.search_token);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public boolean onQueryTextSubmit(final String query) {
-                StorageReference storageReference = storage.getReference().child("Users").child(query).child("Profile Pic");
-                storageReference.getBytes(1024 * 1024).addOnCompleteListener(new OnCompleteListener<byte[]>() {
-                    @Override
-                    public void onComplete(@NonNull Task<byte[]> task) {
-                        if (task.isSuccessful()) {
-                            goProfile(query);
-                        } else {
-                            Toast.makeText(Wall.this, "Incorrect Token", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-                return true;
+            public boolean onQueryTextSubmit(final String UID) {
+                fStore.collection("Users")
+                        .document(UID).get()
+                        .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                if (task.isSuccessful() && task.getResult().exists()) {
+                                    visitProfile(UID);
+                                } else {
+                                    Toast.makeText(Wall.this, "Incorrect user token", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+                return false;
             }
 
             @Override
@@ -143,16 +138,11 @@ public class Wall extends AppCompatActivity {
         viewPager.setCurrentItem(1);
     }
 
-    private void addImage() {
-        Intent intent = new Intent(this, AddImage.class);
-        startActivity(intent);
-    }
-
-
-    private void goProfile(String query) {
+    private void visitProfile(String UID) {
         Intent intent = new Intent(this, VisitProfile.class);
-        intent.putExtra("Token", query);
+        intent.putExtra("UID", UID);
         startActivity(intent);
+        finish();
     }
 
     @Override
@@ -161,7 +151,7 @@ public class Wall extends AppCompatActivity {
 
         if (itemId == R.id.edit_profile) {
             Intent intent = new Intent(this, EditProfile.class);
-            intent.putExtra("Token", user.getUid());
+            intent.putExtra("Token", auth.getUid());
             startActivity(intent);
         } else if (itemId == R.id.logout) {
             logout();
@@ -174,7 +164,7 @@ public class Wall extends AppCompatActivity {
     }
 
     private void getToken() {
-        String userId = user.getUid();
+        String userId = auth.getUid();
 
         ClipboardManager clipboardManager = (ClipboardManager) this.getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clipData = ClipData.newPlainText("Token", userId);

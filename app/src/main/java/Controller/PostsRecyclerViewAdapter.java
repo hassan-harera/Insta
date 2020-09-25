@@ -16,17 +16,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.insta.R;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.Blob;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
-
-import java.sql.Time;
-import java.util.Date;
 import java.util.List;
 
 import Model.Post;
@@ -73,7 +67,7 @@ public class PostsRecyclerViewAdapter extends RecyclerView.Adapter<PostsRecycler
                         holder.postImage.setImageBitmap(getPostImageAsBitmap(post.getPostImage()));
                         holder.date.setText(post.getTime().toDate().toString());
                         holder.caption.setText(post.getCaption());
-                        holder.love_number.setText(posts.get(position).likesNumber + " Loves");
+                        holder.love_number.setText(posts.get(position).getLikes().size() + " Loves");
                         holder.love.setImageResource(post.getLiked() ? R.drawable.loved : R.drawable.love);
                         holder.bar.setVisibility(View.GONE);
                     }
@@ -89,37 +83,14 @@ public class PostsRecyclerViewAdapter extends RecyclerView.Adapter<PostsRecycler
                     posts.get(position).addLike(auth.getUid());
                     holder.love_number.setText((posts.get(position).getLikes().size()) + " Loves");
                     holder.love.setImageResource(R.drawable.loved);
-                    doChanges(posts.get(position));
-                    holder.love.setEnabled(true);
-                } else {
-                    posts.get(position).setLiked(false);
-                    posts.get(position).addLike(auth.getUid());
-                    holder.love_number.setText((posts.get(position).getLikes().size()) + " Loves");
-                    holder.love.setImageResource(R.drawable.love);
-                    undoChanges(posts.get(position));
-                    holder.love.setEnabled(true);
-                }
-            }
-        });
-
-        holder.love.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onClick(View v) {
-                holder.love.setEnabled(false);
-                if (!posts.get(position).getLiked()) {
-                    posts.get(position).setLiked(true);
-                    posts.get(position).addLike(auth.getUid());
-                    holder.love_number.setText((posts.get(position).getLikes().size()) + " Loves");
-                    holder.love.setImageResource(R.drawable.loved);
-                    doChanges(posts.get(position));
+                    setLike(posts.get(position));
                     holder.love.setEnabled(true);
                 } else {
                     posts.get(position).setLiked(false);
                     posts.get(position).removeLike(auth.getUid());
                     holder.love_number.setText((posts.get(position).getLikes().size()) + " Loves");
                     holder.love.setImageResource(R.drawable.love);
-                    undoChanges(posts.get(position));
+                    removeLike(posts.get(position));
                     holder.love.setEnabled(true);
                 }
             }
@@ -132,22 +103,20 @@ public class PostsRecyclerViewAdapter extends RecyclerView.Adapter<PostsRecycler
         return bitmap;
     }
 
-    private void undoChanges(final Post post) {
-        FirebaseDatabase.getInstance().getReference().child("Users").child(post.getUID()).child("Posts").child(post.getID() + "")
-                .child("Likes").child(auth.getUid()).removeValue();
+    private void removeLike(final Post post) {
+        fStore.collection("Users")
+                .document(post.getUID())
+                .collection("Posts")
+                .document(post.getID())
+                .update("likes", post.getLikes());
     }
 
-    private void doChanges(final Post post) {
-        DatabaseReference dbr = FirebaseDatabase.getInstance().getReference().child("Users").child(post.getUID())
-                .child("Posts").child(post.getID())
-                .child("Likes").child(auth.getUid());
-
-        dbr.child("Post ID")
-                .setValue(post.getID());
-        dbr.child("UID")
-                .setValue(auth.getUid());
-        dbr.child("Date")
-                .setValue(Timestamp.now());
+    private void setLike(final Post post) {
+        fStore.collection("Users")
+                .document(post.getUID())
+                .collection("Posts")
+                .document(post.getID())
+                .update("likes", post.getLikes());
     }
 
     @Override

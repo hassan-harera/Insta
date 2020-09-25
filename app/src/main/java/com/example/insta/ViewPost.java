@@ -4,50 +4,45 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import Model.Post;
+
 public class ViewPost extends AppCompatActivity {
 
-    FirebaseStorage storage;
-    FirebaseDatabase database;
     DatabaseReference databaseReference;
-    StorageReference reference;
+    FirebaseFirestore fStore;
 
     String UID, postID;
 
-    TextView caption, likesNumber;
-    ImageView recImage;
-    ProgressBar bar;
+    TextView date, profileName, caption, love_number;
+    ImageView love, postImage, profileImage;
+    public ProgressBar bar;
 
-    ListView likes_list;
 
     List<String> names;
+    ListView listView;
+    ArrayAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,72 +50,67 @@ public class ViewPost extends AppCompatActivity {
         setContentView(R.layout.activity_view_post);
 
 
-        storage = FirebaseStorage.getInstance();
-        reference = storage.getReference();
-        database = FirebaseDatabase.getInstance();
-        databaseReference = database.getReference();
+        if (databaseReference == null) {
+            databaseReference = FirebaseDatabase.getInstance().getReference();
+        }
+
+        fStore = FirebaseFirestore.getInstance();
+
         names = new ArrayList<>();
+        listView = findViewById(R.id.likes_list);
+        adapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, names);
+        listView.setAdapter(adapter);
+
 
         Bundle bundle = getIntent().getExtras();
-        UID = FirebaseAuth.getInstance().getUid();
+        UID = bundle.getString("UID");
         postID = bundle.getString("Post ID");
 
         caption = findViewById(R.id.caption);
-        recImage = findViewById(R.id.post_image);
-        likesNumber = findViewById(R.id.likes_number);
+        postImage = findViewById(R.id.post_image);
+        love_number = findViewById(R.id.love_number);
         bar = findViewById(R.id.progress_bar);
-        likes_list = findViewById(R.id.likes_list);
+        profileImage = findViewById(R.id.profile_image);
+        date = findViewById(R.id.date);
+        profileName = findViewById(R.id.profile_name);
+        love = findViewById(R.id.love);
 
         getPost();
     }
 
     @SuppressLint("SetTextI18n")
     private void getPost() {
-        ConnectivityManager cm = (ConnectivityManager) getApplication()
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
-
-        if (isConnected) {
-            databaseReference.child("Users")
-                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            caption.setText(snapshot.child(UID).child("Posts").child(postID)
-                                    .child("Caption").getValue(String.class));
-                            likesNumber.setText(snapshot.child(UID).child("Posts").child(postID)
-                                    .child("Likes").getChildrenCount() + " Love");
-
-                            for (DataSnapshot s : snapshot.child(UID).child("Posts").child(postID)
-                                    .child("Likes").getChildren()) {
-
-                                names.add(snapshot.child(s.getKey()).child("Name").getValue(String.class));
-                            }
-                            likes_list.setAdapter(new ArrayAdapter<String>
-                                    (ViewPost.this, R.layout.support_simple_spinner_dropdown_item, names));
-                        }
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                        }
-                    });
-
-            final long resolution = 1024 * 1024;
-            reference.child("Users").child(UID).child("Posts").child(postID).
-                    getBytes(resolution).addOnCompleteListener(new OnCompleteListener<byte[]>() {
-                @SuppressLint("SetTextI18n")
-                @Override
-                public void onComplete(@NonNull Task<byte[]> task) {
-                    if (task.isSuccessful()) {
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(task.getResult(), 0, task.getResult().length);
-                        recImage.setImageBitmap(bitmap);
-                        bar.setVisibility(View.GONE);
-                    } else {
-                        Toast.makeText(ViewPost.this, "Failed to load image", Toast.LENGTH_SHORT).show();
+        fStore.collection("Users")
+                .document(UID)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @SuppressLint("SetTextI18n")
+                    @Override
+                    public void onSuccess(DocumentSnapshot ds) {
+                        byte[] bytes = ds.getBlob("Profile Pic").toBytes();
+                        profileImage.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+                        profileName.setText(ds.getString("Name"));
                     }
-                }
-            });
-        } else {
-            Toast.makeText(ViewPost.this, "No Internet Connection", Toast.LENGTH_SHORT).show();
-        }
+                });
+
+        fStore.collection("Users")
+                .document(UID)
+                .collection("Posts")
+                .document(postID)
+                .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot ds) {
+                Post post = ds.toObject(Post.class);
+                postImage.setImageBitmap(BitmapFactory.decodeByteArray(post.getPostImage()
+                        .toBytes(), 0, post.getPostImage().toBytes().length));
+                date.setText(post.getTime().toDate().toString());
+                caption.setText(post.getCaption());
+                love_number.setText(String.valueOf(post.getLikes().size()));
+                love_number.append(" Loves");
+                love.setImageResource(post.getLiked() ? R.drawable.loved : R.drawable.love);
+                bar.setVisibility(View.GONE);
+            }
+        });
+
     }
 }

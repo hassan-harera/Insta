@@ -24,12 +24,16 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import Controller.NotificationsRecyclerViewAdapter;
 import Model.Notification;
@@ -42,11 +46,8 @@ public class Notifications extends Fragment {
     List<Notification> notifications;
 
     FirebaseAuth auth;
-    FirebaseUser user;
+    FirebaseFirestore fStore;
     DatabaseReference dbr;
-    FirebaseDatabase db;
-    StorageReference sr;
-    FirebaseStorage fs;
 
     RecyclerView recyclerView;
     private NotificationsRecyclerViewAdapter adapter;
@@ -55,11 +56,9 @@ public class Notifications extends Fragment {
         this.notifications = new ArrayList();
 
         auth = FirebaseAuth.getInstance();
-        user = auth.getCurrentUser();
-        db = FirebaseDatabase.getInstance();
-        dbr = db.getReference();
-        fs = FirebaseStorage.getInstance();
-        sr = fs.getReference();
+        dbr = FirebaseDatabase.getInstance().getReference();
+        fStore = FirebaseFirestore.getInstance();
+
     }
 
 
@@ -95,8 +94,8 @@ public class Notifications extends Fragment {
 
 
     private void getNotifications() {
-        getFriendRequests(dbr.child("Users").child(user.getUid()).child("Friend Requests"));
-        getLikes(dbr.child("Users").child(user.getUid()).child("Posts"));
+        getFriendRequests(dbr.child("Users").child(auth.getUid()).child("Friend Requests"));
+        getLikes(dbr.child("Users").child(auth.getUid()).child("Posts"));
         Collections.sort(notifications);
     }
 
@@ -108,7 +107,7 @@ public class Notifications extends Fragment {
                     Notification n = new Notification();
                     n.setType("Friend Request");
                     n.setUID(s.child("UID").getValue().toString());
-//                    n.setDate(s.child("Date").getValue(Timestamp.class));
+                    n.setDate(s.child("Date").getValue(Timestamp.class));
                     notifications.add(n);
                     adapter.notifyDataSetChanged();
                 }
@@ -137,7 +136,7 @@ public class Notifications extends Fragment {
                                 n.setType("Like");
                                 n.setPostID(s.child("Post ID").getValue().toString());
                                 n.setUID(s.child("UID").getValue().toString());
-//                                n.setDate(s.child("Date").getValue(Timestamp.class));
+                                n.setDate(new Timestamp(new Date(String.valueOf(s.child("Date").getValue()))));
                                 notifications.add(n);
                                 adapter.notifyDataSetChanged();
                             }

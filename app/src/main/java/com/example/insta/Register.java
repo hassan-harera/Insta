@@ -29,6 +29,9 @@ import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import Controller.Connection;
+import Model.Profile;
+
 
 public class Register extends AppCompatActivity {
 
@@ -87,32 +90,25 @@ public class Register extends AppCompatActivity {
 
 
     private void addUserToDatabase() {
-        Map<String, Object> map = new HashMap<>();
-
-        map.put("Name", name.getText().toString());
-        map.put("Bio", "Bio");
-        map.put("Email", auth.getCurrentUser().getEmail());
+        Profile profile = new Profile();
+        profile.setName(name.getText().toString());
+        profile.setBio("Bio");
+        profile.setEmail(auth.getCurrentUser().getEmail());
 
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.profile);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 50, stream);
-        map.put("Profile Pic", Blob.fromBytes(stream.toByteArray()));
+
+        profile.setProfilePic(Blob.fromBytes(stream.toByteArray()));
 
 
         fStore.collection("Users")
                 .document(auth.getUid())
-                .set(map, SetOptions.merge());
+                .set(profile, SetOptions.merge());
     }
 
     private void failedRegister() {
-        ConnectivityManager cm =
-                (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean isConnected = activeNetwork != null &&
-                activeNetwork.isConnectedOrConnecting();
-
-        if (!isConnected) {
+        if (!Connection.isConnected(this)) {
             internetError();
         } else {
             accountIsRegisteredError();

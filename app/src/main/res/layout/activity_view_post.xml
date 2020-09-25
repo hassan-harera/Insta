@@ -1,17 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ViewPost">
+    android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
+    android:background="#FAFAFA"
+    tools:context=".VisitProfile">
 
 
     <LinearLayout
+        android:id="@+id/ll1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_gravity="center">
+        android:orientation="vertical">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/profile_image"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:layout_margin="5dp"
+                android:src="@drawable/profile" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/profile_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="bottom"
+                    android:text="Hassan Harera"
+                    android:textColor="#000000"
+                    android:textSize="16dp" />
+
+                <TextView
+                    android:id="@+id/date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="bottom"
+                    android:text="13 Dec 2020"
+                    android:textColor="#3E3939"
+                    android:textSize="10dp" />
+            </LinearLayout>
+
+        </LinearLayout>
 
         <TextView
             android:id="@+id/caption"
@@ -19,8 +62,10 @@
             android:layout_height="wrap_content"
             android:gravity="bottom"
             android:padding="5dp"
-            android:textColor="#000000"
+            android:text="Caption"
+            android:textColor="#AEA4A4"
             android:textSize="16dp" />
+
 
         <ImageView
             android:id="@+id/post_image"
@@ -29,21 +74,25 @@
             android:padding="3dp" />
 
         <LinearLayout
+            android:id="@+id/ll"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
             android:orientation="horizontal">
 
-            <Button
+
+            <ImageView
                 android:id="@+id/love"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
+                android:layout_gravity="center"
                 android:layout_margin="3dp"
-                android:background="@drawable/love"
                 android:gravity="center"
-                android:maxLines="0" />
+                android:maxLines="0"
+                android:src="@drawable/love" />
 
             <TextView
-                android:id="@+id/likes_number"
+                android:id="@+id/love_number"
                 android:layout_width="wrap_content"
                 android:layout_height="30dp"
                 android:layout_gravity="center"
@@ -52,23 +101,23 @@
                 android:textColor="#000000"
                 android:textSize="20dp" />
         </LinearLayout>
-
-        <ListView
-            android:id="@+id/likes_list"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="10dp" />
     </LinearLayout>
+
 
     <ProgressBar
         android:id="@+id/progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="150dp"
+        android:layout_centerVertical="true"
         android:visibility="visible" />
 
 
-
-
+    <ListView
+        android:id="@+id/likes_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/ll1"
+        android:layout_margin="5sp"
+        android:layout_gravity="bottom" />
 </RelativeLayout>

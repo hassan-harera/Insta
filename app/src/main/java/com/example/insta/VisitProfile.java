@@ -41,6 +41,7 @@ import java.util.Objects;
 
 import Controller.PostsRecyclerViewAdapter;
 import Model.Post;
+import Model.Profile;
 
 import static android.content.ContentValues.TAG;
 
@@ -58,11 +59,14 @@ public class VisitProfile extends AppCompatActivity {
     TextView name, bio;
     private ImageView addFriend;
     private FirebaseFirestore fStore;
+    private Profile profile;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_visit_profile);
+
+        profile = new Profile();
 
         auth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
@@ -76,7 +80,7 @@ public class VisitProfile extends AppCompatActivity {
 
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
-        UID = bundle.get("Token").toString();
+        UID = bundle.get("UID").toString();
 
         addFriend = findViewById(R.id.add_friend);
         if (UID.equals(auth.getUid())) {
@@ -92,25 +96,17 @@ public class VisitProfile extends AppCompatActivity {
     }
 
     private void getInfo() {
-        ConnectivityManager cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
-
-
-        if (!isConnected) {
-            Toast.makeText(this, "No Internet Connection", Toast.LENGTH_SHORT).show();
-        }
-
         fStore.collection("Users")
                 .document(UID)
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot ds) {
-                        byte[] bytes = ds.getBlob("Profile Pic").toBytes();
-                        profileImage.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
-                        name.setText(ds.getString("Name"));
-                        bio.setText(ds.getString("Bio"));
+                        profile = ds.toObject(Profile.class);
+                        name.setText(profile.getName());
+                        bio.setText(profile.getBio());
+                        profileImage.setImageBitmap(BitmapFactory.decodeByteArray(
+                                profile.getProfilePic().toBytes(), 0, profile.getProfilePic().toBytes().length));
                     }
                 });
     }
@@ -142,27 +138,13 @@ public class VisitProfile extends AppCompatActivity {
     }
 
     public void addFriendClicked(View view) {
-        addFriend.setEnabled(false);
-        DatabaseReference dbr = FirebaseDatabase.getInstance().getReference().child("Users").child(UID)
-                .child("Friend Requests");
-        dbr.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.child(auth.getUid()).getValue() == null) {
-                    DatabaseReference dbr = snapshot.child(auth.getUid()).getRef();
-                    dbr.child("UID").setValue(auth.getUid());
-                    dbr.child("Date").setValue(new Date().toString());
-                    Toast.makeText(VisitProfile.this, "Request Sent", Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(VisitProfile.this, "Request Already Sent", Toast.LENGTH_LONG).show();
-                }
-            }
+        profile.addFriendRequest(auth.getUid());
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
 
-            }
-        });
+        FirebaseFirestore.getInstance()
+                .collection("Users")
+                .document(Objects.requireNonNull(UID))
+                .update("friendRequests", profile.getFriendRequests());
 
     }
 }

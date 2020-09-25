@@ -13,11 +13,29 @@ import java.util.Map;
 public class Post implements Comparable<Post> {
 
     private String caption, ID, UID;
-    public long likesNumber;
     private Timestamp time;
     private Boolean isLiked;
     private Blob postImage;
     private Map<String, String> likes;
+    private Map<String, Comment> comments;
+    private Map<String, Share> shares;
+
+
+    public Map<String, Share> getShares() {
+        return shares;
+    }
+
+    public void setShares(Map<String, Share> shares) {
+        this.shares = shares;
+    }
+
+    public Map<String, Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(Map<String, Comment> comments) {
+        this.comments = comments;
+    }
 
     public Post() {
     }

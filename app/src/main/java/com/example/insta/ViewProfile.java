@@ -7,10 +7,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Context;
 import android.graphics.BitmapFactory;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,11 +21,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
@@ -36,10 +28,10 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import Controller.PostsRecyclerViewAdapter;
 import Model.Post;
+import Model.Profile;
 
 import static android.content.ContentValues.TAG;
 
@@ -58,6 +50,7 @@ public class ViewProfile extends Fragment {
     TextView name, bio;
 
     private FirebaseFirestore fStore;
+    private Profile profile;
 
 
     public ViewProfile() {
@@ -96,25 +89,18 @@ public class ViewProfile extends Fragment {
 
 
     private void getInfo() {
-        ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
-
-
-        if (!isConnected) {
-
-        }
-
         fStore.collection("Users")
                 .document(UID)
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot ds) {
-                        byte[] bytes = ds.getBlob("Profile Pic").toBytes();
+                        profile = new Profile();
+                        profile = ds.toObject(Profile.class);
+                        byte[] bytes = profile.getProfilePic().toBytes();
                         profileImage.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
-                        name.setText(ds.getString("Name"));
-                        bio.setText(ds.getString("Bio"));
+                        name.setText(profile.getName());
+                        bio.setText(profile.getBio());
                     }
                 });
     }
@@ -134,27 +120,9 @@ public class ViewProfile extends Fragment {
                             if (!task.getResult().isEmpty()) {
                                 for (DocumentSnapshot ds : task.getResult().getDocuments()) {
                                     final Post p = ds.toObject(Post.class);
-                                    FirebaseDatabase.getInstance().getReference()
-                                            .child("Users")
-                                            .child(p.getUID())
-                                            .child("Posts")
-                                            .child(p.getID() + "")
-                                            .child("Likes")
-                                            .addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot s) {
-                                            p.setLiked(s.child(Objects.requireNonNull(auth.getUid())).exists());
-                                            p.likesNumber = s.getChildrenCount();
-                                            posts.add(p);
-                                            adapter.notifyDataSetChanged();
-                                        }
-
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError error) {
-
-                                        }
-                                    });
-
+                                    p.setLiked(p.getLikes().containsKey(auth.getUid()));
+                                    posts.add(p);
+                                    adapter.notifyDataSetChanged();
                                 }
                             } else {
                                 Toast.makeText(getContext(), "No Posts", Toast.LENGTH_SHORT).show();

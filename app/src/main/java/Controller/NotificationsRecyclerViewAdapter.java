@@ -121,6 +121,7 @@ public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<Notif
                     @SuppressLint("SetTextI18n")
                     @Override
                     public void onSuccess(DocumentSnapshot ds) {
+                        lh.date.setText(ds.getString(notifications.get(position).getDate().toDate().toString()));
                         lh.message.setText(ds.getString("Name"));
                         lh.message.append(" Liked your picture");
                     }
@@ -218,20 +219,21 @@ public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<Notif
 
     public class LikeHolder extends ViewHolder {
         ImageView postIMG;
-        TextView message;
+        TextView message, date;
         LinearLayout ll;
 
         public LikeHolder(@NonNull View v) {
             super(v);
             postIMG = v.findViewById(R.id.profile_image);
             message = v.findViewById(R.id.request_message);
+            date = v.findViewById(R.id.request_date);
             ll = v.findViewById(R.id.ll);
         }
     }
 
     public class FriendRequestHolder extends ViewHolder {
         ImageView profilePic;
-        TextView message, confirm, delete;
+        TextView message, date, confirm, delete;
         LinearLayout ll;
 
         public FriendRequestHolder(@NonNull View v) {
@@ -240,6 +242,7 @@ public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<Notif
             message = v.findViewById(R.id.request_message);
             ll = v.findViewById(R.id.ll);
             confirm = v.findViewById(R.id.confirm);
+            date = v.findViewById(R.id.request_date);
             delete = v.findViewById(R.id.delete);
         }
     }

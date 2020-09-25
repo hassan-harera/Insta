@@ -127,20 +127,24 @@ public class AddImage extends Fragment {
         post.setCaption(caption.getText().toString());
         post.setTime(Timestamp.now());
         post.setLikes(new HashMap());
+        post.setComments(new HashMap());
+        post.setShares(new HashMap());
         post.setLiked(false);
         post.setUID(auth.getUid());
         post.setID(String.valueOf(Timestamp.now().getSeconds()));
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        reducedBitmap.compress(Bitmap.CompressFormat.PNG, 50, stream);
+        reducedBitmap.compress(Bitmap.CompressFormat.PNG, 0, stream);
         byte[] byteArray = stream.toByteArray();
         post.setPostImage(Blob.fromBytes(byteArray));
+
+        Log.d("byteArray" , byteArray.length+"");
 
         FirebaseFirestore.getInstance()
                 .collection("Users")
                 .document(Objects.requireNonNull(auth.getUid()))
                 .collection("Posts")
-                .document().set(post).addOnCompleteListener(new OnCompleteListener<Void>() {
+                .document(post.getID()).set(post).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
