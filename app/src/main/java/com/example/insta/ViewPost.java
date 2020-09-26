@@ -1,29 +1,19 @@
 package com.example.insta;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.annotation.SuppressLint;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.database.util.GAuthToken;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -39,7 +29,6 @@ import static android.content.ContentValues.TAG;
 
 public class ViewPost extends AppCompatActivity {
 
-    DatabaseReference databaseReference;
     FirebaseFirestore fStore;
 
     String postID;
@@ -62,11 +51,7 @@ public class ViewPost extends AppCompatActivity {
         setContentView(R.layout.activity_view_post);
 
 
-        if (databaseReference == null) {
-            databaseReference = FirebaseDatabase.getInstance().getReference();
-        }
-
-        fStore = FirebaseFirestore.getInstance();
+         fStore = FirebaseFirestore.getInstance();
 
         names = new ArrayList<>();
         listView = findViewById(R.id.likes_list);

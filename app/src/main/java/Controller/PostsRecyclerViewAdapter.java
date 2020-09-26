@@ -16,7 +16,6 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.insta.R;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.Blob;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -25,9 +24,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
-import java.util.List;
 import java.util.Map;
 
+import Model.Date_Time;
 import Model.Post;
 import Model.Profile;
 
@@ -70,7 +69,7 @@ public class PostsRecyclerViewAdapter extends RecyclerView.Adapter<PostsRecycler
                                 0, profile.getProfilePic().toBytes().length));
                         holder.profileName.setText(profile.getName());
                         holder.postImage.setImageBitmap(getPostImageAsBitmap(post.getPostImage()));
-                        holder.date.setText(post.getTime().toDate().toString());
+                        holder.date.setText(Date_Time.timeFromNow(post.getTime()));
                         holder.caption.setText(post.getCaption());
                         holder.love_number.setText(String.valueOf(post.getLikes().size()));
                         holder.love.setImageResource(post.getLiked() ? R.drawable.loved : R.drawable.love);

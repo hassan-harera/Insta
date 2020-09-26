@@ -14,41 +14,31 @@ import com.example.insta.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.List;
 
+import Model.Message;
 
-public class ChatRecyclerViewAdapter extends RecyclerView.Adapter<ChatRecyclerViewAdapter.MessageHolder> {
 
-    List<Model.Message> messages;
+public class MessagesRecyclerViewAdapter extends RecyclerView.Adapter<MessagesRecyclerViewAdapter.MessageHolder> {
+
+    List<Message> messages;
     Context context;
 
 
     FirebaseAuth auth;
     String currentUID;
     DatabaseReference dRef;
-    StorageReference sRef;
 
 
-    public ChatRecyclerViewAdapter(List<Model.Message> messages, Context context) {
+    public MessagesRecyclerViewAdapter(List<Message> messages, Context context) {
         this.messages = messages;
         this.context = context;
-
-
 
         auth = FirebaseAuth.getInstance();
         currentUID = auth.getUid();
         dRef = FirebaseDatabase.getInstance().getReference();
-        sRef = FirebaseStorage.getInstance().getReference();
     }
-
-    public  void update (List<Model.Message> messages){
-        this.messages = messages;
-        this.notifyDataSetChanged();
-    }
-
 
     @Override
     public int getItemViewType(int position) {
@@ -61,15 +51,15 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter<ChatRecyclerVi
 
     @NonNull
     @Override
-    public ChatRecyclerViewAdapter.MessageHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public MessagesRecyclerViewAdapter.MessageHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == 1) {
             return new SenderMessageHolder(LayoutInflater.from(parent.getContext()).
                     inflate(R.layout.sender_message_card_view,
-                    parent, false));
+                            parent, false));
         } else {
             return new ReceiverMessageHolder(LayoutInflater.from(parent.getContext()).
                     inflate(R.layout.reciever_message_card_view,
-                    parent, false));
+                            parent, false));
         }
     }
 
@@ -95,13 +85,14 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter<ChatRecyclerVi
 
 
     public class MessageHolder extends RecyclerView.ViewHolder {
+        TextView message;
+
         public MessageHolder(@NonNull View v) {
             super(v);
         }
     }
 
     public class SenderMessageHolder extends MessageHolder {
-        TextView message;
         public SenderMessageHolder(@NonNull View v) {
             super(v);
             message = v.findViewById(R.id.sender_message);
@@ -109,7 +100,6 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter<ChatRecyclerVi
     }
 
     public class ReceiverMessageHolder extends MessageHolder {
-        TextView message;
         public ReceiverMessageHolder(@NonNull View v) {
             super(v);
             message = v.findViewById(R.id.receiver_message);

@@ -1,9 +1,5 @@
 package com.example.insta;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -18,6 +14,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -29,8 +29,6 @@ import com.google.firebase.firestore.SetOptions;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import Controller.Image;
 import Model.Profile;
@@ -65,8 +63,8 @@ public class EditProfile extends AppCompatActivity {
         progressBar = findViewById(R.id.progress_bar);
 
         getInfo();
-        email.setText(auth.getCurrentUser().getEmail());
 
+        email.setText(auth.getCurrentUser().getEmail());
     }
 
     private void getInfo() {

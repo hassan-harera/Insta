@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFF"
     android:orientation="vertical"
     tools:context=".Chat">
 
 
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="#000"
         android:theme="@style/AppTheme">
 
 
         <LinearLayout
-            android:id="@+id/relativeLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
@@ -35,7 +34,6 @@
                 android:layout_margin="10dp"
                 android:gravity="center"
                 android:textColor="#FFF"
-                android:text="Hassan Shaban Hassan"
                 android:textSize="18dp" />
 
         </LinearLayout>
@@ -45,20 +43,18 @@
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="5dp"
-        android:layout_marginTop="65dp"
-        android:layout_marginRight="5dp"
-        android:layout_marginBottom="70dp"
-        android:background="#FFF"
-        app:stackFromEnd="true" />
-
+        android:layout_below="@+id/app_bar"
+        android:background="#000"
+        android:paddingTop="4sp"
+        android:layout_marginTop="2sp"
+        android:layout_marginBottom="70dp" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/recycler_view"
-        android:layout_marginTop="-70dp"
-        android:background="#FFF"
+        android:layout_marginTop="-68sp"
+        android:background="#000"
         android:gravity="bottom">
 
         <EditText
@@ -69,6 +65,8 @@
             android:layout_marginTop="5dp"
             android:layout_marginRight="48dp"
             android:layout_marginBottom="5dp"
+            android:textColor="#FFF"
+            android:textColorHint="#FFF"
             android:hint="@string/write_a_message" />
 
         <ImageView

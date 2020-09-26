@@ -3,23 +3,7 @@ package com.example.insta;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -27,14 +11,33 @@ import android.widget.ImageView;
 import android.widget.QuickContactBadge;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import Controller.ChatRecyclerViewAdapter;
+import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import Controller.MessagesRecyclerViewAdapter;
 import Model.Message;
+import Model.Profile;
+
+import static android.content.ContentValues.TAG;
 
 public class Chat extends AppCompatActivity {
 
@@ -50,12 +53,11 @@ public class Chat extends AppCompatActivity {
 
     String UID;
     RecyclerView recycler_view;
-    ChatRecyclerViewAdapter adapter;
+    MessagesRecyclerViewAdapter adapter;
 
     FirebaseAuth auth;
     DatabaseReference dRef;
-    StorageReference sRef;
-//    private InstaDatabaseHelper databaseHelper;
+    private FirebaseFirestore fStore;
 
 
     @Override
@@ -64,6 +66,7 @@ public class Chat extends AppCompatActivity {
         setContentView(R.layout.activity_chat);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
 
         UID = getIntent().getExtras().getString("UID");
 
@@ -75,47 +78,51 @@ public class Chat extends AppCompatActivity {
         name = findViewById(R.id.name);
 
         auth = FirebaseAuth.getInstance();
-        sRef = FirebaseStorage.getInstance().getReference();
+        fStore = FirebaseFirestore.getInstance();
         dRef = FirebaseDatabase.getInstance().getReference();
-//        databaseHelper = new InstaDatabaseHelper(this);
 
         recycler_view.setHasFixedSize(true);
         recycler_view.setLayoutManager(new LinearLayoutManager(this));
 
         messages = new ArrayList();
-        adapter = new ChatRecyclerViewAdapter(messages, this);
+        adapter = new MessagesRecyclerViewAdapter(messages, this);
         recycler_view.setAdapter(adapter);
 
-        getMessages();
-        getInfo();
 
-        Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                getMessages();
-            }
-        }, 5000, 500);
-    }
+        fStore.collection("Users")
+                .document(UID)
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable DocumentSnapshot ds, @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Log.e(TAG, e.getStackTrace().toString());
+                        } else if (ds.exists()) {
+                            Profile profile = ds.toObject(Profile.class);
 
-    private void getMessages() {
-        dRef.child("Users").child(auth.getUid()).child("Chats").child(UID).
-                addListenerForSingleValueEvent(new ValueEventListener() {
+                            Bitmap bitmap = BitmapFactory.decodeByteArray(profile.getProfilePic().toBytes()
+                                    , 0, profile.getProfilePic().toBytes().length);
+                            badge.setImageBitmap(bitmap);
+                            name.setText(profile.getName());
+                        }
+                    }
+                });
+
+        dRef.child("Users")
+                .child(auth.getUid())
+                .child("Chats")
+                .child(UID)
+                .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        int i = 1;
+                        int c = 1;
                         for (DataSnapshot s : snapshot.getChildren()) {
-                            if (i > messages.size()) {
-                                Message m = new Message();
-                                m.setFrom(s.child("From").getValue(String.class));
-                                m.setTo(s.child("To").getValue(String.class));
-                                m.setMessage(s.child("Message").getValue(String.class));
-                                m.setDate(s.child("Date").getValue(String.class));
+                            if (c > messages.size()) {
+                                Message m = s.getValue(Message.class);
                                 messages.add(m);
-                                adapter.update(messages);
+                                adapter.notifyDataSetChanged();
                                 recycler_view.smoothScrollToPosition(messages.size());
                             }
-                            ++i;
+                            c++;
                         }
                     }
 
@@ -126,60 +133,30 @@ public class Chat extends AppCompatActivity {
                 });
     }
 
-    private void getInfo() {
-//        if (!databaseHelper.checkUser(UID)) {
-//            final User user = new User();
-//            user.setUid(UID);
-//            sRef.child("Users").child(UID)
-//                    .child("Profile Pic").getBytes(1024 * 1024).
-//                    addOnSuccessListener(new OnSuccessListener<byte[]>() {
-//                        @Override
-//                        public void onSuccess(byte[] bytes) {
-//                            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-//                            badge.setImageBitmap(bitmap);
-//                            user.setProfilePic(bitmap);
-//
-//                            dRef.child("Users").child(UID)
-//                                    .addListenerForSingleValueEvent(new ValueEventListener() {
-//                                        @Override
-//                                        public void onDataChange(@NonNull DataSnapshot ds) {
-//                                            user.setName(ds.child("Name").getValue(String.class));
-//                                            name.setText(user.getName());
-//                                            databaseHelper.insertUser(user);
-//                                        }
-//
-//                                        @Override
-//                                        public void onCancelled(@NonNull DatabaseError error) {
-//                                        }
-//                                    });
-//                        }
-//                    });
-//        } else {
-//            User user = databaseHelper.getUser(UID);
-//            badge.setImageBitmap(user.getProfilePic());
-//            name.setText(user.getName());
-//        }
-    }
 
     public void sendClicked(View view) {
         if (!message_send.getText().toString().equals("")) {
             DatabaseReference dbr = dRef.child("Users").child(auth.getUid()).child("Chats").child(UID).push();
-            dbr.child("From").setValue(auth.getUid());
-            dbr.child("To").setValue(UID);
-            dbr.child("Date").setValue(new Date().toString());
-            dbr.child("Message").setValue(message_send.getText().toString());
+
+            Message m = new Message();
+            m.setFrom(auth.getUid());
+            m.setTo(UID);
+            m.setSeconds(Timestamp.now().getSeconds());
+            m.setMessage(message_send.getText().toString());
+
+            dbr.setValue(m);
 
             dbr = dRef.child("Users").child(UID).child("Chats").child(auth.getUid()).push();
-            dbr.child("From").setValue(auth.getUid());
-            dbr.child("To").setValue(UID);
-            dbr.child("Date").setValue(new Date().toString());
-            dbr.child("Message").setValue(message_send.getText().toString());
+
+            dbr.setValue(m);
+
 
             InputMethodManager manager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
             if (manager.isActive()) {
                 manager.hideSoftInputFromWindow(view.getWindowToken(), 0);
             }
             message_send.setText("");
+
         }
     }
 }

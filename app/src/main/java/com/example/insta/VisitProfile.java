@@ -1,16 +1,7 @@
 package com.example.insta;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -18,27 +9,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.signature.ObjectKey;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -86,9 +70,6 @@ public class VisitProfile extends AppCompatActivity {
         UID = bundle.get("UID").toString();
 
         addFriend = findViewById(R.id.add_friend);
-        if (UID.equals(auth.getUid())) {
-            addFriend.setVisibility(View.INVISIBLE);
-        }
 
         profileImage = findViewById(R.id.user_profile_photo);
         name = findViewById(R.id.user_profile_name);
@@ -116,8 +97,18 @@ public class VisitProfile extends AppCompatActivity {
                         bio.setText(profile.getBio());
                         profileImage.setImageBitmap(BitmapFactory.decodeByteArray(
                                 profile.getProfilePic().toBytes(), 0, profile.getProfilePic().toBytes().length));
+
+                        if (profile.getFriends().contains(auth.getUid())) {
+                            addFriend.setVisibility(View.INVISIBLE);
+                        } else if (UID.equals(auth.getUid())) {
+                            addFriend.setVisibility(View.INVISIBLE);
+                        } else {
+                            addFriend.setVisibility(View.VISIBLE);
+                        }
                     }
                 });
+
+
     }
 
     private void getProfilePostsFromFirebaseFireStore() {
