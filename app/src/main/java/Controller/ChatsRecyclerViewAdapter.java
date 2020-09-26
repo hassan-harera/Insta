@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import android.widget.QuickContactBadge;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.insta.Chat;
@@ -22,27 +24,33 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.List;
 import java.util.Timer;
 
+import Model.Post;
+import Model.Profile;
 import Model.User;
+
+import static android.content.ContentValues.TAG;
 
 public class ChatsRecyclerViewAdapter extends RecyclerView.Adapter<ChatsRecyclerViewAdapter.ViewHolder> {
 
     Context context;
-    List<String> list;
-    private StorageReference reference;
-    private DatabaseReference databaseReference;
-    Timer timer;
+    List<String> friends;
+    FirebaseFirestore fStore;
 
-    public ChatsRecyclerViewAdapter(final Context context, List<String> list) {
+    public ChatsRecyclerViewAdapter(final Context context, List<String> friends) {
         this.context = context;
-        this.list = list;
-        reference = FirebaseStorage.getInstance().getReference();
-        databaseReference = FirebaseDatabase.getInstance().getReference();
+        this.friends = friends;
+
+        fStore = FirebaseFirestore.getInstance();
     }
 
 
@@ -53,50 +61,41 @@ public class ChatsRecyclerViewAdapter extends RecyclerView.Adapter<ChatsRecycler
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
         holder.ll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, Chat.class);
-                intent.putExtra("UID", list.get(position));
+                intent.putExtra("UID", friends.get(position));
                 context.startActivity(intent);
             }
         });
-        getFriend(holder, position);
-    }
 
-    private void getFriend(final ChatsRecyclerViewAdapter.ViewHolder holder, final int position) {
-        final User user = new User();
-        user.setUid(list.get(position));
-        reference.child("Users").child(list.get(position))
-                .child("Profile Pic").getBytes(1024 * 1024).
-                addOnSuccessListener(new OnSuccessListener<byte[]>() {
+        String UID = friends.get(position);
+        fStore.collection("Users")
+                .document(UID)
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
-                    public void onSuccess(byte[] bytes) {
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                        holder.badge.setImageBitmap(bitmap);
-                        user.setProfilePic(bitmap);
+                    public void onEvent(@Nullable DocumentSnapshot ds, @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Log.e(TAG, e.getStackTrace().toString());
+                        } else if (ds.exists()) {
+                            Profile profile = ds.toObject(Profile.class);
 
-                        databaseReference.child("Users").child(list.get(position))
-                                .addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot ds) {
-                                        user.setName(ds.child("Name").getValue(String.class));
-                                        holder.name.setText(user.getName());
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {
-                                    }
-                                });
+                            Bitmap bitmap = BitmapFactory.decodeByteArray(profile.getProfilePic().toBytes()
+                                    , 0, profile.getProfilePic().toBytes().length);
+                            holder.badge.setImageBitmap(bitmap);
+                            holder.name.setText(profile.getName());
+                        }
                     }
                 });
+
     }
 
 
     @Override
     public int getItemCount() {
-        return list.size();
+        return friends.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
