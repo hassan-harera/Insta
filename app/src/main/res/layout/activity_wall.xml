@@ -8,9 +8,11 @@
     tools:context=".Wall">
 
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:theme="@style/AppTheme.AppBarOverlay"
+        android:visibility="invisible">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -36,17 +38,9 @@
         android:layout_marginTop="106dp"
         android:background="#FAFAFA"/>
 
-    <RelativeLayout
-        android:id="@+id/logo"
-        android:layout_width="match_parent"
+
+    <include layout="@layout/waiting_screen"
+        android:id="@+id/screen"
         android:layout_height="match_parent"
-        android:background="#FAFAFA">
-        <ImageView
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true"
-            android:src="@drawable/camera"
-            />
-    </RelativeLayout>
+        android:layout_width="match_parent"/>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

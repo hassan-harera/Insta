@@ -21,6 +21,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.auth.FirebaseAuth;
@@ -45,6 +46,7 @@ public class Wall extends AppCompatActivity {
 
     Toolbar toolbar;
     private RelativeLayout logo;
+    private AppBarLayout app_bar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +60,7 @@ public class Wall extends AppCompatActivity {
                 setCacheSizeBytes(50000000).setPersistenceEnabled(true).build());
 
         toolbar = findViewById(R.id.toolbar);
+        app_bar = findViewById(R.id.app_bar);
         logo = findViewById(R.id.logo);
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
@@ -125,6 +128,7 @@ public class Wall extends AppCompatActivity {
             @Override
             public void run() {
                 logo.setVisibility(View.INVISIBLE);
+                app_bar.setVisibility(View.VISIBLE);
             }
         }, 3000);
 
