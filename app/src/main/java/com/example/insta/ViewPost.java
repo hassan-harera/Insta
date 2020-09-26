@@ -17,11 +17,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.util.GAuthToken;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -40,7 +42,7 @@ public class ViewPost extends AppCompatActivity {
     DatabaseReference databaseReference;
     FirebaseFirestore fStore;
 
-    String UID, postID;
+    String postID;
 
     TextView date, profileName, caption, love_number;
     ImageView love, postImage, profileImage;
@@ -52,6 +54,7 @@ public class ViewPost extends AppCompatActivity {
     ArrayAdapter adapter;
     private Post post;
     private Profile profile;
+    private String UID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,8 +75,8 @@ public class ViewPost extends AppCompatActivity {
 
 
         Bundle bundle = getIntent().getExtras();
-        UID = bundle.getString("UID");
         postID = bundle.getString("Post ID");
+        UID = bundle.getString("UID");
 
         caption = findViewById(R.id.caption);
         postImage = findViewById(R.id.post_image);
@@ -92,7 +95,7 @@ public class ViewPost extends AppCompatActivity {
     private void getPost() {
         fStore.collection("Users")
                 .document(UID)
-                .collection("Users")
+                .collection("Posts")
                 .document(postID)
                 .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override

@@ -109,7 +109,7 @@ public class ChatsRecyclerViewAdapter extends RecyclerView.Adapter<ChatsRecycler
 
             badge = v.findViewById(R.id.profile_image);
             name = v.findViewById(R.id.name);
-            ll = v.findViewById(R.id.ll);
+            ll = v.findViewById(R.id.relativeLayout);
         }
     }
 }

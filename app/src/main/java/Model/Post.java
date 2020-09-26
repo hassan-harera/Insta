@@ -21,7 +21,6 @@ public class Post implements Comparable<Post> {
     private Map<String, Comment> comments;
     private Map<String, Share> shares;
 
-
     public Map<String, Share> getShares() {
         return shares;
     }
@@ -73,10 +72,6 @@ public class Post implements Comparable<Post> {
         this.likes = likes;
     }
 
-    public void removeLike(String UID) {
-        likes.remove(UID);
-    }
-
     public Timestamp getTime() {
         return time;
     }
@@ -101,9 +96,17 @@ public class Post implements Comparable<Post> {
         return caption;
     }
 
-
     @Override
     public int compareTo(Post o) {
         return o.getTime().compareTo(time);
+    }
+
+    public void addLike(String UID) {
+        likes.remove(UID);
+        likes.put(UID, Timestamp.now());
+    }
+
+    public void removeLike(String UID) {
+        likes.remove(UID);
     }
 }

@@ -25,6 +25,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.storage.FirebaseStorage;
 
 
@@ -37,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     FirebaseAuth auth;
     FirebaseUser user;
     FirebaseStorage storage;
+    private FirebaseFirestore fStore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +53,12 @@ public class MainActivity extends AppCompatActivity {
         storage = FirebaseStorage.getInstance();
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
+
+
+        fStore = FirebaseFirestore.getInstance();
+        fStore.setFirestoreSettings(new FirebaseFirestoreSettings.
+                Builder().
+                setCacheSizeBytes(50000000).setPersistenceEnabled(true).build());
 
         if (user != null) {
             goFeed();

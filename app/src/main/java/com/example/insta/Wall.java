@@ -21,6 +21,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -63,6 +64,9 @@ public class Wall extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
+        fStore.setFirestoreSettings(new FirebaseFirestoreSettings.
+                Builder().
+                setCacheSizeBytes(50000000).setPersistenceEnabled(true).build());
 
         toolbar = findViewById(R.id.toolbar);
         logo = findViewById(R.id.logo);

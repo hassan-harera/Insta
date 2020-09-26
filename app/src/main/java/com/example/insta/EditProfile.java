@@ -4,12 +4,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -60,7 +57,7 @@ public class EditProfile extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
 
-        profileImage = findViewById(R.id.profile_image);
+        profileImage = findViewById(R.id.user_profile_photo);
         edit = findViewById(R.id.EditProfile_edit);
         name = findViewById(R.id.EditProfile_name);
         bio = findViewById(R.id.EditProfile_bio);
@@ -85,7 +82,7 @@ public class EditProfile extends AppCompatActivity {
                         profileImage.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
                         name.setText(profile.getName());
                         bio.setText(profile.getBio());
-                        email.setText(ds.getString("Email"));
+                        email.setText(ds.getString("email"));
                     }
                 });
     }

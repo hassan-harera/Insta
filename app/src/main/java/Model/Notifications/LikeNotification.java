@@ -4,6 +4,15 @@ public class LikeNotification extends Notification {
 
     private String postID;
     private int likeNumbers;
+    private String UID;
+
+    public String getUID() {
+        return UID;
+    }
+
+    public void setUID(String UID) {
+        this.UID = UID;
+    }
 
     public LikeNotification() {
         super.setType(1);

@@ -25,6 +25,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -125,8 +126,9 @@ public class Notifications extends Fragment {
                                 if (!likes.isEmpty()) {
                                     LikeNotification n = new LikeNotification();
                                     n.setLikeNumbers(likes.size());
-                                    n.setDate(likes.get(likes.keySet().size()-1));
+                                    n.setDate(likes.get((String)(likes.keySet().toArray())[likes.keySet().size()-1]));
                                     n.setPostID(p.getID());
+                                    n.setUID(p.getUID());
                                     notifications.add(n);
                                     adapter.notifyDataSetChanged();
                                 }

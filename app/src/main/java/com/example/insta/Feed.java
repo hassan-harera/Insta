@@ -12,8 +12,11 @@ import android.view.LayoutInflater;
 
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -25,7 +28,9 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import Controller.PostsRecyclerViewAdapter;
 import Model.Post;
@@ -68,46 +73,41 @@ public class Feed extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         posts = new ArrayList<>();
         adapter = new PostsRecyclerViewAdapter(posts, view.getContext());
+        recyclerView.setAdapter(adapter);
 
-        getFriendsPosts();
+
+        fStore.collection("Users")
+                .document(auth.getUid())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot ds) {
+                        profile = ds.toObject(Profile.class);
+                        getFriendsPosts();
+                    }
+                });
+
 
         return view;
     }
 
-    private void getPostsFor(String UID) {
-        fStore.collection("Users")
-                .document(auth.getUid())
-                .collection("Posts")
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot qs, @Nullable FirebaseFirestoreException e) {
-                        if (e != null) {
-                            Log.e(TAG, e.getStackTrace().toString());
-                        } else if (!qs.isEmpty()) {
-                            for (int i = qs.size() - 1; i > qs.size() - 6; i--) {
-                                posts.add(qs.getDocuments().get(i).toObject(Post.class));
-                            }
-                        }
-                    }
-                });
-    }
-
     private void getFriendsPosts() {
-        profile = new Profile();
-        fStore.collection("Users")
-                .document(auth.getUid())
-                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable DocumentSnapshot ds, @Nullable FirebaseFirestoreException e) {
-                        if (e != null) {
-                            Log.e(TAG, e.getStackTrace().toString());
-                        } else if (ds.exists()) {
-                            profile = ds.toObject(Profile.class);
-                            for (String UID : profile.getFriends()) {
-                                getPostsFor(UID);
+        for (String UID : profile.getFriends()) {
+            fStore.collection("Users")
+                    .document(UID)
+                    .collection("Posts")
+                    .get()
+                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                        @Override
+                        public void onSuccess(QuerySnapshot qs) {
+                            for (DocumentSnapshot ds : qs.getDocuments()) {
+                                final Post p = ds.toObject(Post.class);
+                                p.setLiked(p.getLikes().containsKey(auth.getUid()));
+                                posts.add(p);
+                                adapter.notifyDataSetChanged();
                             }
                         }
-                    }
-                });
+                    });
+        }
     }
 }

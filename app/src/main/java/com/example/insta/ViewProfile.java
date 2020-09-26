@@ -74,11 +74,11 @@ public class ViewProfile extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_view_profile, container, false);
 
-        profileImage = view.findViewById(R.id.view_profile_photo);
-        name = view.findViewById(R.id.view_profile_user_name);
-        bio = view.findViewById(R.id.view_profile_user_bio);
+        profileImage = view.findViewById(R.id.user_profile_photo);
+        name = view.findViewById(R.id.user_profile_name);
+        bio = view.findViewById(R.id.user_profile_short_bio);
 
-        recyclerView = view.findViewById(R.id.view_profile_posts);
+        recyclerView = view.findViewById(R.id.profile_posts);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         adapter = new PostsRecyclerViewAdapter(posts, getContext());

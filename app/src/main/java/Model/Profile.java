@@ -68,4 +68,12 @@ public class Profile {
     public void addFriendRequest(String UID) {
         friendRequests.put(UID, Timestamp.now());
     }
+
+    public void removeFriendRequest(String UID) {
+        friendRequests.remove(UID);
+    }
+
+    public void addFriend(String UID) {
+        friends.add(UID);
+    }
 }

@@ -9,7 +9,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -28,13 +27,13 @@
                     android:layout_height="40dp"
                     android:layout_gravity="center"
                     android:layout_margin="5dp"
-                    android:src="@drawable/profile"/>
+                    android:src="@drawable/profile" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_margin="5dp">
+                    android:layout_margin="5dp"
+                    android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/profile_name"
@@ -60,7 +59,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="bottom"
-                android:padding="5dp"
                 android:textColor="#AEA4A4"
                 android:textSize="16dp" />
 
@@ -68,15 +66,14 @@
             <ImageView
                 android:id="@+id/post_image"
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
-                android:padding="3dp" />
+                android:layout_height="250dp" />
 
             <LinearLayout
-                android:id="@+id/ll"
+                android:id="@+id/relativeLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginLeft="5dp">
+                android:layout_marginLeft="5dp"
+                android:orientation="horizontal">
 
 
                 <ImageView
@@ -85,9 +82,9 @@
                     android:layout_height="30dp"
                     android:layout_gravity="center"
                     android:layout_margin="3dp"
-                    android:src="@drawable/love"
                     android:gravity="center"
-                    android:maxLines="0" />
+                    android:maxLines="0"
+                    android:src="@drawable/love" />
 
                 <TextView
                     android:id="@+id/love_number"
@@ -109,6 +106,4 @@
             android:layout_centerVertical="true"
             android:visibility="visible" />
     </RelativeLayout>
-
-
 </androidx.cardview.widget.CardView>
