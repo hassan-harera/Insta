@@ -26,6 +26,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
 import java.util.List;
+import java.util.Map;
 
 import Model.Post;
 import Model.Profile;
@@ -33,12 +34,12 @@ import Model.Profile;
 public class PostsRecyclerViewAdapter extends RecyclerView.Adapter<PostsRecyclerViewAdapter.ViewHolder> {
 
     private final Context context;
-    List<Post> posts;
+    Map<String, Post> posts;
     FirebaseFirestore fStore;
     FirebaseAuth auth;
 
 
-    public PostsRecyclerViewAdapter(List<Post> posts, Context context) {
+    public PostsRecyclerViewAdapter(Map<String, Post> posts, Context context) {
         this.posts = posts;
         this.context = context;
 
@@ -58,7 +59,7 @@ public class PostsRecyclerViewAdapter extends RecyclerView.Adapter<PostsRecycler
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
-        final Post post = posts.get(position);
+        final Post post = (Post) posts.values().toArray()[position];
         fStore.collection("Users")
                 .document(post.getUID())
                 .addSnapshotListener(new EventListener<DocumentSnapshot>() {
@@ -83,19 +84,19 @@ public class PostsRecyclerViewAdapter extends RecyclerView.Adapter<PostsRecycler
             @Override
             public void onClick(View v) {
                 holder.love.setEnabled(false);
-                if (!posts.get(position).getLiked()) {
-                    posts.get(position).setLiked(true);
-                    posts.get(position).addLike(auth.getUid());
-                    holder.love_number.setText(String.valueOf(posts.get(position).getLikes().size()));
+                if (!post.getLiked()) {
+                    post.setLiked(true);
+                    post.addLike(auth.getUid());
+                    holder.love_number.setText(String.valueOf(post.getLikes().size()));
                     holder.love.setImageResource(R.drawable.loved);
-                    setLike(posts.get(position));
+                    setLike(post);
                     holder.love.setEnabled(true);
                 } else {
-                    posts.get(position).setLiked(false);
-                    posts.get(position).removeLike(auth.getUid());
-                    holder.love_number.setText(String.valueOf(posts.get(position).getLikes().size()));
+                    post.setLiked(false);
+                    post.removeLike(auth.getUid());
+                    holder.love_number.setText(String.valueOf(post.getLikes().size()));
                     holder.love.setImageResource(R.drawable.love);
-                    removeLike(posts.get(position));
+                    removeLike(post);
                     holder.love.setEnabled(true);
                 }
             }

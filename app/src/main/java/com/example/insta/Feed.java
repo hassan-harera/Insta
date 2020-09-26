@@ -49,7 +49,7 @@ public class Feed extends Fragment {
     FirebaseFirestore fStore;
 
 
-    List<Post> posts;
+    Map<String, Post> posts;
     View view;
     private Profile profile;
 
@@ -71,7 +71,7 @@ public class Feed extends Fragment {
         recyclerView = view.findViewById(R.id.posts);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        posts = new ArrayList<>();
+        posts = new HashMap();
         adapter = new PostsRecyclerViewAdapter(posts, view.getContext());
         recyclerView.setAdapter(adapter);
 
@@ -103,7 +103,7 @@ public class Feed extends Fragment {
                             for (DocumentSnapshot ds : qs.getDocuments()) {
                                 final Post p = ds.toObject(Post.class);
                                 p.setLiked(p.getLikes().containsKey(auth.getUid()));
-                                posts.add(p);
+                                posts.put(p.getID() ,p);
                                 adapter.notifyDataSetChanged();
                             }
                         }

@@ -29,6 +29,7 @@ import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,7 +47,7 @@ public class Notifications extends Fragment {
     private View view;
 
 
-    List<Notification> notifications;
+    Map<String, Notification> notifications;
 
     FirebaseAuth auth;
     FirebaseFirestore fStore;
@@ -56,7 +57,7 @@ public class Notifications extends Fragment {
     private Profile profile;
 
     public Notifications() {
-        this.notifications = new ArrayList();
+        this.notifications = new HashMap();
 
         auth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
@@ -82,7 +83,6 @@ public class Notifications extends Fragment {
     private void getNotifications() {
         getFriendRequests();
         getLikes();
-        Collections.sort(notifications);
     }
 
     private void getFriendRequests() {
@@ -101,7 +101,7 @@ public class Notifications extends Fragment {
                                 FriendRequestNotification n = new FriendRequestNotification();
                                 n.setUID(UID);
                                 n.setDate(map.get(UID));
-                                notifications.add(n);
+                                notifications.put(n.getUID(), n);
                                 adapter.notifyDataSetChanged();
                             }
                         }
@@ -126,10 +126,10 @@ public class Notifications extends Fragment {
                                 if (!likes.isEmpty()) {
                                     LikeNotification n = new LikeNotification();
                                     n.setLikeNumbers(likes.size());
-                                    n.setDate(likes.get((String)(likes.keySet().toArray())[likes.keySet().size()-1]));
+                                    n.setDate((Timestamp)(likes.values().toArray()[0]));
                                     n.setPostID(p.getID());
                                     n.setUID(p.getUID());
-                                    notifications.add(n);
+                                    notifications.put(n.getPostID(), n);
                                     adapter.notifyDataSetChanged();
                                 }
                             }

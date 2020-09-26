@@ -29,6 +29,7 @@ import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.SetOptions;
 
 import java.util.List;
+import java.util.Map;
 
 import Model.Date_Time;
 import Model.Notifications.FriendRequestNotification;
@@ -41,14 +42,14 @@ import static android.content.ContentValues.TAG;
 
 public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<NotificationsRecyclerViewAdapter.ViewHolder> {
 
-    List<Notification> notifications;
+    Map<String, Notification> notifications;
     Context context;
 
     FirebaseAuth auth;
     private FirebaseFirestore fStore;
 
 
-    public NotificationsRecyclerViewAdapter(List<Notification> notifications, Context context) {
+    public NotificationsRecyclerViewAdapter(Map<String, Notification> notifications, Context context) {
         this.notifications = notifications;
         this.context = context;
 
@@ -78,17 +79,18 @@ public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<Notif
 
     @Override
     public int getItemViewType(int position) {
-        return notifications.get(position).getType();
+        return ((Notification) notifications.values().toArray()[position]).getType();
     }
 
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
+        Notification n = (Notification) notifications.values().toArray()[position];
 
-        switch (notifications.get(position).getType()) {
+        switch (n.getType()) {
             case 1:
                 final LikeHolder lh = (LikeHolder) holder;
-                final LikeNotification ln = (LikeNotification) notifications.get(position);
+                final LikeNotification ln = (LikeNotification) notifications.values().toArray()[position];
 
                 lh.relativeLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -114,7 +116,7 @@ public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<Notif
                                     Post post = ds.toObject(Post.class);
                                     lh.postIMG.setImageBitmap(BitmapFactory.decodeByteArray(post.getPostImage().toBytes()
                                             , 0, post.getPostImage().toBytes().length));
-                                    lh.date.setText(Date_Time.timeFromNow(notifications.get(position).getDate()));
+                                    lh.date.setText(Date_Time.timeFromNow(ln.getDate()));
                                     lh.message.setText(post.getLikes().size() + " people reacted to your post");
                                 }
                             }
@@ -123,7 +125,7 @@ public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<Notif
 
             case 2:
                 final FriendRequestHolder fh = (FriendRequestHolder) holder;
-                final FriendRequestNotification frn = (FriendRequestNotification) notifications.get(position);
+                final FriendRequestNotification frn = (FriendRequestNotification) notifications.values().toArray()[position];
 
                 fh.relativeLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -138,7 +140,7 @@ public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<Notif
                     @Override
                     public void onClick(View v) {
                         confirm(frn);
-                        notifications.remove(position);
+                        notifications.remove(frn.getUID());
                         notifyDataSetChanged();
                     }
                 });
@@ -147,7 +149,7 @@ public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<Notif
                     @Override
                     public void onClick(View v) {
                         delete(frn);
-                        notifications.remove(position);
+                        notifications.remove(frn.getUID());
                         notifyDataSetChanged();
                     }
                 });

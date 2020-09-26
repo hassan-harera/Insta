@@ -56,7 +56,7 @@ public class VisitProfile extends AppCompatActivity {
 
     RecyclerView recyclerView;
     PostsRecyclerViewAdapter adapter;
-    List<Post> posts;
+    Map<String, Post> posts;
 
     ImageView profileImage;
     TextView name, bio;
@@ -77,7 +77,7 @@ public class VisitProfile extends AppCompatActivity {
         recyclerView = findViewById(R.id.profile_posts);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        posts = new ArrayList<>();
+        posts = new HashMap();
         adapter = new PostsRecyclerViewAdapter(posts, this);
         recyclerView.setAdapter(adapter);
 
@@ -135,7 +135,7 @@ public class VisitProfile extends AppCompatActivity {
                             if (!task.getResult().isEmpty()) {
                                 for (DocumentSnapshot ds : task.getResult().getDocuments()) {
                                     Post p = ds.toObject(Post.class);
-                                    posts.add(p);
+                                    posts.put(p.getID(), p);
                                     adapter.notifyDataSetChanged();
                                 }
                             } else {

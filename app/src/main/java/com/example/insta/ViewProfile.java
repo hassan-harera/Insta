@@ -17,9 +17,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -28,9 +25,8 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.HashMap;
+import java.util.Map;
 
 import Controller.PostsRecyclerViewAdapter;
 import Model.Post;
@@ -47,7 +43,7 @@ public class ViewProfile extends Fragment {
 
     RecyclerView recyclerView;
     PostsRecyclerViewAdapter adapter;
-    List<Post> posts;
+    Map<String, Post> posts;
 
     ImageView profileImage;
     TextView name, bio;
@@ -57,7 +53,7 @@ public class ViewProfile extends Fragment {
 
 
     public ViewProfile() {
-        posts = new ArrayList();
+        posts = new HashMap();
 
         auth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
@@ -124,7 +120,7 @@ public class ViewProfile extends Fragment {
                                 for (DocumentSnapshot ds : qs.getDocuments()) {
                                     final Post p = ds.toObject(Post.class);
                                     p.setLiked(p.getLikes().containsKey(auth.getUid()));
-                                    posts.add(p);
+                                    posts.put(p.getID(), p);
                                     adapter.notifyDataSetChanged();
                                 }
                             } else {
