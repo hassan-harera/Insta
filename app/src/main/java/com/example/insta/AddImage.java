@@ -4,7 +4,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -29,6 +33,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.security.Permission;
+import java.security.Permissions;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Objects;
@@ -39,6 +45,8 @@ import Model.Post;
 public class AddImage extends Fragment {
 
     public static final int ADD_IMAGE_REQUEST = 1025;
+    public static final int TAKE_PICTURE = 2015;
+    public static final int PERMISSION_REQUEST_CODE = 123;
 
     ImageView image;
     EditText caption;
@@ -70,7 +78,7 @@ public class AddImage extends Fragment {
         image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addImageClicked(v);
+                addImageClicked();
             }
         });
 
@@ -84,16 +92,56 @@ public class AddImage extends Fragment {
         return view;
     }
 
-    public void addImageClicked(View view) {
+    private void verifyPermission() {
+        if (getActivity().checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            startActivityForResult(intent, TAKE_PICTURE);
+        } else {
+            getActivity().requestPermissions(new String[]{Manifest.permission.CAMERA}, PERMISSION_REQUEST_CODE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == this.PERMISSION_REQUEST_CODE && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            verifyPermission();
+        }
+    }
+
+    public void addImageClicked() {
         image.setEnabled(false);
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(intent, ADD_IMAGE_REQUEST);
+
+        AlertDialog alertDialog = new AlertDialog.Builder(getContext())
+                .setTitle("Select photo way")
+                .setPositiveButton("Take a picture", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        verifyPermission();
+                    }
+                })
+                .setNegativeButton("Select a picture", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                        startActivityForResult(intent, ADD_IMAGE_REQUEST);
+                    }
+                })
+                .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        image.setEnabled(true);
+                    }
+                })
+                .show();
     }
 
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        add.setEnabled(true);
+        caption.setEnabled(true);
         image.setEnabled(true);
+
         super.onActivityResult(requestCode, resultCode, data);
 
         if (data != null && requestCode == ADD_IMAGE_REQUEST && resultCode == -1) {
@@ -108,14 +156,18 @@ public class AddImage extends Fragment {
                     e.printStackTrace();
                 }
             }
+        } else if (data != null && requestCode == TAKE_PICTURE && resultCode == -1) {
+            Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+            reducedBitmap = bitmap;
+            image.setImageBitmap(bitmap);
         }
     }
 
     public void addClicked(View view) {
         if (reducedBitmap != null) {
-            image.setEnabled(false);
             add.setEnabled(false);
             caption.setEnabled(false);
+            image.setEnabled(false);
         } else {
             Toast.makeText(view.getContext(), "Add an image firstly", Toast.LENGTH_LONG).show();
             return;
@@ -138,7 +190,7 @@ public class AddImage extends Fragment {
         byte[] byteArray = stream.toByteArray();
         post.setPostImage(Blob.fromBytes(byteArray));
 
-        Log.d("byteArray" , byteArray.length+"");
+        Log.d("byteArray", byteArray.length + "");
 
         FirebaseFirestore.getInstance()
                 .collection("Users")
