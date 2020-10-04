@@ -186,7 +186,7 @@ public class AddImage extends Fragment {
         post.setID(String.valueOf(Timestamp.now().getSeconds()));
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        reducedBitmap.compress(Bitmap.CompressFormat.PNG, 0, stream);
+        reducedBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
         byte[] byteArray = stream.toByteArray();
         post.setPostImage(Blob.fromBytes(byteArray));
 

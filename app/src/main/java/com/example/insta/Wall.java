@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.tabs.TabLayout;
@@ -30,9 +31,15 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Queue;
 
 import Controller.FragmentAdapter;
+import Model.Profile;
 
 
 public class Wall extends AppCompatActivity {
@@ -74,19 +81,14 @@ public class Wall extends AppCompatActivity {
         final SearchView searchView = findViewById(R.id.search_token);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public boolean onQueryTextSubmit(final String UID) {
-                fStore.collection("Users")
-                        .document(UID).get()
-                        .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                if (task.isSuccessful() && task.getResult().exists()) {
-                                    visitProfile(UID);
-                                } else {
-                                    Toast.makeText(Wall.this, "Incorrect user token", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
+            public boolean onQueryTextSubmit(String name) {
+                final List<String> list = searchUser(name);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        getSearchResult(list);
+                    }
+                }, 3000);
                 return false;
             }
 
@@ -135,10 +137,62 @@ public class Wall extends AppCompatActivity {
         viewPager.setCurrentItem(1);
     }
 
-    private void visitProfile(String UID) {
-        Intent intent = new Intent(this, VisitProfile.class);
-        intent.putExtra("UID", UID);
-        startActivity(intent);
+    private void getSearchResult(List<String> list) {
+        if (list.isEmpty())
+            Toast.makeText(Wall.this, "Not Found", Toast.LENGTH_SHORT).show();
+        else {
+            Intent intent = new Intent(Wall.this, SearchResult.class);
+            String arr[] = new String[list.size()];
+            for (int i = 0; i < list.size(); i++) {
+                arr[i] = list.get(i);
+            }
+            intent.putExtra("list", arr);
+            startActivity(intent);
+        }
+    }
+
+    private List<String> searchUser(final String name) {
+        final Queue<String> q = new LinkedList<>();
+        q.add(auth.getUid());
+        final Map<String, Boolean> visited = new HashMap<>();
+        visited.put(auth.getUid(), true);
+
+        final int[] count = {1};
+        final List<String> list = new ArrayList();
+
+        while (!q.isEmpty() && count[0] < 5000) {
+            final String cur = q.poll();
+            count[0]++;
+            final Profile[] p = new Profile[1];
+
+            fStore.collection("Users")
+                    .document(cur)
+                    .get()
+
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot ds) {
+                            p[0] = ds.toObject(Profile.class);
+
+                            if (p[0].getName().contains(name)) {
+                                list.add(cur);
+                            }
+                        }
+                    });
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    for (String user : p[0].getFriends()) {
+                        if (!visited.containsKey(user)) {
+                            q.add(user);
+                            visited.put(user, true);
+                        }
+                    }
+                }
+            }, 500);
+        }
+        return list;
     }
 
     @Override

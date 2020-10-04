@@ -9,6 +9,7 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:theme="@style/AppTheme.NoActionBar">
+        <activity android:name=".SearchResult"></activity>
         <activity
             android:name=".Chat"
             android:label="@string/title_activity_chat"
