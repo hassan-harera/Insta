@@ -19,7 +19,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import Controller.NotificationsRecyclerViewAdapter;
@@ -36,17 +39,19 @@ public class Notifications extends Fragment {
     private View view;
 
 
-    Map<String, Notification> notifications;
+    private Map<String, Notification> notifications;
+    private List<Notification> list;
 
-    FirebaseAuth auth;
-    FirebaseFirestore fStore;
+    private FirebaseAuth auth;
+    private FirebaseFirestore fStore;
 
-    RecyclerView recyclerView;
+    private RecyclerView recyclerView;
     private NotificationsRecyclerViewAdapter adapter;
     private Profile profile;
 
     public Notifications() {
-        this.notifications = new HashMap();
+        notifications = new HashMap();
+        list = new ArrayList<>();
 
         auth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
@@ -61,7 +66,7 @@ public class Notifications extends Fragment {
         recyclerView = view.findViewById(R.id.recycler_view_notifications);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         recyclerView.setHasFixedSize(true);
-        adapter = new NotificationsRecyclerViewAdapter(notifications, view.getContext());
+        adapter = new NotificationsRecyclerViewAdapter(list, view.getContext());
         recyclerView.setAdapter(adapter);
 
         getNotifications();
@@ -91,7 +96,11 @@ public class Notifications extends Fragment {
                                 n.setUID(UID);
                                 n.setDate(map.get(UID));
                                 notifications.put(n.getUID(), n);
-                                adapter.notifyDataSetChanged();
+
+                                list = new ArrayList<>();
+                                list.addAll(notifications.values());
+                                Collections.sort(list);
+                                adapter.update(list);
                             }
                         }
                     }
@@ -115,11 +124,15 @@ public class Notifications extends Fragment {
                                 if (!likes.isEmpty()) {
                                     LikeNotification n = new LikeNotification();
                                     n.setLikeNumbers(likes.size());
-                                    n.setDate((Timestamp)(likes.values().toArray()[0]));
+                                    n.setDate((Timestamp) (likes.values().toArray()[0]));
                                     n.setPostID(p.getID());
                                     n.setUID(p.getUID());
                                     notifications.put(n.getPostID(), n);
-                                    adapter.notifyDataSetChanged();
+
+                                    list = new ArrayList<>();
+                                    list.addAll(notifications.values());
+                                    Collections.sort(list);
+                                    adapter.update(list);
                                 }
                             }
                         }

@@ -1,33 +1,23 @@
 package com.example.insta;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
-import android.view.LayoutInflater;
-
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
-
-
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.QuerySnapshot;
 
-
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,8 +25,6 @@ import java.util.Map;
 import Controller.PostsRecyclerViewAdapter;
 import Model.Post;
 import Model.Profile;
-
-import static android.content.ContentValues.TAG;
 
 
 public class Feed extends Fragment {
@@ -52,9 +40,10 @@ public class Feed extends Fragment {
     Map<String, Post> posts;
     View view;
     private Profile profile;
+    private List<Post> list ;
 
     public Feed() {
-
+        list = new ArrayList<>();
         auth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
         fStore.setFirestoreSettings(new FirebaseFirestoreSettings.
@@ -72,7 +61,7 @@ public class Feed extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         posts = new HashMap();
-        adapter = new PostsRecyclerViewAdapter(posts, view.getContext());
+        adapter = new PostsRecyclerViewAdapter(list, view.getContext());
         recyclerView.setAdapter(adapter);
 
 
@@ -104,7 +93,11 @@ public class Feed extends Fragment {
                                 final Post p = ds.toObject(Post.class);
                                 p.setLiked(p.getLikes().containsKey(auth.getUid()));
                                 posts.put(p.getID() ,p);
-                                adapter.notifyDataSetChanged();
+
+                                list = new ArrayList<>();
+                                list.addAll(posts.values());
+                                Collections.sort(list);
+                                adapter.update(list);
                             }
                         }
                     });

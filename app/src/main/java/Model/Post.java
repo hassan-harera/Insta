@@ -1,14 +1,8 @@
 package Model;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.Blob;
 
-import java.sql.Time;
-import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 public class Post implements Comparable<Post> {
@@ -96,10 +90,7 @@ public class Post implements Comparable<Post> {
         return caption;
     }
 
-    @Override
-    public int compareTo(Post o) {
-        return o.getTime().compareTo(time);
-    }
+
 
     public void addLike(String UID) {
         likes.remove(UID);
@@ -108,5 +99,10 @@ public class Post implements Comparable<Post> {
 
     public void removeLike(String UID) {
         likes.remove(UID);
+    }
+
+    @Override
+    public int compareTo(Post o) {
+        return o.getTime().compareTo(time);
     }
 }

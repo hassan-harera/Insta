@@ -22,7 +22,10 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -41,6 +44,7 @@ public class VisitProfile extends AppCompatActivity {
     RecyclerView recyclerView;
     PostsRecyclerViewAdapter adapter;
     Map<String, Post> posts;
+    List<Post> list;
 
     ImageView profileImage;
     TextView name, bio;
@@ -54,7 +58,7 @@ public class VisitProfile extends AppCompatActivity {
         setContentView(R.layout.activity_visit_profile);
 
         profile = new Profile();
-
+        list = new ArrayList<>();
         auth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
 
@@ -62,7 +66,7 @@ public class VisitProfile extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         posts = new HashMap();
-        adapter = new PostsRecyclerViewAdapter(posts, this);
+        adapter = new PostsRecyclerViewAdapter(list, this);
         recyclerView.setAdapter(adapter);
 
         Intent intent = getIntent();
@@ -127,7 +131,11 @@ public class VisitProfile extends AppCompatActivity {
                                 for (DocumentSnapshot ds : task.getResult().getDocuments()) {
                                     Post p = ds.toObject(Post.class);
                                     posts.put(p.getID(), p);
-                                    adapter.notifyDataSetChanged();
+
+                                    list = new ArrayList<>();
+                                    list.addAll(posts.values());
+                                    Collections.sort(list);
+                                    adapter.update(list);
                                 }
                             } else {
                                 Toast.makeText(VisitProfile.this, "No Posts", Toast.LENGTH_SHORT).show();

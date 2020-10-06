@@ -24,7 +24,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
-import java.util.Map;
+import java.util.List;
 
 import Model.Date_Time;
 import Model.Post;
@@ -33,12 +33,12 @@ import Model.Profile;
 public class PostsRecyclerViewAdapter extends RecyclerView.Adapter<PostsRecyclerViewAdapter.ViewHolder> {
 
     private final Context context;
-    Map<String, Post> posts;
+    List<Post> posts;
     FirebaseFirestore fStore;
     FirebaseAuth auth;
 
 
-    public PostsRecyclerViewAdapter(Map<String, Post> posts, Context context) {
+    public PostsRecyclerViewAdapter(List<Post> posts, Context context) {
         this.posts = posts;
         this.context = context;
 
@@ -47,6 +47,11 @@ public class PostsRecyclerViewAdapter extends RecyclerView.Adapter<PostsRecycler
         fStore.setFirestoreSettings(new FirebaseFirestoreSettings.Builder()
                 .setPersistenceEnabled(true)
                 .setCacheSizeBytes(50000000).build());
+    }
+
+    public void update (List<Post> posts){
+        this.posts = posts;
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -58,7 +63,7 @@ public class PostsRecyclerViewAdapter extends RecyclerView.Adapter<PostsRecycler
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
-        final Post post = (Post) posts.values().toArray()[position];
+        final Post post = posts.get(position);
         fStore.collection("Users")
                 .document(post.getUID())
                 .addSnapshotListener(new EventListener<DocumentSnapshot>() {
