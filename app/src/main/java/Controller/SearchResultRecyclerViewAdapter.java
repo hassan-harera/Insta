@@ -16,9 +16,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.insta.Chat;
-import com.example.insta.R;
-import com.example.insta.VisitProfile;
+import com.whiteside.insta.R;
+import com.whiteside.insta.VisitProfile;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;

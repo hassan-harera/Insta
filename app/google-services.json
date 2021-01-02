@@ -37,9 +37,9 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1004201569665:android:7a154fa231504200088c80",
+        "mobilesdk_app_id": "1:1004201569665:android:4de00e7c3db46075088c80",
         "android_client_info": {
-          "package_name": "com.example.newbaghdadcourse"
+          "package_name": "com.harera.android.insta"
         }
       },
       "oauth_client": [

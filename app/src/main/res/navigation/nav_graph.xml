@@ -5,7 +5,7 @@
     android:id="@+id/nav_graph">
     <fragment
         android:id="@+id/FirstFragment"
-        android:name="com.example.insta.FirstFragment"
+        android:name="com.whiteside.insta.FirstFragment"
         android:label="@string/first_fragment_label"
         tools:layout="@layout/fragment_first">
 
@@ -15,7 +15,7 @@
     </fragment>
     <fragment
         android:id="@+id/SecondFragment"
-        android:name="com.example.insta.SecondFragment"
+        android:name="com.whiteside.insta.SecondFragment"
         android:label="@string/second_fragment_label"
         tools:layout="@layout/fragment_second">
 

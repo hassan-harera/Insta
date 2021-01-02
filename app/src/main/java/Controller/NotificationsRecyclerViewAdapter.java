@@ -16,9 +16,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.insta.R;
-import com.example.insta.ViewPost;
-import com.example.insta.VisitProfile;
+import com.whiteside.insta.R;
+import com.whiteside.insta.ViewPost;
+import com.whiteside.insta.VisitProfile;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
