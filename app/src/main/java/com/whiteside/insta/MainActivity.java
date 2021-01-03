@@ -3,6 +3,7 @@ package com.whiteside.insta;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -40,20 +41,18 @@ public class MainActivity extends AppCompatActivity {
     FirebaseUser user;
     FirebaseStorage storage;
     private FirebaseFirestore fStore;
+    private static final String PREFERENCE_INITIALIZE_KEY = "initialization";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        FirebaseApp.initializeApp(getApplicationContext(),
-                new FirebaseOptions.Builder()
-                        .setProjectId("insta-simulator")
-                        .setApiKey("AIzaSyBQACODJwGDU-48H-UBD1Qpz-OCvT99f1M")
-                        .setApplicationId("1:1004201569665:android:4de00e7c3db46075088c80")
-                        .build());
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-        FirebaseDatabase.getInstance().setPersistenceCacheSizeBytes(50000000);
+        SharedPreferences preferences = getSharedPreferences(PREFERENCE_INITIALIZE_KEY, MODE_PRIVATE);
+        if (!preferences.getBoolean("isInitialized", false) ) {
+            initializeAPP();
+        }
+
 
         email = findViewById(R.id.login_email);
         password = findViewById(R.id.password);
@@ -72,6 +71,21 @@ public class MainActivity extends AppCompatActivity {
         if (user != null) {
             goFeed();
         }
+    }
+
+    private void initializeAPP() {
+        FirebaseApp.initializeApp(getApplicationContext(),
+                new FirebaseOptions.Builder()
+                        .setProjectId("insta-simulator")
+                        .setApiKey("AIzaSyBQACODJwGDU-48H-UBD1Qpz-OCvT99f1M")
+                        .setApplicationId("1:1004201569665:android:4de00e7c3db46075088c80")
+                        .build());
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        FirebaseDatabase.getInstance().setPersistenceCacheSizeBytes(50000000);
+
+        SharedPreferences.Editor editor = getSharedPreferences(PREFERENCE_INITIALIZE_KEY, MODE_PRIVATE).edit();
+        editor.putBoolean("isInitialized", true);
+        editor.apply();
     }
 
     private void goFeed() {
