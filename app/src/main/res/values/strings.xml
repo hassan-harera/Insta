@@ -18,5 +18,8 @@
     <string name="title_activity_chat">Chat</string>
     <string name="write_a_message">Write a message</string>
     <string name="confirm">Confirm</string>
+    <string name="email">Email</string>
+    <string name="login">Login</string>
+    <string name="password">Password</string>
 
 </resources>

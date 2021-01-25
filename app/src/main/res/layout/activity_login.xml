@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFF"
     tools:context=".LoginActivity">
 
 
@@ -31,40 +30,51 @@
         android:layout_below="@+id/image1"
         android:layout_marginStart="38dp"
         android:layout_marginTop="40dp"
-        android:text="Login"
+        android:text="@string/login"
         android:textColor="#1A1A1A"
         android:textSize="30dp" />
 
     <LinearLayout
         android:id="@+id/linear"
-        android:layout_width="289.15dp"
-        android:layout_height="125.15dp"
+        android:layout_width="290sp"
+        android:layout_height="150sp"
         android:layout_below="@+id/text1"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="30dp"
         android:orientation="vertical"
         android:weightSum="2">
 
-        <EditText
-            android:id="@+id/login_email"
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_margin="5dp"
             android:layout_weight="1"
-            android:hint="Email"
-            android:inputType="textEmailAddress"
-            android:textAlignment="textStart" />
+            android:baselineAligned="false">
 
-        <EditText
-            android:id="@+id/password"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/login_email"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/email"
+                android:inputType="textEmailAddress"
+                android:textAlignment="textStart" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_margin="5dp"
+            android:layout_marginTop="5sp"
             android:layout_weight="1"
-            android:hint="Password"
-            android:inputType="textPassword"
-            android:textAlignment="textStart" />
+            android:baselineAligned="false">
 
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/password"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/password"
+                android:inputType="textPassword"
+                android:textAlignment="textStart" />
+        </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
 
     <Button
