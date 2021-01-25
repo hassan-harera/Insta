@@ -29,7 +29,7 @@ import Controller.Connection;
 import Model.Profile;
 
 
-public class Register extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity {
 
     EditText password, email, repassword, name;
     Button register;
@@ -111,7 +111,6 @@ public class Register extends AppCompatActivity {
         } else {
             accountIsRegisteredError();
         }
-
     }
 
     private void internetError() {
@@ -158,22 +157,19 @@ public class Register extends AppCompatActivity {
 
     }
 
-    private void goLogin() {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-        finish();
-    }
-
     private void succeedRegister() {
         Toast.makeText(this, "successful register", Toast.LENGTH_LONG).show();
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, FeedActivity.class);
         startActivity(intent);
         finish();
     }
 
     public void loginClicked(View view) {
-        Intent intent = new Intent(this, MainActivity.class);
-        auth.signOut();
+        goLogin();
+    }
+
+    private void goLogin() {
+        Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
         finish();
     }

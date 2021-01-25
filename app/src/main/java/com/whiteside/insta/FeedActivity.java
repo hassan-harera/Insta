@@ -26,7 +26,6 @@ import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,16 +38,16 @@ import Controller.FragmentAdapter;
 import Model.Profile;
 
 
-public class Wall extends AppCompatActivity {
+public class FeedActivity extends AppCompatActivity {
 
-    List<Fragment> list;
-    TabLayout tabLayout;
-    ViewPager2 viewPager;
+    private List<Fragment> list;
+    private TabLayout tabLayout;
+    private ViewPager2 viewPager;
 
-    FirebaseAuth auth;
-    FirebaseFirestore fStore;
+    private FirebaseAuth auth;
+    private FirebaseFirestore fStore;
 
-    Toolbar toolbar;
+    private Toolbar toolbar;
     private RelativeLayout logo;
     private AppBarLayout app_bar;
 
@@ -59,9 +58,6 @@ public class Wall extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
-        fStore.setFirestoreSettings(new FirebaseFirestoreSettings.
-                Builder().
-                setCacheSizeBytes(50000000).setPersistenceEnabled(true).build());
 
         toolbar = findViewById(R.id.toolbar);
         app_bar = findViewById(R.id.app_bar);
@@ -123,22 +119,14 @@ public class Wall extends AppCompatActivity {
             }
         }).attach();
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                logo.setVisibility(View.INVISIBLE);
-                app_bar.setVisibility(View.VISIBLE);
-            }
-        }, 3000);
-
         viewPager.setCurrentItem(1);
     }
 
     private void getSearchResult(List<String> list) {
         if (list.isEmpty())
-            Toast.makeText(Wall.this, "Not Found", Toast.LENGTH_SHORT).show();
+            Toast.makeText(FeedActivity.this, "Not Found", Toast.LENGTH_SHORT).show();
         else {
-            Intent intent = new Intent(Wall.this, SearchResult.class);
+            Intent intent = new Intent(FeedActivity.this, SearchResult.class);
             String arr[] = new String[list.size()];
             for (int i = 0; i < list.size(); i++) {
                 arr[i] = list.get(i);
@@ -220,11 +208,9 @@ public class Wall extends AppCompatActivity {
     }
 
     private void logout() {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-        this.finish();
         auth.signOut();
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+        finish();
     }
-
-
 }

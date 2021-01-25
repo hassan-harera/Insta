@@ -4,14 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Wall">
+    tools:context=".FeedActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay"
-        android:visibility="invisible">
+        android:theme="@style/AppTheme.AppBarOverlay">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -24,21 +23,12 @@
             android:id="@+id/tabs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-
     </com.google.android.material.appbar.AppBarLayout>
-
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="106dp"
-        android:background="#FAFAFA" />
+        android:layout_marginTop="106dp" />
 
-
-    <include
-        android:id="@+id/screen"
-        layout="@layout/waiting_screen"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

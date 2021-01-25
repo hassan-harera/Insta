@@ -58,9 +58,6 @@ public class NotificationsRecyclerViewAdapter extends RecyclerView.Adapter<Notif
 
         auth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
-        fStore.setFirestoreSettings(new FirebaseFirestoreSettings.Builder()
-                .setPersistenceEnabled(true)
-                .setCacheSizeBytes(50000000).build());
     }
 
     @NonNull

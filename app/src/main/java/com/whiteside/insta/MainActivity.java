@@ -1,176 +1,69 @@
 package com.whiteside.insta;
 
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreSettings;
-import com.google.firebase.storage.FirebaseStorage;
 
 
 public class MainActivity extends AppCompatActivity {
 
-    EditText password, email;
-    TextView register;
-    Button login;
-
-    FirebaseAuth auth;
-    FirebaseUser user;
-    FirebaseStorage storage;
-    private FirebaseFirestore fStore;
-    private static final String PREFERENCE_INITIALIZE_KEY = "initialization";
+    private FirebaseAuth auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        SharedPreferences preferences = getSharedPreferences(PREFERENCE_INITIALIZE_KEY, MODE_PRIVATE);
-        if (!preferences.getBoolean("isInitialized", false) ) {
-            initializeAPP();
-        }
+        initializeAPP();
 
-
-        email = findViewById(R.id.login_email);
-        password = findViewById(R.id.password);
-        login = findViewById(R.id.login);
-        register = findViewById(R.id.register_text);
-        storage = FirebaseStorage.getInstance();
         auth = FirebaseAuth.getInstance();
-        user = auth.getCurrentUser();
-
-
-        fStore = FirebaseFirestore.getInstance();
-        fStore.setFirestoreSettings(new FirebaseFirestoreSettings.
-                Builder().
-                setCacheSizeBytes(50000000).setPersistenceEnabled(true).build());
-
-        if (user != null) {
-            goFeed();
-        }
     }
 
     private void initializeAPP() {
-        FirebaseApp.initializeApp(getApplicationContext(),
-                new FirebaseOptions.Builder()
-                        .setProjectId("insta-simulator")
-                        .setApiKey("AIzaSyBQACODJwGDU-48H-UBD1Qpz-OCvT99f1M")
-                        .setApplicationId("1:1004201569665:android:4de00e7c3db46075088c80")
-                        .build());
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-        FirebaseDatabase.getInstance().setPersistenceCacheSizeBytes(50000000);
+        if (FirebaseApp.getApps(this).isEmpty()) {
+            FirebaseApp.initializeApp(getApplicationContext(),
+                    new FirebaseOptions.Builder()
+                            .setProjectId("insta-simulator")
+                            .setApiKey("AIzaSyBQACODJwGDU-48H-UBD1Qpz-OCvT99f1M")
+                            .setApplicationId("1:1004201569665:android:4de00e7c3db46075088c80")
+                            .build());
+            FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+            FirebaseDatabase.getInstance().setPersistenceCacheSizeBytes(50000000);
+        }
+    }
 
-        SharedPreferences.Editor editor = getSharedPreferences(PREFERENCE_INITIALIZE_KEY, MODE_PRIVATE).edit();
-        editor.putBoolean("isInitialized", true);
-        editor.apply();
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (auth.getCurrentUser() != null) {
+                    goFeed();
+                } else {
+                    goLogin();
+                }
+            }
+        }, 2000);
+
     }
 
     private void goFeed() {
-        Intent intent = new Intent(this, Wall.class);
+        Intent intent = new Intent(this, FeedActivity.class);
         startActivity(intent);
         finish();
     }
 
-
-    public void loginClicked(View view) {
-
-        final String password = this.password.getText().toString(),
-                username = this.email.getText().toString();
-
-        if (username.equals("")) {
-            this.email.setError("E-mail is required");
-        } else if (password.equals("")) {
-            this.password.setError("Password is required");
-        } else {
-            login.setEnabled(false);
-            auth.signInWithEmailAndPassword(username, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
-                    if (task.isSuccessful()) {
-                        successLogin();
-                        login.setEnabled(true);
-                    } else {
-                        failedLogin();
-                        login.setEnabled(true);
-                    }
-                }
-            });
-        }
-    }
-
-    private void successLogin() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Intent intent = new Intent(MainActivity.this, Wall.class);
-                startActivity(intent);
-                finish();
-            }
-        }, 500);
-    }
-
-    private void failedLogin() {
-        ConnectivityManager cm =
-                (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean isConnected = activeNetwork != null &&
-                activeNetwork.isConnectedOrConnecting();
-
-        if (!isConnected) {
-            internetError();
-        } else {
-            Toast.makeText(this, "username or password is not correct", Toast.LENGTH_LONG).show();
-        }
-    }
-
-    private void internetError() {
-        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-
-        dialog.setTitle("Internet Problem");
-        dialog.setMessage("There is an internet problem");
-
-        dialog.setPositiveButton("Try again", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                loginClicked(login.getRootView());
-                dialog.cancel();
-            }
-        });
-
-        dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        }).show();
-    }
-
-    public void registerClicked(View view) {
-        Intent intent = new Intent(this, Register.class);
+    private void goLogin() {
+        Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
         finish();
     }

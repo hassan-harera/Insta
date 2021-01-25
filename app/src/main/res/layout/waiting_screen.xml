@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/screen"
-    tools:context=".Wall">
+    tools:context=".FeedActivity">
 
 <RelativeLayout
         android:id="@+id/logo"

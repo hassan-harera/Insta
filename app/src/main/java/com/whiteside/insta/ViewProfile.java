@@ -61,9 +61,7 @@ public class ViewProfile extends Fragment {
         list = new ArrayList<>();
         auth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
-        fStore.setFirestoreSettings(new FirebaseFirestoreSettings
-                .Builder().setPersistenceEnabled(true)
-                .setCacheSizeBytes(50000000).build());
+
         UID = auth.getUid();
     }
 

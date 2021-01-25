@@ -7,87 +7,10 @@
     android:background="#FFF"
     tools:context=".MainActivity">
 
-
-    <ImageView
-        android:id="@+id/image1"
+    <include
+        android:id="@+id/screen"
+        layout="@layout/waiting_screen"
         android:layout_width="match_parent"
-        android:layout_height="320dp"
-        android:src="@drawable/animated_button3" />
+        android:layout_height="match_parent" />
 
-    <ImageView
-        android:id="@+id/image2"
-        android:layout_width="47dp"
-        android:layout_height="47dp"
-        android:layout_below="@+id/image1"
-        android:layout_marginStart="5.27dp"
-        android:layout_marginTop="-40dp"
-        android:background="@drawable/animated_button3"
-        android:rotation="45" />
-
-    <TextView
-        android:id="@+id/text1"
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:layout_below="@+id/image1"
-        android:layout_marginStart="38dp"
-        android:layout_marginTop="40dp"
-        android:text="Login"
-        android:textColor="#1A1A1A"
-        android:textSize="30dp" />
-
-    <LinearLayout
-        android:id="@+id/linear"
-        android:layout_width="289.15dp"
-        android:layout_height="125.15dp"
-        android:layout_below="@+id/text1"
-        android:layout_marginLeft="38.85dp"
-        android:layout_marginTop="30dp"
-        android:orientation="vertical"
-        android:weightSum="2">
-
-        <EditText
-            android:id="@+id/login_email"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_margin="5dp"
-            android:layout_weight="1"
-            android:hint="Email"
-            android:inputType="textEmailAddress"
-            android:textAlignment="textStart" />
-
-        <EditText
-            android:id="@+id/password"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_margin="5dp"
-            android:layout_weight="1"
-            android:hint="Password"
-            android:inputType="textPassword"
-            android:textAlignment="textStart" />
-
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/login"
-        android:layout_width="250dp"
-        android:layout_height="47dp"
-        android:layout_below="@id/linear"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="40dp"
-        android:background="@drawable/animated_button2"
-        android:onClick="loginClicked"
-        android:text="login"
-        android:textColor="#FAFAFA" />
-
-    <TextView
-        android:id="@+id/register_text"
-        android:layout_width="160dp"
-        android:layout_height="35dp"
-        android:layout_below="@+id/login"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
-        android:gravity="center"
-        android:onClick="registerClicked"
-        android:text="Do you want to SIGN UP?"
-        android:textColor="#707070" />
 </RelativeLayout>
