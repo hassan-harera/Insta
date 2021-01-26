@@ -21,5 +21,8 @@
     <string name="email">Email</string>
     <string name="login">Login</string>
     <string name="password">Password</string>
+    <string name="name">Name</string>
+    <string name="confirm_password">Confirm password</string>
+    <string name="signup">Signup</string>
 
 </resources>
