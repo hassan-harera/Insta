@@ -10,23 +10,28 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
+import com.whiteside.insta.databinding.ActivityMainBinding;
+import com.whiteside.insta.ui.profile.LoginActivity;
 
 
 public class MainActivity extends AppCompatActivity {
 
     private FirebaseAuth auth;
+    private ActivityMainBinding bind;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
-        initializeAPP();
+        bind = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(bind.getRoot());
+
+        initializeFirebase();
 
         auth = FirebaseAuth.getInstance();
     }
 
-    private void initializeAPP() {
+    private void initializeFirebase() {
         if (FirebaseApp.getApps(this).isEmpty()) {
             FirebaseApp.initializeApp(getApplicationContext(),
                     new FirebaseOptions.Builder()
@@ -43,21 +48,28 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+        viewSplashPage();
+    }
+
+    private void viewSplashPage() {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (auth.getCurrentUser() != null) {
-                    goFeed();
-                } else {
-                    goLogin();
-                }
+                checkLogin();
             }
         }, 2000);
+    }
 
+    private void checkLogin() {
+        if (auth.getCurrentUser() != null) {
+            goFeed();
+        } else {
+            goLogin();
+        }
     }
 
     private void goFeed() {
-        Intent intent = new Intent(this, FeedActivity.class);
+        Intent intent = new Intent(this, WallActivity.class);
         startActivity(intent);
         finish();
     }

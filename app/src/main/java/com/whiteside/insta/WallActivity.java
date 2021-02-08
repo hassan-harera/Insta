@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.Toast;
@@ -19,6 +18,9 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.facebook.login.LoginManager;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.tabs.TabLayout;
@@ -26,6 +28,9 @@ import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.whiteside.insta.ui.feed.FeedFragment;
+import com.whiteside.insta.ui.profile.LoginActivity;
+import com.whiteside.insta.ui.profile.ProfileActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,8 +42,10 @@ import java.util.Queue;
 import Controller.FragmentAdapter;
 import Model.Profile;
 
+import static com.whiteside.insta.ui.GoogleSignIn.getGoogleSignInClient;
 
-public class FeedActivity extends AppCompatActivity {
+
+public class WallActivity extends AppCompatActivity {
 
     private List<Fragment> list;
     private TabLayout tabLayout;
@@ -62,12 +69,7 @@ public class FeedActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         app_bar = findViewById(R.id.app_bar);
         logo = findViewById(R.id.logo);
-        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                return onOptionsItemSelected(item);
-            }
-        });
+        toolbar.setOnMenuItemClickListener(item -> onOptionsItemSelected(item));
         toolbar.setTitle("Insta");
 
 
@@ -76,12 +78,7 @@ public class FeedActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(String name) {
                 final List<String> list = searchUser(name);
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        getSearchResult(list);
-                    }
-                }, 3000);
+                new Handler().postDelayed(() -> getSearchResult(list), 3000);
                 return false;
             }
 
@@ -93,8 +90,8 @@ public class FeedActivity extends AppCompatActivity {
 
         list = new ArrayList();
         list.add(new AddImage());
-        list.add(new Feed());
-        list.add(new ViewProfile());
+        list.add(new FeedFragment());
+        list.add(new ProfileActivity());
         list.add(new Notifications());
         list.add(new Chats());
 
@@ -112,21 +109,16 @@ public class FeedActivity extends AppCompatActivity {
         res.add(R.drawable.chats);
 
         tabLayout = findViewById(R.id.tabs);
-        new TabLayoutMediator(tabLayout, viewPager, new TabLayoutMediator.TabConfigurationStrategy() {
-            @Override
-            public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
-                tab.setIcon(res.get(position));
-            }
-        }).attach();
+        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> tab.setIcon(res.get(position))).attach();
 
         viewPager.setCurrentItem(1);
     }
 
     private void getSearchResult(List<String> list) {
         if (list.isEmpty())
-            Toast.makeText(FeedActivity.this, "Not Found", Toast.LENGTH_SHORT).show();
+            Toast.makeText(WallActivity.this, "Not Found", Toast.LENGTH_SHORT).show();
         else {
-            Intent intent = new Intent(FeedActivity.this, SearchResult.class);
+            Intent intent = new Intent(WallActivity.this, SearchResult.class);
             String arr[] = new String[list.size()];
             for (int i = 0; i < list.size(); i++) {
                 arr[i] = list.get(i);
@@ -208,6 +200,16 @@ public class FeedActivity extends AppCompatActivity {
     }
 
     private void logout() {
+        GoogleSignInClient client = getGoogleSignInClient(this);
+        client.signOut()
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+
+        LoginManager.getInstance().logOut();
         auth.signOut();
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);

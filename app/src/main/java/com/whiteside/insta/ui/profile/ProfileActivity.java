@@ -1,4 +1,4 @@
-package com.whiteside.insta;
+package com.whiteside.insta.ui.profile;
 
 
 import android.graphics.BitmapFactory;
@@ -24,6 +24,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.whiteside.insta.R;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,7 +39,7 @@ import Model.Profile;
 import static android.content.ContentValues.TAG;
 
 
-public class ViewProfile extends Fragment {
+public class ProfileActivity extends Fragment {
 
 
     private String UID;
@@ -56,7 +57,7 @@ public class ViewProfile extends Fragment {
     private Profile profile;
 
 
-    public ViewProfile() {
+    public ProfileActivity() {
         posts = new HashMap();
         list = new ArrayList<>();
         auth = FirebaseAuth.getInstance();

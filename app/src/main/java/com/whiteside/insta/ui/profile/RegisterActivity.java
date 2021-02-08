@@ -1,4 +1,4 @@
-package com.whiteside.insta;
+package com.whiteside.insta.ui.profile;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -6,12 +6,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -19,15 +16,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.Blob;
 import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
+import com.whiteside.insta.R;
+import com.whiteside.insta.WallActivity;
 
 import Controller.Connection;
-import Model.Profile;
 
 
 public class RegisterActivity extends AppCompatActivity {
@@ -75,7 +68,7 @@ public class RegisterActivity extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
-                        addUserToDatabase();
+//                        addUserToDatabase();
                         succeedRegister();
                     } else {
                         failedRegister();
@@ -83,27 +76,6 @@ public class RegisterActivity extends AppCompatActivity {
                 }
             });
         }
-    }
-
-
-    private void addUserToDatabase() {
-        Profile profile = new Profile();
-        profile.setName(name.getText().toString());
-        profile.setBio("Bio");
-        profile.setEmail(auth.getCurrentUser().getEmail());
-        profile.setFriends(new ArrayList());
-        profile.setFriendRequests(new HashMap());
-
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.profile);
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 50, stream);
-
-        profile.setProfilePic(Blob.fromBytes(stream.toByteArray()));
-
-
-        fStore.collection("Users")
-                .document(auth.getUid())
-                .set(profile);
     }
 
     private void failedRegister() {
@@ -160,7 +132,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void succeedRegister() {
         Toast.makeText(this, "successful register", Toast.LENGTH_LONG).show();
-        Intent intent = new Intent(this, FeedActivity.class);
+        Intent intent = new Intent(this, WallActivity.class);
         startActivity(intent);
         finish();
     }

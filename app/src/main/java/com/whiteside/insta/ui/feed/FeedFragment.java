@@ -1,4 +1,4 @@
-package com.whiteside.insta;
+package com.whiteside.insta.ui.feed;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,6 +15,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.whiteside.insta.R;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,7 +28,7 @@ import Model.Post;
 import Model.Profile;
 
 
-public class Feed extends Fragment {
+public class FeedFragment extends Fragment {
 
     RecyclerView recyclerView;
     PostsRecyclerViewAdapter adapter;
@@ -40,16 +41,12 @@ public class Feed extends Fragment {
     Map<String, Post> posts;
     View view;
     private Profile profile;
-    private List<Post> list ;
+    private List<Post> list;
 
-    public Feed() {
+    public FeedFragment() {
         list = new ArrayList<>();
         auth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
-        fStore.setFirestoreSettings(new FirebaseFirestoreSettings.
-                Builder().
-                setCacheSizeBytes(50000000).setPersistenceEnabled(true).build());
-
     }
 
 
@@ -72,7 +69,8 @@ public class Feed extends Fragment {
                     @Override
                     public void onSuccess(DocumentSnapshot ds) {
                         profile = ds.toObject(Profile.class);
-                        getFriendsPosts();
+                        if (profile != null)
+                            getFriendsPosts();
                     }
                 });
 
@@ -92,7 +90,7 @@ public class Feed extends Fragment {
                             for (DocumentSnapshot ds : qs.getDocuments()) {
                                 final Post p = ds.toObject(Post.class);
                                 p.setLiked(p.getLikes().containsKey(auth.getUid()));
-                                posts.put(p.getID() ,p);
+                                posts.put(p.getID(), p);
 
                                 list = new ArrayList<>();
                                 list.addAll(posts.values());

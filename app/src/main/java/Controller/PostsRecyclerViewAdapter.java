@@ -15,14 +15,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.whiteside.insta.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.Blob;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import com.whiteside.insta.R;
 
 import java.util.List;
 
@@ -46,7 +45,7 @@ public class PostsRecyclerViewAdapter extends RecyclerView.Adapter<PostsRecycler
         fStore = FirebaseFirestore.getInstance();
     }
 
-    public void update (List<Post> posts){
+    public void update(List<Post> posts) {
         this.posts = posts;
         notifyDataSetChanged();
     }
@@ -66,6 +65,10 @@ public class PostsRecyclerViewAdapter extends RecyclerView.Adapter<PostsRecycler
                 .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
                     public void onEvent(@Nullable DocumentSnapshot ds, @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+                            e.printStackTrace();
+                            return;
+                        }
                         Profile profile = ds.toObject(Profile.class);
                         holder.profileImage.setImageBitmap(BitmapFactory.decodeByteArray(profile.getProfilePic().toBytes(),
                                 0, profile.getProfilePic().toBytes().length));
@@ -132,9 +135,9 @@ public class PostsRecyclerViewAdapter extends RecyclerView.Adapter<PostsRecycler
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
+        public ProgressBar bar;
         TextView date, profileName, caption, love_number;
         ImageView love, postImage, profileImage;
-        public ProgressBar bar;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);

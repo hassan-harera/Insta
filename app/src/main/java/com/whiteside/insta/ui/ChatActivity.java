@@ -1,22 +1,15 @@
-package com.whiteside.insta;
+package com.whiteside.insta.ui;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.QuickContactBadge;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -29,9 +22,11 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.whiteside.insta.databinding.ActivityChatBinding;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import Controller.MessagesRecyclerViewAdapter;
 import Model.Message;
@@ -39,54 +34,40 @@ import Model.Profile;
 
 import static android.content.ContentValues.TAG;
 
-public class Chat extends AppCompatActivity {
+public class ChatActivity extends AppCompatActivity {
 
+    private List<Message> messages;
 
-    List<Message> messages;
+    private String UID;
+    private MessagesRecyclerViewAdapter adapter;
 
-    EditText message_send;
-    ImageView send;
-
-    QuickContactBadge badge;
-    TextView name;
-
-
-    String UID;
-    RecyclerView recycler_view;
-    MessagesRecyclerViewAdapter adapter;
-
-    FirebaseAuth auth;
-    DatabaseReference dRef;
+    private FirebaseAuth auth;
+    private DatabaseReference dRef;
     private FirebaseFirestore fStore;
+    private ActivityChatBinding bind;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
+        bind = ActivityChatBinding.inflate(getLayoutInflater());
+        setContentView(bind.getRoot());
+
+        setSupportActionBar(bind.appBar);
 
         UID = getIntent().getExtras().getString("UID");
-
-
-        send = findViewById(R.id.send);
-        message_send = findViewById(R.id.message_send);
-        recycler_view = findViewById(R.id.recycler_view);
-        badge = findViewById(R.id.profile_image);
-        name = findViewById(R.id.name);
 
         auth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
         dRef = FirebaseDatabase.getInstance().getReference();
 
-        recycler_view.setHasFixedSize(true);
-        recycler_view.setLayoutManager(new LinearLayoutManager(this));
+        bind.recyclerView.setHasFixedSize(true);
+        bind.recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         messages = new ArrayList();
         adapter = new MessagesRecyclerViewAdapter(messages, this);
-        recycler_view.setAdapter(adapter);
+        bind.recyclerView.setAdapter(adapter);
 
 
         fStore.collection("Users")
@@ -101,8 +82,8 @@ public class Chat extends AppCompatActivity {
 
                             Bitmap bitmap = BitmapFactory.decodeByteArray(profile.getProfilePic().toBytes()
                                     , 0, profile.getProfilePic().toBytes().length);
-                            badge.setImageBitmap(bitmap);
-                            name.setText(profile.getName());
+                            bind.profileImage.setImageBitmap(bitmap);
+                            bind.name.setText(profile.getName());
                         }
                     }
                 });
@@ -120,7 +101,7 @@ public class Chat extends AppCompatActivity {
                                 Message m = s.getValue(Message.class);
                                 messages.add(m);
                                 adapter.notifyDataSetChanged();
-                                recycler_view.smoothScrollToPosition(messages.size());
+                                bind.recyclerView.smoothScrollToPosition(messages.size());
                             }
                             c++;
                         }
@@ -133,30 +114,41 @@ public class Chat extends AppCompatActivity {
                 });
     }
 
-
     public void sendClicked(View view) {
-        if (!message_send.getText().toString().equals("")) {
-            DatabaseReference dbr = dRef.child("Users").child(auth.getUid()).child("Chats").child(UID).push();
-
+        String messageText = bind.messageSend.getText().toString();
+        if (!messageText.equals("")) {
             Message m = new Message();
             m.setFrom(auth.getUid());
             m.setTo(UID);
             m.setSeconds(Timestamp.now().getSeconds());
-            m.setMessage(message_send.getText().toString());
+            m.setMessage(bind.messageSend.getText().toString());
 
-            dbr.setValue(m);
-
-            dbr = dRef.child("Users").child(UID).child("Chats").child(auth.getUid()).push();
-
-            dbr.setValue(m);
-
-
-            InputMethodManager manager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-            if (manager.isActive()) {
-                manager.hideSoftInputFromWindow(view.getWindowToken(), 0);
-            }
-            message_send.setText("");
-
+            sendMessage(m);
         }
+    }
+
+    protected Boolean sendMessage(Message m) {
+        DatabaseReference dbReferences = FirebaseDatabase.getInstance().getReference();
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+
+        String uid = Objects.requireNonNull(auth.getUid());
+        dbReferences = dbReferences
+                .child("Users")
+                .child(uid)
+                .child("Chats")
+                .child(m.getTo())
+                .push();
+
+        dbReferences.setValue(m);
+
+        dbReferences
+                .child("Users")
+                .child(m.getTo())
+                .child("Chats")
+                .child(uid)
+                .push()
+                .setValue(m);
+
+        return true;
     }
 }

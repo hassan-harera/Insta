@@ -4,16 +4,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".Chat">
+    tools:context=".ui.ChatActivity">
 
 
-    <com.google.android.material.appbar.AppBarLayout
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#000"
         android:theme="@style/AppTheme">
-
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -37,7 +36,7 @@
                 android:textSize="18dp" />
 
         </LinearLayout>
-    </com.google.android.material.appbar.AppBarLayout>
+    </androidx.appcompat.widget.Toolbar>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"

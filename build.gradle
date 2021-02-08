@@ -1,11 +1,20 @@
 buildscript {
+    ext.kotlin_version = '1.4.30'
     repositories {
         google()
         jcenter()
+        mavenCentral()
+        maven {
+            url "https://maven.springframework.org/release"
+        }
+        maven {
+            url "https://maven.restlet.com"
+        }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.1'
-
+        classpath ("org.junit.platform:junit-platform-gradle-plugin:1.0.0-M4")
+        classpath 'com.android.tools.build:gradle:4.1.2'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
@@ -13,6 +22,7 @@ allprojects {
     repositories {
         google()
         jcenter()
+        mavenCentral()
     }
 }
 

@@ -16,7 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.whiteside.insta.Chat;
+import com.whiteside.insta.ui.ChatActivity;
 import com.whiteside.insta.R;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -54,7 +54,7 @@ public class ChatsRecyclerViewAdapter extends RecyclerView.Adapter<ChatsRecycler
         holder.ll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, Chat.class);
+                Intent intent = new Intent(context, ChatActivity.class);
                 intent.putExtra("UID", friends.get(position));
                 context.startActivity(intent);
             }

@@ -1,105 +1,134 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LoginActivity">
+    android:orientation="vertical"
+    android:weightSum="14"
+    tools:context=".ui.profile.LoginActivity">
 
 
     <ImageView
-        android:id="@+id/image1"
         android:layout_width="match_parent"
-        android:layout_height="320dp"
+        android:layout_height="0sp"
+        android:layout_weight="6"
         android:src="@drawable/animated_button3" />
 
     <ImageView
-        android:id="@+id/image2"
-        android:layout_width="47dp"
-        android:layout_height="47dp"
-        android:layout_below="@+id/image1"
-        android:layout_marginStart="5.27dp"
+        android:layout_width="50sp"
+        android:layout_height="50sp"
+        android:layout_marginStart="8sp"
         android:layout_marginTop="-40dp"
         android:background="@drawable/animated_button3"
         android:rotation="45" />
 
     <TextView
-        android:id="@+id/text1"
         android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:layout_below="@+id/image1"
-        android:layout_marginStart="38dp"
-        android:layout_marginTop="40dp"
+        android:layout_height="0sp"
+        android:layout_margin="40sp"
+        android:layout_weight="2"
+        android:gravity="center|top"
         android:text="@string/login"
         android:textColor="#1A1A1A"
         android:textSize="30dp" />
 
+    <TextView
+        android:id="@+id/register_text"
+        android:layout_width="wrap_content"
+        android:layout_height="0sp"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="Choose Login Method"
+        android:textColor="#707070" />
+
+
+    <!--    <LinearLayout-->
+    <!--        android:id="@+id/linear"-->
+    <!--        android:layout_width="290sp"-->
+    <!--        android:layout_height="150sp"-->
+    <!--        android:layout_below="@+id/text1"-->
+    <!--        android:layout_centerHorizontal="true"-->
+    <!--        android:layout_marginTop="30dp"-->
+    <!--        android:orientation="vertical"-->
+    <!--        android:weightSum="2">-->
+
+    <!--        <com.google.android.material.textfield.TextInputLayout-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="0dp"-->
+    <!--            android:layout_weight="1"-->
+    <!--            android:baselineAligned="false">-->
+
+    <!--            <com.google.android.material.textfield.TextInputEditText-->
+    <!--                android:id="@+id/login_email"-->
+    <!--                android:layout_width="match_parent"-->
+    <!--                android:layout_height="match_parent"-->
+    <!--                android:hint="@string/email"-->
+    <!--                android:inputType="textEmailAddress"-->
+    <!--                android:textAlignment="textStart" />-->
+    <!--        </com.google.android.material.textfield.TextInputLayout>-->
+
+
+    <!--        <com.google.android.material.textfield.TextInputLayout-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="0dp"-->
+    <!--            android:layout_marginTop="5sp"-->
+    <!--            android:layout_weight="1"-->
+    <!--            android:baselineAligned="false">-->
+
+    <!--            <com.google.android.material.textfield.TextInputEditText-->
+    <!--                android:id="@+id/password"-->
+    <!--                android:layout_width="match_parent"-->
+    <!--                android:layout_height="match_parent"-->
+    <!--                android:hint="@string/password"-->
+    <!--                android:inputType="textPassword"-->
+    <!--                android:textAlignment="textStart" />-->
+    <!--        </com.google.android.material.textfield.TextInputLayout>-->
+    <!--    </LinearLayout>-->
+
     <LinearLayout
-        android:id="@+id/linear"
-        android:layout_width="290sp"
-        android:layout_height="150sp"
-        android:layout_below="@+id/text1"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="30dp"
+        android:id="@+id/ll3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
         android:orientation="vertical"
         android:weightSum="2">
 
-        <com.google.android.material.textfield.TextInputLayout
+
+        <com.google.android.gms.common.SignInButton
+            android:id="@+id/sign_in_button"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:baselineAligned="false">
+            android:layout_margin="5sp"
+            android:layout_height="wrap_content" />
+<!--        -->
+<!--        <ImageView-->
+<!--            android:id="@+id/gmail_login"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_margin="10sp"-->
+<!--            android:onClick="googleLogin"-->
+<!--            android:src="@drawable/google_login" />-->
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/login_email"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:hint="@string/email"
-                android:inputType="textEmailAddress"
-                android:textAlignment="textStart" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-
-        <com.google.android.material.textfield.TextInputLayout
+        <com.facebook.login.widget.LoginButton
+            android:id="@+id/facebook_login"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="5sp"
-            android:layout_weight="1"
-            android:baselineAligned="false">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/password"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:hint="@string/password"
-                android:inputType="textPassword"
-                android:textAlignment="textStart" />
-        </com.google.android.material.textfield.TextInputLayout>
+            android:layout_height="wrap_content"
+            android:layout_margin="5sp" />
     </LinearLayout>
 
-    <Button
-        android:id="@+id/login"
-        style="?attr/materialButtonOutlinedStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/linear"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="40dp"
-        android:background="@drawable/button_shape"
-        android:onClick="loginClicked"
-        android:text="@string/login"
-        android:textColor="#065FA3"
-        android:textSize="16sp" />
+    <!--    <Button-->
+    <!--        android:layout_gravity="center"-->
+    <!--        android:id="@+id/login"-->
+    <!--        style="?attr/materialButtonOutlinedStyle"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginTop="40dp"-->
+    <!--        android:background="@drawable/button_shape"-->
+    <!--        android:onClick="loginClicked"-->
+    <!--        android:text="@string/login"-->
+    <!--        android:textColor="#065FA3"-->
+    <!--        android:textSize="16sp" />-->
 
-    <TextView
-        android:id="@+id/register_text"
-        android:layout_width="160dp"
-        android:layout_height="35dp"
-        android:layout_below="@+id/login"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
-        android:gravity="center"
-        android:onClick="registerClicked"
-        android:text="Do you want to SIGN UP?"
-        android:textColor="#707070" />
-</RelativeLayout>
+
+</LinearLayout>
