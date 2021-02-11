@@ -26,22 +26,9 @@ public class MainActivity extends AppCompatActivity {
         bind = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(bind.getRoot());
 
-        initializeFirebase();
+        SecretData.initializeFirebase(this);
 
         auth = FirebaseAuth.getInstance();
-    }
-
-    private void initializeFirebase() {
-        if (FirebaseApp.getApps(this).isEmpty()) {
-            FirebaseApp.initializeApp(getApplicationContext(),
-                    new FirebaseOptions.Builder()
-                            .setProjectId("insta-simulator")
-                            .setApiKey("AIzaSyBQACODJwGDU-48H-UBD1Qpz-OCvT99f1M")
-                            .setApplicationId("1:1004201569665:android:4de00e7c3db46075088c80")
-                            .build());
-            FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-            FirebaseDatabase.getInstance().setPersistenceCacheSizeBytes(50000000);
-        }
     }
 
     @Override
