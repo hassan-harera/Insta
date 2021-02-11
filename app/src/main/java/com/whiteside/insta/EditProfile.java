@@ -35,13 +35,13 @@ import Model.Profile;
 
 public class EditProfile extends AppCompatActivity {
 
-    FirebaseAuth auth;
-    FirebaseFirestore fStore;
+    private  FirebaseAuth auth;
+    private   FirebaseFirestore fStore;
 
-    ImageView profileImage;
-    EditText name, bio;
-    TextView email;
-    Button edit;
+    private   ImageView profileImage;
+    private    EditText name, bio;
+    private    TextView email;
+    private    Button edit;
 
     ProgressBar progressBar;
     private Profile profile;

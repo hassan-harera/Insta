@@ -29,18 +29,18 @@ import static android.content.ContentValues.TAG;
 
 public class ViewPost extends AppCompatActivity {
 
-    FirebaseFirestore fStore;
+    private   FirebaseFirestore fStore;
 
-    String postID;
+    private     String postID;
 
-    TextView date, profileName, caption, love_number;
-    ImageView love, postImage, profileImage;
+    private     TextView date, profileName, caption, love_number;
+    private     ImageView love, postImage, profileImage;
     public ProgressBar bar;
 
 
-    List<String> names;
-    ListView listView;
-    ArrayAdapter adapter;
+    private     List<String> names;
+    private    ListView listView;
+    private   ArrayAdapter adapter;
     private Post post;
     private Profile profile;
     private String UID;

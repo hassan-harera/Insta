@@ -7,7 +7,7 @@
     tools:context=".AddImage">
 
     <ImageView
-        android:id="@+id/image_add"
+        android:id="@+id/add_image"
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:layout_marginLeft="30dp"
@@ -20,7 +20,7 @@
         android:id="@+id/caption"
         android:layout_width="match_parent"
         android:layout_height="120dp"
-        android:layout_below="@id/image_add"
+        android:layout_below="@id/add_image"
         android:layout_margin="20dp"
         android:hint="caption"
         android:gravity="top"
@@ -29,7 +29,7 @@
         android:maxLength="120"/>
 
     <Button
-        android:id="@+id/add_add_image"
+        android:id="@+id/add"
         android:layout_width="200dp"
         android:layout_height="35dp"
         android:layout_below="@id/caption"

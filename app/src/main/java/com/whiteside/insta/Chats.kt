@@ -1,65 +1,50 @@
-package com.whiteside.insta;
+package com.whiteside.insta
 
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import Controller.ChatsRecyclerViewAdapter
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FirebaseFirestore
+import com.whiteside.insta.databinding.FragmentChatsBinding
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+class Chats : Fragment() {
 
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
+    private lateinit var bind: FragmentChatsBinding
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val fStore: FirebaseFirestore = FirebaseFirestore.getInstance()
+    private var friends: List<String>? = null
+    private var recyclerView: RecyclerView? = null
+    private var adapter: ChatsRecyclerViewAdapter? = null
+    override fun onCreateView(inflater: LayoutInflater,
+                              container: ViewGroup?,
+                              savedInstanceState: Bundle?): View {
+        bind = FragmentChatsBinding.inflate(inflater)
 
-import java.util.List;
 
-import Controller.ChatsRecyclerViewAdapter;
+        recyclerView = bind.friends
+        recyclerView!!.setHasFixedSize(true)
+        recyclerView!!.layoutManager = LinearLayoutManager(context)
+        chats
 
-public class Chats extends Fragment {
-
-    FirebaseAuth auth;
-    FirebaseFirestore fStore;
-
-    List<String> friends;
-    RecyclerView recyclerView;
-    private ChatsRecyclerViewAdapter adapter;
-
-    public Chats() {
-        auth = FirebaseAuth.getInstance();
-        fStore = FirebaseFirestore.getInstance();
+        return bind.root
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_chats, container, false);
-        recyclerView = view.findViewById(R.id.friends);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        getChats();
-
-        return view;
-    }
-
-    public void getChats() {
-        fStore.collection("Users")
-                .document(auth.getUid())
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot ds) {
-                        friends = (List<String>) ds.get("friends");
-                        adapter = new ChatsRecyclerViewAdapter(getContext(), friends);
-                        recyclerView.setAdapter(adapter);
+    val chats: Unit
+        get() {
+            fStore.collection("Users")
+                    .document(auth.uid!!)
+                    .get()
+                    .addOnSuccessListener { ds: DocumentSnapshot ->
+                        friends = ds["friends"] as List<String>?
+                        adapter = ChatsRecyclerViewAdapter(context, friends)
+                        recyclerView!!.adapter = adapter
                     }
-                });
-    }
+        }
+
 }

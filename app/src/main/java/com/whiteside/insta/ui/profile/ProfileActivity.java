@@ -3,12 +3,9 @@ package com.whiteside.insta.ui.profile;
 
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -19,12 +16,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.FirebaseFirestoreSettings;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.whiteside.insta.R;
+import com.whiteside.insta.databinding.FragmentViewProfileBinding;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,29 +29,24 @@ import Controller.PostsRecyclerViewAdapter;
 import Model.Post;
 import Model.Profile;
 
-import static android.content.ContentValues.TAG;
-
 
 public class ProfileActivity extends Fragment {
 
 
-    private String UID;
-    FirebaseAuth auth;
-
-    RecyclerView recyclerView;
-    PostsRecyclerViewAdapter adapter;
-    Map<String, Post> posts;
-    List<Post> list;
-
-    ImageView profileImage;
-    TextView name, bio;
-
-    private FirebaseFirestore fStore;
+    private final String UID;
+    private final FirebaseAuth auth;
+    private final Map<String, Post> posts;
+    private final FirebaseFirestore fStore;
+    private PostsRecyclerViewAdapter adapter;
+    private List<Post> list;
+//    private ImageView profileImage;
+//    private TextView name, bio;
     private Profile profile;
+    private FragmentViewProfileBinding bind;
 
 
     public ProfileActivity() {
-        posts = new HashMap();
+        posts = new HashMap<>();
         list = new ArrayList<>();
         auth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
@@ -70,41 +58,33 @@ public class ProfileActivity extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        bind = FragmentViewProfileBinding.inflate(inflater);
 
-        View view = inflater.inflate(R.layout.fragment_view_profile, container, false);
-
-        profileImage = view.findViewById(R.id.user_profile_photo);
-        name = view.findViewById(R.id.user_profile_name);
-        bio = view.findViewById(R.id.user_profile_short_bio);
-
-        recyclerView = view.findViewById(R.id.profile_posts);
+        RecyclerView recyclerView = bind.profilePosts;
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        recyclerView.setLayoutManager(new LinearLayoutManager(bind.getRoot().getContext()));
         adapter = new PostsRecyclerViewAdapter(list, getContext());
         recyclerView.setAdapter(adapter);
 
         getInfo();
         getProfilePostsFromFirebaseFireStore();
 
-        return view;
+        return bind.getRoot();
     }
 
     private void getInfo() {
         fStore.collection("Users")
                 .document(UID)
-                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable DocumentSnapshot ds, @Nullable FirebaseFirestoreException e) {
-                        try {
-                            profile = new Profile();
-                            profile = ds.toObject(Profile.class);
-                            byte[] bytes = profile.getProfilePic().toBytes();
-                            profileImage.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
-                            name.setText(profile.getName());
-                            bio.setText(profile.getBio());
-                        } catch (Exception e1) {
-                            Log.d(TAG, "onEvent: ", e1);
-                        }
+                .addSnapshotListener((ds, e) -> {
+                    try {
+                        profile = new Profile();
+                        profile = ds.toObject(Profile.class);
+                        byte[] bytes = profile.getProfilePic().toBytes();
+                        bind.userProfilePhoto.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+                        bind.userProfileName.setText(profile.getName());
+                        bind.userProfileShortBio.setText(profile.getBio());
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
                     }
                 });
     }
@@ -113,26 +93,23 @@ public class ProfileActivity extends Fragment {
         fStore.collection("Users")
                 .document(UID)
                 .collection("Posts")
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot qs, @Nullable FirebaseFirestoreException e) {
-                        if (e != null) {
-                            Log.e(TAG, e.getStackTrace().toString());
-                        } else {
-                            if (!qs.getDocuments().isEmpty()) {
-                                for (DocumentSnapshot ds : qs.getDocuments()) {
-                                    final Post p = ds.toObject(Post.class);
-                                    p.setLiked(p.getLikes().containsKey(auth.getUid()));
-                                    posts.put(p.getID(), p);
+                .addSnapshotListener((qs, e) -> {
+                    if (e != null) {
+                        e.printStackTrace();
+                    } else {
+                        if (!qs.getDocuments().isEmpty()) {
+                            for (DocumentSnapshot ds : qs.getDocuments()) {
+                                final Post p = ds.toObject(Post.class);
+                                p.setLiked(p.getLikes().containsKey(auth.getUid()));
+                                posts.put(p.getID(), p);
 
-                                    list = new ArrayList<>();
-                                    list.addAll(posts.values());
-                                    Collections.sort(list);
-                                    adapter.update(list);
-                                }
-                            } else {
-                                Toast.makeText(getContext(), "No Posts", Toast.LENGTH_SHORT).show();
+                                list = new ArrayList<>();
+                                list.addAll(posts.values());
+                                Collections.sort(list);
+                                adapter.update(list);
                             }
+                        } else {
+                            Toast.makeText(getContext(), "No Posts", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });

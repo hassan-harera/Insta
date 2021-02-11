@@ -18,7 +18,7 @@ class TestExample {
 
     @Test
     fun testAddImage() {
-        onView(withId(R.id.image_add)).perform(click())
+        onView(withId(R.id.add_image)).perform(click())
     }
 
 }

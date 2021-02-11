@@ -13,7 +13,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.whiteside.insta.R;
 
@@ -30,16 +29,12 @@ import Model.Profile;
 
 public class FeedFragment extends Fragment {
 
-    RecyclerView recyclerView;
-    PostsRecyclerViewAdapter adapter;
-
-
-    FirebaseAuth auth;
-    FirebaseFirestore fStore;
-
-
-    Map<String, Post> posts;
-    View view;
+    private   Map<String, Post> posts;
+    private   View view;
+    private RecyclerView recyclerView;
+    private PostsRecyclerViewAdapter adapter;
+    private FirebaseAuth auth;
+    private FirebaseFirestore fStore;
     private Profile profile;
     private List<Post> list;
 

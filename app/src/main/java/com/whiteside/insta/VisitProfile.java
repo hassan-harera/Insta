@@ -5,8 +5,6 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -21,6 +19,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.whiteside.insta.databinding.ActivityVisitProfileBinding;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,23 +38,23 @@ public class VisitProfile extends AppCompatActivity {
 
 
     private String UID;
-    FirebaseAuth auth;
+    private FirebaseAuth auth;
 
-    RecyclerView recyclerView;
-    PostsRecyclerViewAdapter adapter;
-    Map<String, Post> posts;
-    List<Post> list;
+    private RecyclerView recyclerView;
+    private PostsRecyclerViewAdapter adapter;
+    private Map<String, Post> posts;
+    private List<Post> list;
 
-    ImageView profileImage;
-    TextView name, bio;
-    private ImageView addFriend;
     private FirebaseFirestore fStore;
     private Profile profile;
+    private ActivityVisitProfileBinding bind;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_visit_profile);
+
+        bind = ActivityVisitProfileBinding.inflate(getLayoutInflater());
+        setContentView(bind.getRoot());
 
         profile = new Profile();
         list = new ArrayList<>();
@@ -72,12 +71,6 @@ public class VisitProfile extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
         UID = bundle.get("UID").toString();
-
-        addFriend = findViewById(R.id.add_friend);
-
-        profileImage = findViewById(R.id.user_profile_photo);
-        name = findViewById(R.id.user_profile_name);
-        bio = findViewById(R.id.user_profile_short_bio);
 
         getInfo();
         getProfilePostsFromFirebaseFireStore();
@@ -97,17 +90,17 @@ public class VisitProfile extends AppCompatActivity {
                     @Override
                     public void onSuccess(DocumentSnapshot ds) {
                         profile = ds.toObject(Profile.class);
-                        name.setText(profile.getName());
-                        bio.setText(profile.getBio());
-                        profileImage.setImageBitmap(BitmapFactory.decodeByteArray(
+                        bind.userProfileName.setText(profile.getName());
+                        bind.userProfileShortBio.setText(profile.getBio());
+                        bind.userProfilePhoto.setImageBitmap(BitmapFactory.decodeByteArray(
                                 profile.getProfilePic().toBytes(), 0, profile.getProfilePic().toBytes().length));
 
                         if (profile.getFriends().contains(auth.getUid())) {
-                            addFriend.setVisibility(View.INVISIBLE);
+                            bind.addFriend.setVisibility(View.INVISIBLE);
                         } else if (UID.equals(auth.getUid())) {
-                            addFriend.setVisibility(View.INVISIBLE);
+                            bind.addFriend.setVisibility(View.INVISIBLE);
                         } else {
-                            addFriend.setVisibility(View.VISIBLE);
+                            bind.addFriend.setVisibility(View.VISIBLE);
                         }
                     }
                 });
