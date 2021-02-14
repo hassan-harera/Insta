@@ -12,9 +12,29 @@ buildscript {
         }
     }
     dependencies {
-        classpath ("org.junit.platform:junit-platform-gradle-plugin:1.0.0-M4")
+        classpath("org.junit.platform:junit-platform-gradle-plugin:1.0.0-M4")
         classpath 'com.android.tools.build:gradle:4.1.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.4.30'
+}
+repositories {
+    mavenCentral()
+}
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+}
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
     }
 }
 
@@ -26,6 +46,3 @@ allprojects {
     }
 }
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
-}

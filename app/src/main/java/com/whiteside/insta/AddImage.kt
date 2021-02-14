@@ -24,17 +24,16 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.whiteside.insta.databinding.ActivityAddImageBinding
 import java.io.ByteArrayOutputStream
 import java.io.IOException
-import java.util.*
 
 class AddImage : Fragment() {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private var bind: ActivityAddImageBinding? = null
     private var reducedBitmap: Bitmap? = null
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
 
         bind = ActivityAddImageBinding.inflate(layoutInflater)
-        bind!!.addImage.setOnClickListener { v: View? -> addImageClicked() }
-        bind!!.add.setOnClickListener { v: View? -> addClicked() }
+        bind!!.addImage.setOnClickListener { addImageClicked() }
+        bind!!.add.setOnClickListener { addClicked() }
 
         return bind!!.root
     }
@@ -54,7 +53,7 @@ class AddImage : Fragment() {
         }
     }
 
-    fun addImageClicked() {
+    private fun addImageClicked() {
         bind!!.addImage.isEnabled = false
         AlertDialog.Builder(context)
                 .setTitle("Select photo way")
@@ -71,21 +70,20 @@ class AddImage : Fragment() {
         bind!!.add.isEnabled = true
         bind!!.caption.isEnabled = true
         bind!!.addImage.isEnabled = true
-        super.onActivityResult(requestCode, resultCode, data)
         if (data != null && requestCode == ADD_IMAGE_REQUEST && resultCode == -1) {
             val uri = data.data
             if (uri != null) {
                 try {
-                    val bitmap = MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, uri)
+                    val bitmap = MediaStore.Images.Media.getBitmap(activity?.contentResolver, uri)
                     reducedBitmap = Image.getReducedBitmap(bitmap, 512)
-                    Log.d("Image Uploaded", reducedBitmap!!.getByteCount().toString())
+                    Log.d("Image Uploaded", reducedBitmap!!.byteCount.toString())
                     bind!!.addImage.setImageBitmap(bitmap)
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }
             }
-        } else if (data != null && requestCode == TAKE_PICTURE && resultCode == -1) {
-            val bitmap = data.extras!!["data"] as Bitmap?
+        } else if (requestCode == TAKE_PICTURE && resultCode == -1) {
+            val bitmap = data!!.extras!!["data"] as Bitmap?
             reducedBitmap = bitmap
             bind!!.addImage.setImageBitmap(bitmap)
         }
@@ -101,15 +99,12 @@ class AddImage : Fragment() {
             return
         }
         bind!!.progressBar.visibility = View.VISIBLE
-        val post = Post()
-        post.caption = bind!!.caption.text.toString()
-        post.time = Timestamp.now()
-        post.likes = HashMap()
-        post.comments = HashMap()
-        post.shares = HashMap()
-        post.liked = false
-        post.uid = auth.uid
-        post.id = Timestamp.now().seconds.toString()
+        val post = Post(
+                caption = bind!!.caption.text.toString(),
+                time = Timestamp.now(),
+                uId = auth.uid,
+                Id = Timestamp.now().seconds.toString()
+        )
         val stream = ByteArrayOutputStream()
         reducedBitmap!!.compress(Bitmap.CompressFormat.PNG, 100, stream)
         val byteArray = stream.toByteArray()
@@ -119,7 +114,8 @@ class AddImage : Fragment() {
                 .collection("Users")
                 .document(auth.currentUser!!.uid)
                 .collection("Posts")
-                .document(post.id).set(post)
+                .document(post.Id!!)
+                .set(post)
                 .addOnCompleteListener { task: Task<Void?> ->
                     if (task.isSuccessful) {
                         Toast.makeText(context, "The image added Successfully", Toast.LENGTH_LONG).show()
@@ -141,5 +137,4 @@ class AddImage : Fragment() {
         const val TAKE_PICTURE = 2015
         const val PERMISSION_REQUEST_CODE = 123
     }
-
 }

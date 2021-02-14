@@ -18,7 +18,7 @@ class Chats : Fragment() {
     private lateinit var bind: FragmentChatsBinding
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val fStore: FirebaseFirestore = FirebaseFirestore.getInstance()
-    private var friends: List<String>? = null
+    private var friends: List<String> = ArrayList()
     private var recyclerView: RecyclerView? = null
     private var adapter: ChatsRecyclerViewAdapter? = null
     override fun onCreateView(inflater: LayoutInflater,
@@ -41,7 +41,7 @@ class Chats : Fragment() {
                     .document(auth.uid!!)
                     .get()
                     .addOnSuccessListener { ds: DocumentSnapshot ->
-                        friends = ds["friends"] as List<String>?
+                        friends = ds["friends"] as List<String>
                         adapter = ChatsRecyclerViewAdapter(context, friends)
                         recyclerView!!.adapter = adapter
                     }
