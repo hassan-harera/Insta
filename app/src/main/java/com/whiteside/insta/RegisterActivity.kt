@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.whiteside.insta.ui.login.LoginActivity
 
 class RegisterActivity : AppCompatActivity() {
     var password: TextInputEditText? = null

@@ -1,6 +1,6 @@
-package com.whiteside.insta
+package com.whiteside.insta.ui.login
 
-import Model.Profile
+import com.whiteside.insta.ui.edit_profile.Profile
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.firestore.FirebaseFirestore
@@ -15,11 +15,6 @@ class LoginViewModel : ViewModel() {
                 .get()
                 .addOnSuccessListener { documentSnapshot ->
                     profileGetter.value = documentSnapshot.toObject(Profile::class.java)
-                    //                        assert profile != null;
-//                        if(profile.getEmail() == null)
-//                            addUserToDatabase();
-//                        else
-//                            successLogin();
                 }
     }
 

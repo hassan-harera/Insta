@@ -1,6 +1,6 @@
 package Controller
 
-import Model.Profile
+import com.whiteside.insta.ui.edit_profile.Profile
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent

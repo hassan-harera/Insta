@@ -1,5 +1,8 @@
-package Model
+package com.whiteside.insta.ui.edit_profile
 
+import android.graphics.BitmapFactory
+import android.widget.ImageView
+import androidx.databinding.BindingAdapter
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.Blob
 
@@ -10,6 +13,8 @@ class Profile {
     var profilePic: Blob? = null
     private var friendRequests: MutableMap<String, Timestamp>? = null
     private var friends: MutableList<String>? = null
+
+
     fun getFriends(): List<String>? {
         return friends
     }

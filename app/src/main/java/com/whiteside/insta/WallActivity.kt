@@ -1,7 +1,7 @@
 package com.whiteside.insta
 
 import Controller.FragmentAdapter
-import Model.Profile
+import com.whiteside.insta.ui.edit_profile.Profile
 import android.animation.StateListAnimator
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -22,6 +22,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.whiteside.insta.GoogleSignIn.getGoogleSignInClient
 import com.whiteside.insta.databinding.ActivityWallBinding
+import com.whiteside.insta.ui.add_image.AddImage
+import com.whiteside.insta.ui.edit_profile.EditProfile
+import com.whiteside.insta.ui.login.LoginActivity
 import java.util.*
 import kotlin.collections.ArrayList
 

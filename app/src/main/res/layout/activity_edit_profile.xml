@@ -1,90 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".EditProfile">
+    tools:context=".ui.edit_profile.EditProfile">
 
+    <data>
 
-    <ImageView
-        android:id="@+id/header_cover_image"
+        <variable
+            name="profile"
+            type="com.whiteside.insta.ui.edit_profile.Profile" />
+
+        <variable
+            name="viewModel"
+            type="com.whiteside.insta.ui.edit_profile.EditProfileViewModel" />
+    </data>
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="260dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/animated_button3" />
+        android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/user_profile_photo"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:elevation="5dp" />
+        <ImageView
+            android:id="@+id/header_cover_image"
+            android:layout_width="match_parent"
+            android:layout_height="260dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/animated_button3" />
 
+        <ImageView
+            android:id="@+id/profile_edit_img"
+            profile_edit_img="@{profile}"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:elevation="5dp"
+            android:onClick="@{(view) -> viewModel.onChangeImageClicked(view, profile)}" />
 
-    <EditText
-        android:id="@+id/EditProfile_name"
-        android:layout_width="200dp"
-        android:layout_height="40dp"
-        android:layout_below="@id/user_profile_photo"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
-        android:imeOptions="actionNext"
-        android:inputType="textPersonName"
-        android:maxLength="20"
-        android:text="Name"
-        android:textColor="@color/colorPrimary"
-        android:textSize="14dp"
-        android:textStyle="bold" />
+        <!--TODO Convert the layout to Linear Layout or Constraint Layout-->
+        <EditText
+            android:id="@+id/name"
+            android:layout_width="200dp"
+            android:layout_height="40dp"
+            android:layout_below="@id/profile_edit_img"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:autofillHints=""
+            android:background="@color/back_transparent"
+            android:imeOptions="actionNext"
+            android:inputType="textPersonName"
+            android:maxLength="20"
+            android:text="@={profile.name, default=@string/name}"
+            android:textAlignment="center"
+            android:textColor="#000"
+            android:textSize="14sp"
+            android:textStyle="bold" />
 
-    <EditText
-        android:id="@+id/EditProfile_bio"
-        android:layout_width="250dp"
-        android:layout_height="60dp"
-        android:layout_below="@+id/EditProfile_name"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
-        android:imeOptions="actionDone"
-        android:maxLength="40"
-        android:singleLine="true"
-        android:text="Bio"
-        android:textColor="#000000"
-        android:textSize="12dp" />
+        <EditText
+            android:id="@+id/bio"
+            android:layout_width="250dp"
+            android:layout_height="60dp"
+            android:layout_below="@+id/name"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:autofillHints="bio"
+            android:background="@color/back_transparent"
+            android:imeOptions="actionDone"
+            android:maxLength="40"
+            android:singleLine="true"
+            android:text="@={profile.bio, default=@string/bio}"
+            android:textAlignment="center"
+            android:textColor="#000000"
+            android:textSize="12sp" />
 
+        <TextView
+            android:id="@+id/email"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/header_cover_image"
+            android:layout_margin="5dp"
+            android:background="#fff"
+            android:elevation="4dp"
+            android:padding="20dp"
+            android:text="@{profile.email, default=@string/email}"
+            android:textColor="@color/colorPrimary" />
 
-    <TextView
-        android:id="@+id/user_profile_email"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/header_cover_image"
-        android:layout_margin="5dp"
-        android:background="#fff"
-        android:clickable="true"
-        android:elevation="4dp"
-        android:padding="20dp"
-        android:text="Email"
-        android:textColor="@color/colorPrimary" />
-
-
-    <Button
-        android:id="@+id/EditProfile_edit"
-        android:layout_width="200dp"
-        android:layout_height="30dp"
-        android:layout_below="@+id/user_profile_email"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"
-        android:background="@drawable/animated_button"
-        android:onClick="editClicked"
-        android:text="edit"
-        android:textColor="#FAFAFA" />
-
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/user_profile_email"
-        android:layout_centerHorizontal="true"
-        android:visibility="invisible" />
-
-</RelativeLayout>
+        <Button
+            android:id="@+id/save"
+            android:layout_width="200dp"
+            android:layout_height="30dp"
+            android:layout_below="@+id/email"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="50dp"
+            android:background="@drawable/animated_button"
+            android:onClick="@{(view)-> viewModel.onSaveClicked(view, profile)}"
+            android:text="@string/save"
+            android:textColor="#FAFAFA" />
+    </RelativeLayout>
+</layout>

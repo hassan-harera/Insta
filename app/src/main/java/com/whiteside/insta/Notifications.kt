@@ -5,7 +5,7 @@ import Model.Notifications.FriendRequestNotification
 import Model.Notifications.LikeNotification
 import Model.Notifications.Notification
 import Model.Post
-import Model.Profile
+import com.whiteside.insta.ui.edit_profile.Profile
 import android.content.ContentValues
 import android.os.Bundle
 import android.util.Log
@@ -19,7 +19,6 @@ import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.whiteside.insta.databinding.FragmentNotificationsBinding
-import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 

@@ -18,10 +18,8 @@
     <string name="title_activity_chat">Chat</string>
     <string name="write_a_message">Write a message</string>
     <string name="confirm">Confirm</string>
-    <string name="email">Email</string>
     <string name="login">Login</string>
     <string name="password">Password</string>
-    <string name="name">Name</string>
     <string name="confirm_password">Confirm password</string>
     <string name="signup">Signup</string>
 
@@ -29,6 +27,12 @@
     <string name="fb_login_protocol_scheme">fb2820434058232155</string>
     <string name="try_again">Try Again</string>
     <string name="no_internet_message">No Internet Connection<br/>Please check your internet</string>
-<!--    <string name="default_web_client_id"></string>-->
+    <string name="add">add</string>
+    <string name="caption">caption</string>
+    <string name="name">Name</string>
+    <string name="bio">Bio</string>
+    <string name="email">Email</string>
+    <string name="save">Save</string>
+    <!--    <string name="default_web_client_id"></string>-->
 <!--    <string name="client_server">N2adcbOG2qnM8lqjBh8je3yS</string>-->
 </resources>

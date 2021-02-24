@@ -2,7 +2,7 @@ package com.whiteside.insta
 
 import Controller.MessagesRecyclerViewAdapter
 import Model.Message
-import Model.Profile
+import com.whiteside.insta.ui.edit_profile.Profile
 import android.content.ContentValues
 import android.graphics.BitmapFactory
 import android.os.Bundle

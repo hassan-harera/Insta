@@ -1,51 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AddImage">
+    android:orientation="vertical"
+    android:weightSum="10"
+    tools:context=".ui.add_image.AddImage">
+
 
     <ImageView
         android:id="@+id/add_image"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginTop="45dp"
-        android:layout_marginRight="30dp"
-        android:src="@drawable/add_image" />
-
-
-    <EditText
-        android:id="@+id/caption"
-        android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:layout_below="@id/add_image"
-        android:layout_margin="20dp"
-        android:gravity="top"
-        android:hint="caption"
-        android:imeOptions="actionDone"
-        android:maxLength="120"
-        android:selectAllOnFocus="true" />
-
-    <Button
-        android:id="@+id/add"
-        android:layout_width="200dp"
-        android:layout_height="35dp"
-        android:layout_below="@id/caption"
-        android:layout_centerHorizontal="true"
+        android:layout_height="0dp"
         android:layout_gravity="center"
-        android:layout_marginTop="30dp"
-        android:background="@drawable/animated_button"
-        android:text="add"
-        android:textColor="#FAFAFA" />
+        android:layout_marginTop="@dimen/_30sdp"
+        android:layout_weight="7"
+        android:padding="@dimen/_10sdp"
+        android:src="@drawable/add_image" />
 
     <ProgressBar
         android:id="@+id/progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="350dp"
-        android:foregroundGravity="center"
+        android:layout_gravity="center"
         android:visibility="invisible" />
 
-</RelativeLayout>
+    <EditText
+        android:id="@+id/caption"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="@dimen/_20sdp"
+        android:layout_weight="2"
+        android:gravity="top"
+        android:hint="@string/caption"
+        android:padding="@dimen/_4sdp"
+        android:textSize="@dimen/_18sdp" />
+
+    <Button
+        android:id="@+id/add"
+        android:layout_width="@dimen/_70sdp"
+        android:layout_height="@dimen/_35sdp"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:background="@drawable/blue_round_button"
+        android:text="@string/add"
+        android:textColor="#0984e3"
+        android:textSize="@dimen/_16sdp" />
+</LinearLayout>

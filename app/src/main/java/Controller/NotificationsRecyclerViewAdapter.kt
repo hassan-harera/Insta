@@ -5,7 +5,7 @@ import Model.Notifications.FriendRequestNotification
 import Model.Notifications.LikeNotification
 import Model.Notifications.Notification
 import Model.Post
-import Model.Profile
+import com.whiteside.insta.ui.edit_profile.Profile
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent

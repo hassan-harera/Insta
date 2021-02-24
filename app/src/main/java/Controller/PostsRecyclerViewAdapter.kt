@@ -2,7 +2,7 @@ package Controller
 
 import Model.Date_Time.timeFromNow
 import Model.Post
-import Model.Profile
+import com.whiteside.insta.ui.edit_profile.Profile
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
