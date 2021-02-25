@@ -4,7 +4,7 @@ import Model.Date_Time.timeFromNow
 import Model.Notifications.FriendRequestNotification
 import Model.Notifications.LikeNotification
 import Model.Notifications.Notification
-import Model.Post
+import com.whiteside.insta.ui.feed.Post
 import com.whiteside.insta.ui.edit_profile.Profile
 import android.content.ContentValues
 import android.content.Context

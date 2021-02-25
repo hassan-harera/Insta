@@ -15,7 +15,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.FirebaseFirestore
 import com.whiteside.insta.R
-import com.whiteside.insta.ChatActivity
+import com.whiteside.insta.ui.chat.ChatActivity
 
 class ChatsRecyclerViewAdapter(var context: Context?, var friends: List<String>) : RecyclerView.Adapter<ChatsRecyclerViewAdapter.ViewHolder>() {
     var fStore: FirebaseFirestore

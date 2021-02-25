@@ -1,4 +1,4 @@
-package com.whiteside.insta
+package com.whiteside.insta.ui.chat
 
 import Controller.MessagesRecyclerViewAdapter
 import Model.Message
@@ -7,15 +7,14 @@ import android.content.ContentValues
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.firestore.FirebaseFirestore
+import com.whiteside.insta.R
 import com.whiteside.insta.databinding.ActivityChatBinding
-import java.util.*
 import kotlin.collections.ArrayList
 
 class ChatActivity : AppCompatActivity() {
@@ -28,9 +27,13 @@ class ChatActivity : AppCompatActivity() {
     private var bind: ActivityChatBinding? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        bind = ActivityChatBinding.inflate(layoutInflater)
-        setContentView(bind!!.root)
+
+//        sendClicked
+        bind = DataBindingUtil.setContentView(this, R.layout.activity_chat)
+
+
         setSupportActionBar(bind!!.appBar)
+
         UID = intent.extras!!.getString("UID")
         auth = FirebaseAuth.getInstance()
         fStore = FirebaseFirestore.getInstance()
@@ -71,38 +74,5 @@ class ChatActivity : AppCompatActivity() {
 
                     override fun onCancelled(error: DatabaseError) {}
                 })
-    }
-
-    fun sendClicked(view: View?) {
-        val messageText = bind!!.messageSend.text.toString()
-        if (messageText != "") {
-            val m = Message()
-            m.from = auth!!.uid
-            m.to = UID
-            m.seconds = Timestamp.now().seconds
-            m.message = bind!!.messageSend.text.toString()
-            sendMessage(m)
-        }
-    }
-
-    protected fun sendMessage(m: Message): Boolean {
-        var dbReferences = FirebaseDatabase.getInstance().reference
-        val auth = FirebaseAuth.getInstance()
-        val uid = Objects.requireNonNull(auth.uid)
-        dbReferences = dbReferences
-                .child("Users")
-                .child(uid!!)
-                .child("Chats")
-                .child(m.to!!)
-                .push()
-        dbReferences.setValue(m)
-        dbReferences
-                .child("Users")
-                .child(m.to!!)
-                .child("Chats")
-                .child(uid)
-                .push()
-                .setValue(m)
-        return true
     }
 }

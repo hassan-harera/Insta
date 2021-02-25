@@ -23,7 +23,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.whiteside.insta.GoogleSignIn.getGoogleSignInClient
 import com.whiteside.insta.databinding.ActivityWallBinding
 import com.whiteside.insta.ui.add_image.AddImage
+import com.whiteside.insta.ui.chats.Chats
 import com.whiteside.insta.ui.edit_profile.EditProfile
+import com.whiteside.insta.ui.feed.FeedFragment
 import com.whiteside.insta.ui.login.LoginActivity
 import java.util.*
 import kotlin.collections.ArrayList

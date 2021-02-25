@@ -1,7 +1,6 @@
-package Controller
+package com.whiteside.insta.ui.feed
 
 import Model.Date_Time.timeFromNow
-import Model.Post
 import com.whiteside.insta.ui.edit_profile.Profile
 import android.content.Context
 import android.graphics.Bitmap
@@ -23,10 +22,15 @@ class PostsRecyclerViewAdapter(var posts: List<Post?>, private val context: Cont
         notifyDataSetChanged()
     }
 
+    fun addPost(post: Post?){
+        posts.plus(post)
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.post_view_card, parent, false)
         return ViewHolder(view)
     }
+
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val post = posts[position]

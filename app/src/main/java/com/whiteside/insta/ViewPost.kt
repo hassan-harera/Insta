@@ -1,6 +1,6 @@
 package com.whiteside.insta
 
-import Model.Post
+import com.whiteside.insta.ui.feed.Post
 import com.whiteside.insta.ui.edit_profile.Profile
 import android.content.ContentValues
 import android.graphics.BitmapFactory

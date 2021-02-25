@@ -1,4 +1,4 @@
-package com.whiteside.insta
+package com.whiteside.insta.ui.chats
 
 import Controller.ChatsRecyclerViewAdapter
 import android.os.Bundle
@@ -30,21 +30,20 @@ class Chats : Fragment() {
         recyclerView = bind.friends
         recyclerView!!.setHasFixedSize(true)
         recyclerView!!.layoutManager = LinearLayoutManager(context)
-        chats
+        getChats()
 
         return bind.root
     }
 
-    val chats: Unit
-        get() {
-            fStore.collection("Users")
-                    .document(auth.uid!!)
-                    .get()
-                    .addOnSuccessListener { ds: DocumentSnapshot ->
-                        friends = ds["friends"] as List<String>
-                        adapter = ChatsRecyclerViewAdapter(context, friends)
-                        recyclerView!!.adapter = adapter
-                    }
-        }
+    private fun getChats() {
+        fStore.collection("Users")
+                .document(auth.uid!!)
+                .get()
+                .addOnSuccessListener { ds: DocumentSnapshot ->
+                    friends = ds["friends"] as List<String>
+                    adapter = ChatsRecyclerViewAdapter(context, friends)
+                    recyclerView!!.adapter = adapter
+                }
+    }
 
 }

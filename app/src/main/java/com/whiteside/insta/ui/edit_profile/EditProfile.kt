@@ -21,7 +21,7 @@ class EditProfile : AppCompatActivity() {
         bind!!.viewModel = viewModel
         bind!!.profile = viewModel.profile.value
 
-        getUser();
+        getUser()
     }
     private fun getUser() {
         viewModel.profile.observe(this, Observer {

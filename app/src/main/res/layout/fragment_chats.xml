@@ -6,6 +6,6 @@
     android:layout_height="match_parent"
     android:layout_margin="10dp"
     android:nestedScrollingEnabled="false"
-    tools:context=".Chats">
+    tools:context=".ui.chats.Chats">
 
 </androidx.recyclerview.widget.RecyclerView>

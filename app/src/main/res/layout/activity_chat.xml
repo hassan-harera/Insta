@@ -1,84 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".ChatActivity">
+<layout>
 
+    <data>
+        <variable
+            name="viewModel"
+            type="com.whiteside.insta.ui.chat.ChatViewModel" />
+    </data>
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/app_bar"
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#000"
-        android:theme="@style/AppTheme">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".ui.chat.ChatActivity">
 
-        <LinearLayout
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/app_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:background="#000"
+            android:theme="@style/AppTheme">
 
-
-            <QuickContactBadge
-                android:id="@+id/profile_image"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_margin="5sp" />
-
-            <TextView
-                android:id="@+id/name"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:gravity="center"
-                android:textColor="#FFF"
-                android:textSize="18dp" />
+                android:orientation="horizontal">
 
-        </LinearLayout>
-    </androidx.appcompat.widget.Toolbar>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/app_bar"
-        android:background="#000"
-        android:paddingTop="4sp"
-        android:layout_marginTop="2sp"
-        android:layout_marginBottom="70dp" />
+                <QuickContactBadge
+                    android:id="@+id/profile_image"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_margin="5sp" />
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/recycler_view"
-        android:layout_marginTop="-68sp"
-        android:background="#000"
-        android:gravity="bottom">
+                <TextView
+                    android:id="@+id/name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:gravity="center"
+                    android:textColor="#FFF"
+                    android:textSize="18dp" />
 
-        <EditText
-            android:id="@+id/message_send"
+            </LinearLayout>
+        </androidx.appcompat.widget.Toolbar>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginLeft="5dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginRight="48dp"
-            android:layout_marginBottom="5dp"
-            android:textColor="#FFF"
-            android:textColorHint="#FFF"
-            android:hint="@string/write_a_message" />
+            android:layout_below="@+id/app_bar"
+            android:background="#000"
+            android:paddingTop="4sp"
+            android:layout_marginTop="2sp"
+            android:layout_marginBottom="70dp" />
 
-        <ImageView
-            android:id="@+id/send"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginLeft="-43dp"
-            android:layout_marginTop="14dp"
-            android:layout_toRightOf="@id/message_send"
-            android:foregroundGravity="center"
-            android:onClick="sendClicked"
-            android:src="@drawable/send" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/recycler_view"
+            android:layout_marginTop="-68sp"
+            android:background="#000"
+            android:gravity="bottom">
 
+            <EditText
+                android:id="@+id/message_send"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="48dp"
+                android:layout_marginBottom="5dp"
+                android:textColor="#FFF"
+                android:textColorHint="#FFF"
+                android:hint="@string/write_a_message" />
+
+            <ImageView
+                android:id="@+id/send"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="-43dp"
+                android:layout_marginTop="14dp"
+                android:layout_toRightOf="@id/message_send"
+                android:foregroundGravity="center"
+                android:onClick="sendClicked"
+                android:src="@drawable/send" />
+
+        </RelativeLayout>
     </RelativeLayout>
-
-</RelativeLayout>
+</layout>

@@ -16,7 +16,7 @@
         <activity android:name=".ui.login.LoginActivity" />
         <activity android:name=".SearchResult" />
         <activity
-            android:name=".ChatActivity"
+            android:name=".ui.chat.ChatActivity"
             android:label="@string/title_activity_chat"
             android:theme="@style/AppTheme.NoActionBar.NoActionBar" />
         <activity android:name=".ViewPost" />
