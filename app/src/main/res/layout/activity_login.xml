@@ -1,134 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:weightSum="14"
-    tools:context=".ui.login.LoginActivity">
+<layout>
+
+    <data>
+
+        <variable
+            name="vieWModel"
+            type="com.whiteside.insta.ui.login.LoginViewModel" />
+
+    </data>
 
 
-    <ImageView
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="0sp"
-        android:layout_weight="6"
-        android:src="@drawable/animated_button3" />
-
-    <ImageView
-        android:layout_width="50sp"
-        android:layout_height="50sp"
-        android:layout_marginStart="8sp"
-        android:layout_marginTop="-40dp"
-        android:background="@drawable/animated_button3"
-        android:rotation="45" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="0sp"
-        android:layout_margin="40sp"
-        android:layout_weight="2"
-        android:gravity="center|top"
-        android:text="@string/login"
-        android:textColor="#1A1A1A"
-        android:textSize="30dp" />
-
-    <TextView
-        android:id="@+id/register_text"
-        android:layout_width="wrap_content"
-        android:layout_height="0sp"
-        android:layout_gravity="center"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:text="Choose Login Method"
-        android:textColor="#707070" />
-
-
-    <!--    <LinearLayout-->
-    <!--        android:id="@+id/linear"-->
-    <!--        android:layout_width="290sp"-->
-    <!--        android:layout_height="150sp"-->
-    <!--        android:layout_below="@+id/text1"-->
-    <!--        android:layout_centerHorizontal="true"-->
-    <!--        android:layout_marginTop="30dp"-->
-    <!--        android:orientation="vertical"-->
-    <!--        android:weightSum="2">-->
-
-    <!--        <com.google.android.material.textfield.TextInputLayout-->
-    <!--            android:layout_width="match_parent"-->
-    <!--            android:layout_height="0dp"-->
-    <!--            android:layout_weight="1"-->
-    <!--            android:baselineAligned="false">-->
-
-    <!--            <com.google.android.material.textfield.TextInputEditText-->
-    <!--                android:id="@+id/login_email"-->
-    <!--                android:layout_width="match_parent"-->
-    <!--                android:layout_height="match_parent"-->
-    <!--                android:hint="@string/email"-->
-    <!--                android:inputType="textEmailAddress"-->
-    <!--                android:textAlignment="textStart" />-->
-    <!--        </com.google.android.material.textfield.TextInputLayout>-->
-
-
-    <!--        <com.google.android.material.textfield.TextInputLayout-->
-    <!--            android:layout_width="match_parent"-->
-    <!--            android:layout_height="0dp"-->
-    <!--            android:layout_marginTop="5sp"-->
-    <!--            android:layout_weight="1"-->
-    <!--            android:baselineAligned="false">-->
-
-    <!--            <com.google.android.material.textfield.TextInputEditText-->
-    <!--                android:id="@+id/password"-->
-    <!--                android:layout_width="match_parent"-->
-    <!--                android:layout_height="match_parent"-->
-    <!--                android:hint="@string/password"-->
-    <!--                android:inputType="textPassword"-->
-    <!--                android:textAlignment="textStart" />-->
-    <!--        </com.google.android.material.textfield.TextInputLayout>-->
-    <!--    </LinearLayout>-->
-
-    <LinearLayout
-        android:id="@+id/ll3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:weightSum="2">
+        android:weightSum="14"
+        tools:context=".ui.login.LoginActivity">
 
-
-        <com.google.android.gms.common.SignInButton
-            android:id="@+id/sign_in_button"
+        <ImageView
             android:layout_width="match_parent"
-            android:layout_margin="5sp"
-            android:layout_height="wrap_content" />
-<!--        -->
-<!--        <ImageView-->
-<!--            android:id="@+id/gmail_login"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_margin="10sp"-->
-<!--            android:onClick="googleLogin"-->
-<!--            android:src="@drawable/google_login" />-->
+            android:layout_height="0sp"
+            android:layout_weight="6"
+            android:src="@drawable/animated_button3" />
 
-        <com.facebook.login.widget.LoginButton
-            android:id="@+id/facebook_login"
-            android:layout_width="match_parent"
+        <ImageView
+            android:layout_width="50sp"
+            android:layout_height="50sp"
+            android:layout_marginStart="8sp"
+            android:layout_marginTop="-40dp"
+            android:background="@drawable/animated_button3"
+            android:rotation="45" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="0sp"
+            android:layout_margin="40sp"
+            android:layout_weight="2"
+            android:gravity="center|top"
+            android:text="@string/login"
+            android:textColor="#1A1A1A"
+            android:textSize="30dp" />
+
+        <!-- TODO How to get the profile Image from facebook and google -->
+
+        <TextView
+            android:id="@+id/register_text"
+            android:layout_width="wrap_content"
+            android:layout_height="0sp"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Choose Login Method"
+            android:textColor="#707070" />
+
+        <LinearLayout
+            android:id="@+id/ll3"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="5sp" />
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:weightSum="2">
+
+            <com.google.android.gms.common.SignInButton
+                android:id="@+id/sign_in_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5sp"
+                android:onClick="onGoogleLoginClicked" />
+
+            <com.facebook.login.widget.LoginButton
+                android:id="@+id/facebook_login"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5sp"
+                android:elevation="8dp" />
+        </LinearLayout>
     </LinearLayout>
-
-    <!--    <Button-->
-    <!--        android:layout_gravity="center"-->
-    <!--        android:id="@+id/login"-->
-    <!--        style="?attr/materialButtonOutlinedStyle"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_marginTop="40dp"-->
-    <!--        android:background="@drawable/button_shape"-->
-    <!--        android:onClick="loginClicked"-->
-    <!--        android:text="@string/login"-->
-    <!--        android:textColor="#065FA3"-->
-    <!--        android:textSize="16sp" />-->
-
-
-</LinearLayout>
+</layout>

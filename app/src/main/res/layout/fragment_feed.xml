@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -9,13 +10,29 @@
 
         <variable
             name="profile"
-            type="com.whiteside.insta.ui.edit_profile.Profile" />
+            type="com.whiteside.insta.model.Profile" />
     </data>
 
-    <androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/posts"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        posts="@{viewModel.profile}"
-        android:padding="4dp" />
+        android:layout_height="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/posts"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="4dp" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/add_post"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/_15sdp"
+            android:backgroundTint="#FFF"
+            android:baseline="@dimen/_15sdp"
+            android:contentDescription="@string/todo"
+            android:src="@drawable/add_image" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

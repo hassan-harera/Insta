@@ -1,0 +1,44 @@
+{
+  "project_info": {
+    "project_number": "1004201569665",
+    "firebase_url": "https://insta-simulator.firebaseio.com",
+    "project_id": "insta-simulator",
+    "storage_bucket": "insta-simulator.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1004201569665:android:926f73a8fe252878088c80",
+        "android_client_info": {
+          "package_name": "com.whiteside.insta"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1004201569665-sgmavtgqffqtghq88nn2n36jd71h81dl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.whiteside.insta",
+            "certificate_hash": "624f481adc8c4d1fc03f18403f825042f97a8208"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3bvP7dJKdSUzfs2TB7c6Lc9vXMF7aqOY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1004201569665-1eb3lga7mja49qpefj9fg9u1v96b0f18.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

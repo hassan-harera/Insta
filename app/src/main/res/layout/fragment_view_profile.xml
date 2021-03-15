@@ -1,62 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/scrollView"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <RelativeLayout
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.whiteside.insta.ui.profile.ProfileFragmentViewModel" />
+
+        <variable
+            name="profile"
+            type="com.whiteside.insta.model.Profile" />
+
+    </data>
+
+    <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
-        <ImageView
-            android:id="@+id/header_cover_image"
-            android:layout_width="match_parent"
-            android:layout_height="260dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/animated_button3" />
-
-        <ImageView
-            android:id="@+id/userProfilePhoto"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="30dp"
-            android:elevation="5dp"/>
-
-        <TextView
-            android:id="@+id/user_profile_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/userProfilePhoto"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="10dp"
-            android:text="Name"
-            android:textColor="#fff"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/user_profile_short_bio"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/user_profile_name"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="12dp"
-            android:text="Bio"
-            android:textColor="#fff"
-            android:textSize="14sp" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/profile_posts"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/header_cover_image"
-            android:layout_alignParentBottom="true"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="10dp"
-            android:nestedScrollingEnabled="true" />
+            android:orientation="vertical"
+            android:padding="@dimen/_5sdp">
 
-    </RelativeLayout>
-</androidx.core.widget.NestedScrollView>
+            <ImageView
+                android:id="@+id/profile_edit_img"
+                profile_edit_img="@{profile.profilePic}"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                android:elevation="5dp"
+                android:src="@drawable/profile" />
+
+            <!--TODO Convert the layout to Linear Layout or Constraint Layout-->
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="8dp"
+                android:background="@color/back_transparent"
+                android:maxLength="20"
+                android:text="@={profile.name, default=@string/name}"
+                android:textAlignment="center"
+                android:textColor="#000"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/bio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:autofillHints="bio"
+                android:background="@color/back_transparent"
+                android:maxLength="40"
+                android:singleLine="true"
+                android:text="@={profile.bio, default=@string/bio}"
+                android:textAlignment="center"
+                android:textColor="#000000"
+                android:textSize="12sp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                profile_posts="@{viewModel.adapter}"
+                android:id="@+id/profile_posts"
+                android:layout_width="match_parent"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                android:layout_height="match_parent"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:nestedScrollingEnabled="true" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</layout>

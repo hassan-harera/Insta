@@ -52,7 +52,7 @@ The Profile fragment contains the info of that user, his profile pic, name, bio,
 
 <h2>Notification Tab</h2>
 <h3>
-The Notification Tab contains all the notifications of the user. it shows the notifications within a recycler view with multiple View Holder. The data collected and is sent in a list to the Notifications adapter. the list is sorted based date. The friend request notification contains two buttons to confirm and delete. if the user confirmed the request the other user will be added to the friend list of the user and vise verse. and if clicked the request the profile of the user will be shown. Like notification, if the user clicked it will show the post with the list of the users that liked the post names.
+The Notification Tab contains all the notifications of the user. it shows the notifications within a recycler view with multiple View Holder. The data collected and is sent in a list to the Notifications com.whiteside.insta.adapter. the list is sorted based date. The friend request notification contains two buttons to confirm and delete. if the user confirmed the request the other user will be added to the friend list of the user and vise verse. and if clicked the request the profile of the user will be shown. Like notification, if the user clicked it will show the post with the list of the users that liked the post names.
 </h3>
 <div>
 <img src="screenshots/108.jpg" width="300" height="600">

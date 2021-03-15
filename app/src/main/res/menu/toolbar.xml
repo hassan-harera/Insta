@@ -8,11 +8,11 @@
         android:title="Edit Profile"
         app:showAsAction="never" />
 
-    <item
-        android:id="@+id/settings"
-        android:icon="@drawable/settings"
-        android:title="Settings"
-        app:showAsAction="never" />
+<!--    <item-->
+<!--        android:id="@+id/settings"-->
+<!--        android:icon="@drawable/settings"-->
+<!--        android:title="Settings"-->
+<!--        app:showAsAction="never" />-->
 
     <item
         android:id="@+id/logout"
@@ -20,11 +20,11 @@
         android:title="Log out"
         app:showAsAction="never" />
 
-    <item
-        android:id="@+id/get_token"
-        android:icon="@drawable/settings"
-        android:title="Get Token"
-        app:showAsAction="never" />
+<!--    <item-->
+<!--        android:id="@+id/get_token"-->
+<!--        android:icon="@drawable/settings"-->
+<!--        android:title="Get Token"-->
+<!--        app:showAsAction="never" />-->
 
     <item
         android:id="@+id/search_token"

@@ -1,123 +1,121 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="10dp"
-    android:background="#FAFAFA"
-    tools:context=".VisitProfile">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.whiteside.insta.ui.view_post.PostViewModel" />
+
+        <variable
+            name="post"
+            type="com.whiteside.insta.model.Post" />
+
+        <variable
+            name="profile"
+            type="com.whiteside.insta.model.Profile" />
+    </data>
 
 
-    <LinearLayout
-        android:id="@+id/ll1"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+        <ImageView
+            android:id="@+id/profile_image"
+            profile_image="@{profile}"
+            android:layout_width="@dimen/_40sdp"
+            android:layout_height="@dimen/_40sdp"
             android:layout_gravity="center"
-            android:orientation="horizontal">
+            android:layout_margin="5dp"
+            android:src="@drawable/profile"
+            app:layout_constraintBottom_toTopOf="@+id/caption"
+            app:layout_constraintEnd_toStartOf="@+id/post_image"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <ImageView
-                android:id="@+id/profile_image"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_gravity="center"
-                android:layout_margin="5dp"
-                android:src="@drawable/profile" />
+        <TextView
+            android:id="@+id/profile_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/_3sdp"
+            android:text="@{profile.name}"
+            android:textColor="#000000"
+            android:textSize="@dimen/_10sdp"
+            app:layout_constraintStart_toEndOf="@id/profile_image"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:orientation="vertical">
+        <TextView
+            android:id="@+id/date"
+            post_date="@{post}"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/_3sdp"
+            android:textColor="#3E3939"
+            android:textSize="@dimen/_8sdp"
+            app:layout_constraintStart_toEndOf="@id/profile_image"
+            app:layout_constraintTop_toBottomOf="@+id/profile_name" />
 
-                <TextView
-                    android:id="@+id/profile_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="bottom"
-                    android:text="Hassan Harera"
-                    android:textColor="#000000"
-                    android:textSize="16dp" />
-
-                <TextView
-                    android:id="@+id/date"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="bottom"
-                    android:text="13 Dec 2020"
-                    android:textColor="#3E3939"
-                    android:textSize="10dp" />
-            </LinearLayout>
-
-        </LinearLayout>
 
         <TextView
             android:id="@+id/caption"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="bottom"
-            android:padding="5dp"
-            android:text="Caption"
+            android:layout_margin="@dimen/_3sdp"
+            android:text="@{post.caption}"
             android:textColor="#AEA4A4"
-            android:textSize="16dp" />
-
+            android:textSize="@dimen/_10sdp"
+            app:layout_constraintTop_toBottomOf="@+id/profile_image" />
 
         <ImageView
             android:id="@+id/post_image"
+            post_image="@{post}"
             android:layout_width="match_parent"
-            android:layout_height="250dp"
-            android:padding="3dp" />
+            android:layout_height="@dimen/_190sdp"
+            app:layout_constraintTop_toBottomOf="@+id/caption" />
 
-        <LinearLayout
-            android:id="@+id/relativeLayout"
+
+        <ImageView
+            android:id="@+id/love"
+            android:layout_width="@dimen/_30sdp"
+            android:layout_height="@dimen/_30sdp"
+            android:layout_gravity="center"
+            android:layout_margin="3dp"
+            android:src="@drawable/love"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/post_image" />
+
+
+        <TextView
+            android:id="@+id/love_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:orientation="horizontal">
+            android:layout_margin="@dimen/_3sdp"
+            android:text='@{Integer.toString(post.likes.size())}'
+            android:textColor="#000000"
+            android:textSize="@dimen/_10sdp"
+            app:layout_constraintStart_toEndOf="@+id/love"
+            app:layout_constraintTop_toBottomOf="@+id/post_image" />
 
 
-            <ImageView
-                android:id="@+id/love"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_gravity="center"
-                android:layout_margin="3dp"
-                android:gravity="center"
-                android:maxLines="0"
-                android:src="@drawable/love" />
+        <!--        <ProgressBar-->
+        <!--            android:id="@+id/progress_bar"-->
+        <!--            progress_bar="@{viewModel.post}"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_centerHorizontal="true"-->
+        <!--            android:layout_centerVertical="true"-->
+        <!--            android:visibility="visible" />-->
 
-            <TextView
-                android:id="@+id/love_number"
-                android:layout_width="wrap_content"
-                android:layout_height="30dp"
-                android:layout_gravity="center"
-                android:layout_marginLeft="10dp"
-                android:text="0 Love"
-                android:textColor="#000000"
-                android:textSize="20dp" />
-        </LinearLayout>
-    </LinearLayout>
-
-
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:visibility="visible" />
-
-
-    <ListView
-        android:id="@+id/likes_list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/ll1"
-        android:layout_margin="5sp"
-        android:layout_gravity="bottom" />
-</RelativeLayout>
+        <ListView
+            android:id="@+id/likes_list"
+            likes_list="@{viewModel.names}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5sp"
+            app:layout_constraintTop_toBottomOf="@+id/love"
+            app:layout_constraintVertical_weight="1" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

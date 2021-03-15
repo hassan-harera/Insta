@@ -1,10 +1,8 @@
 package com.whiteside.insta.ui.edit_profile
 
+import com.whiteside.insta.model.Profile
 import android.app.Activity
 import android.app.Application
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
@@ -18,32 +16,32 @@ import com.google.firebase.firestore.Blob
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
-import java.io.ByteArrayOutputStream
+import com.whiteside.insta.model.BlobBitmap
 
-class EditProfileViewModel(val activity: Activity, application: Application) : AndroidViewModel(application) {
+class EditProfileViewModel(application: Application) : AndroidViewModel(application) {
     var profile = MutableLiveData<Profile>()
+    val finishActivity: MutableLiveData<Boolean> = MutableLiveData<Boolean>()
 
     companion object {
         @JvmStatic
         @BindingAdapter("profile_edit_img")
-        fun getImage(view: ImageView, profile: Profile?) {
-            if (profile!!.profilePic == null) {
-                return
-            }
-            val bytes = profile.profilePic!!.toBytes()
-            view.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.size))
+        fun getImage(view: ImageView, blob: Blob?) {
+            view.setImageBitmap(BlobBitmap.convertBlobToBitmap(blob))
         }
     }
 
-    fun getUser() {
+    fun loadProfile() {
         FirebaseFirestore
-                .getInstance()
-                .collection("Users")
-                .document(FirebaseAuth.getInstance().uid!!)
-                .get()
-                .addOnSuccessListener { ds: DocumentSnapshot ->
-                    profile.value = ds.toObject(Profile::class.java)
-                }
+            .getInstance()
+            .collection("Users")
+            .document(FirebaseAuth.getInstance().uid!!)
+            .get()
+            .addOnSuccessListener { ds: DocumentSnapshot ->
+                profile.value = ds.toObject(Profile::class.java)
+            }
+            .addOnFailureListener {
+                it.printStackTrace()
+            }
     }
 
     //TODO Progress Bar
@@ -51,38 +49,22 @@ class EditProfileViewModel(val activity: Activity, application: Application) : A
         val progressBar = ProgressBar(view.context)
         progressBar.visibility = View.VISIBLE
         FirebaseFirestore
-                .getInstance()
-                .collection("Users")
-                .document(FirebaseAuth.getInstance().uid!!)
-                .set(profile, SetOptions.merge())
-                .addOnCompleteListener {
-                    Toast.makeText(view.context, "Successfully Edited", Toast.LENGTH_SHORT).show()
-                    progressBar.visibility = View.INVISIBLE
-                    activity.finish()
-                }
+            .getInstance()
+            .collection("Users")
+            .document(FirebaseAuth.getInstance().uid!!)
+            .set(profile, SetOptions.merge())
+            .addOnCompleteListener {
+                Toast.makeText(view.context, "Successfully Edited", Toast.LENGTH_SHORT).show()
+                progressBar.visibility = View.INVISIBLE
+                finishActivity.value = true
+            }
     }
 
-    fun onChangeImageClicked(view: View, profile: Profile) {
+    fun onChangeImageClicked(view: View) {
         ImagePicker
-                .with(activity)
-                .compress(100)
-                .maxResultSize(512, 512)
-                .start { resultCode, data ->
-                    if (resultCode == Activity.RESULT_OK) {
-                        val imageBitmap = BitmapFactory.decodeFile(data!!.data!!.path)
-
-                        val stream = ByteArrayOutputStream()
-                        imageBitmap!!.compress(Bitmap.CompressFormat.PNG, 100, stream)
-                        val byteArray = stream.toByteArray()
-                        profile.profilePic = Blob.fromBytes(byteArray)
-
-                        (view as ImageView).setImageBitmap(imageBitmap)
-                        Log.d("IMAGESIZE", "${byteArray.size}")
-                    } else if (resultCode == ImagePicker.RESULT_ERROR) {
-                        Toast.makeText(activity.baseContext, ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(activity.baseContext, "Task Cancelled", Toast.LENGTH_SHORT).show()
-                    }
-                }
+            .with(view.context as Activity)
+            .compress(100)
+            .maxResultSize(512, 512)
+            .start()
     }
 }

@@ -1,10 +1,39 @@
-<androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/friends"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_margin="10dp"
-    android:nestedScrollingEnabled="false"
-    tools:context=".SearchResult">
+<layout>
 
-</androidx.recyclerview.widget.RecyclerView>
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.whiteside.insta.ui.search_resault.ProfileSearchViewModel" />
+
+        <variable
+            name="profile"
+            type="com.whiteside.insta.model.Profile" />
+    </data>
+
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/relativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+
+        <QuickContactBadge
+            android:id="@+id/profile_image"
+<!--            profile_image="@{profile}" !-->
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/animated_button3" />
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_3sdp"
+            android:gravity="center"
+            android:text="@{profile.name, default=@string/name}"
+            android:textColor="#000"
+            android:textSize="18sp" />
+    </LinearLayout>
+</layout>

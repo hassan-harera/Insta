@@ -1,49 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".ui.edit_profile.EditProfile">
+<layout>
 
     <data>
 
         <variable
             name="profile"
-            type="com.whiteside.insta.ui.edit_profile.Profile" />
+            type="com.whiteside.insta.model.Profile" />
 
         <variable
             name="viewModel"
             type="com.whiteside.insta.ui.edit_profile.EditProfileViewModel" />
     </data>
 
-    <RelativeLayout
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <ImageView
-            android:id="@+id/header_cover_image"
-            android:layout_width="match_parent"
-            android:layout_height="260dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/animated_button3" />
-
-        <ImageView
-            android:id="@+id/profile_edit_img"
-            profile_edit_img="@{profile}"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="20dp"
-            android:elevation="5dp"
-            android:onClick="@{(view) -> viewModel.onChangeImageClicked(view, profile)}" />
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".ui.edit_profile.EditProfileActivity">
 
         <!--TODO Convert the layout to Linear Layout or Constraint Layout-->
+        <ImageView
+            android:id="@+id/profile_edit_img"
+            profile_edit_img="@{profile.profilePic}"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:elevation="5dp"
+            android:onClick="@{(view) -> viewModel.onChangeImageClicked(view)}" />
+
         <EditText
             android:id="@+id/name"
-            android:layout_width="200dp"
-            android:layout_height="40dp"
-            android:layout_below="@id/profile_edit_img"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="10dp"
-            android:autofillHints=""
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="8dp"
             android:background="@color/back_transparent"
             android:imeOptions="actionNext"
             android:inputType="textPersonName"
@@ -56,10 +48,9 @@
 
         <EditText
             android:id="@+id/bio"
-            android:layout_width="250dp"
-            android:layout_height="60dp"
-            android:layout_below="@+id/name"
-            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_marginTop="10dp"
             android:autofillHints="bio"
             android:background="@color/back_transparent"
@@ -75,7 +66,6 @@
             android:id="@+id/email"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/header_cover_image"
             android:layout_margin="5dp"
             android:background="#fff"
             android:elevation="4dp"
@@ -87,12 +77,11 @@
             android:id="@+id/save"
             android:layout_width="200dp"
             android:layout_height="30dp"
-            android:layout_below="@+id/email"
-            android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
             android:layout_marginTop="50dp"
             android:background="@drawable/animated_button"
             android:onClick="@{(view)-> viewModel.onSaveClicked(view, profile)}"
             android:text="@string/save"
             android:textColor="#FAFAFA" />
-    </RelativeLayout>
+    </LinearLayout>
 </layout>

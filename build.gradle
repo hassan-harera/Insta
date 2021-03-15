@@ -2,24 +2,23 @@ buildscript {
     ext.kotlin_version = '1.4.30'
     repositories {
         google()
-        jcenter()
         mavenCentral()
+        maven {
+            url "https://maven.google.com"
+        }
         maven {
             url "https://maven.springframework.org/release"
         }
-        maven {
-            url "https://maven.restlet.com"
-        }
     }
     dependencies {
+        classpath 'com.google.gms:google-services:4.3.5'
+        classpath 'com.android.tools.build:gradle:4.2.0-beta05'
         classpath("org.junit.platform:junit-platform-gradle-plugin:1.0.0-M4")
-        classpath 'com.android.tools.build:gradle:4.1.2'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.31"
     }
 }
-
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.4.30'
+    id 'org.jetbrains.kotlin.jvm' version '1.4.31'
 }
 repositories {
     mavenCentral()
@@ -40,8 +39,7 @@ compileTestKotlin {
 allprojects {
     repositories {
         google()
-        jcenter()
         mavenCentral()
-        maven { url 'https://jitpack.io' }
+        maven { url "https://www.jitpack.io" }
     }
 }

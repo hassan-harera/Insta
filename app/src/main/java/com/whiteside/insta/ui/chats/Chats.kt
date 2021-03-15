@@ -1,6 +1,6 @@
 package com.whiteside.insta.ui.chats
 
-import Controller.ChatsRecyclerViewAdapter
+import com.whiteside.insta.adapter.ChatsRecyclerViewAdapter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -30,7 +30,7 @@ class Chats : Fragment() {
         recyclerView = bind.friends
         recyclerView!!.setHasFixedSize(true)
         recyclerView!!.layoutManager = LinearLayoutManager(context)
-        getChats()
+//        getChats()
 
         return bind.root
     }

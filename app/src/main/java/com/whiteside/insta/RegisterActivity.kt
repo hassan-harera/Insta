@@ -1,6 +1,6 @@
 package com.whiteside.insta
 
-import Controller.Connection
+import com.whiteside.insta.model.Connection
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -12,6 +12,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.whiteside.insta.ui.login.LoginActivity
+import com.whiteside.insta.ui.wall.WallActivity
 
 class RegisterActivity : AppCompatActivity() {
     var password: TextInputEditText? = null
