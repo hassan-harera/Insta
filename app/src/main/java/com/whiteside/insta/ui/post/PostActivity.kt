@@ -12,6 +12,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.whiteside.insta.R
+import com.whiteside.insta.R.*
 import com.whiteside.insta.databinding.ActivityPostBinding
 import com.whiteside.insta.model.BlobBitmap
 import com.whiteside.insta.ui.edit_profile.EditProfileViewModel
@@ -23,7 +24,7 @@ class PostActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        bind = DataBindingUtil.setContentView(this, R.layout.activity_post)
+        bind = DataBindingUtil.setContentView(this, layout.activity_post)
         viewModel = ViewModelProvider(this).get(PostViewModel::class.java)
 
         bind.viewModel = viewModel
@@ -46,7 +47,7 @@ class PostActivity : AppCompatActivity() {
     }
 
     private fun addOnImageClick() {
-        bind.addImage.setOnClickListener {
+        bind.changeImage.setOnClickListener {
             ImagePicker
                 .with(this)
                 .compress(120)

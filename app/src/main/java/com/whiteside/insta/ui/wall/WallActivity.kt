@@ -1,7 +1,6 @@
 package com.whiteside.insta.ui.wall
 
 import com.whiteside.insta.adapter.FragmentAdapter
-import com.whiteside.insta.model.Profile
 import android.animation.StateListAnimator
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -12,7 +11,6 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
 import com.facebook.login.LoginManager
 import com.google.android.material.appbar.AppBarLayout
@@ -21,19 +19,15 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.whiteside.insta.GoogleSignIn
-import com.whiteside.insta.GoogleSignIn.getGoogleSignInClient
 import com.whiteside.insta.R
 import com.whiteside.insta.databinding.ActivityWallBinding
-import com.whiteside.insta.ui.chats.Chats
+import com.whiteside.insta.ui.chats.ChatsFragment
 import com.whiteside.insta.ui.edit_profile.EditProfileActivity
 import com.whiteside.insta.ui.feed.FeedFragment
 import com.whiteside.insta.ui.login.LoginActivity
 import com.whiteside.insta.ui.notifications.NotificationsFragment
 import com.whiteside.insta.ui.profile.ProfileFragment
 import com.whiteside.insta.ui.search_resault.SearchResult
-import com.whiteside.insta.ui.visit_profile.VisitProfile
-import java.util.*
-import kotlin.collections.ArrayList
 
 class WallActivity : AppCompatActivity() {
     private lateinit var bind: ActivityWallBinding
@@ -71,7 +65,7 @@ class WallActivity : AppCompatActivity() {
             FeedFragment(),
             ProfileFragment(),
             NotificationsFragment(),
-            Chats()
+            ChatsFragment()
         )
 
         val res = arrayListOf(

@@ -14,13 +14,15 @@ import com.whiteside.insta.model.Profile
 import java.util.ArrayList
 
 class FeedViewModel(application: Application) : AndroidViewModel(application) {
-    var profile: MutableLiveData<Profile> = MutableLiveData()
-    var posts = ArrayList<Post?>()
+    var profile = MutableLiveData<Profile>()
+
+    var posts : MutableList<Post?> = ArrayList()
+    val adapter = PostsRecyclerViewAdapter(posts)
 
     companion object {
         @JvmStatic
         @BindingAdapter("posts")
-        fun getFriendsPosts(view: RecyclerView, adapter: PostsRecyclerViewAdapter?) {
+        fun adaptPosts(view: RecyclerView, adapter: PostsRecyclerViewAdapter?) {
             view.adapter = adapter
         }
     }
@@ -33,24 +35,27 @@ class FeedViewModel(application: Application) : AndroidViewModel(application) {
             .addOnSuccessListener { ds ->
                 profile.value = ds.toObject(Profile::class.java)
             }
-            .addOnFailureListener{
+            .addOnFailureListener {
                 it.printStackTrace()
             }
     }
 
-    fun loadProfilePosts() {
-        profile.value?.friends?.forEach {
-            FirebaseFirestore.getInstance()
-                .collection("Users")
-                .document(it)
-                .collection("Posts")
-                .orderBy("time", Query.Direction.DESCENDING)
-                .get()
-                .addOnSuccessListener {
-                    it.documents.forEach {
-                        posts.add(it.toObject(Post::class.java))
+    fun loadProfilePosts(profile: Profile) {
+        profile.let {
+            it.friends!!.forEach {
+                FirebaseFirestore.getInstance()
+                    .collection("Users")
+                    .document(it)
+                    .collection("Posts")
+                    .orderBy("time", Query.Direction.DESCENDING)
+                    .get()
+                    .addOnSuccessListener {
+                        it.documents.forEach {
+                            posts.add(it.toObject(Post::class.java))
+                            adapter.notifyDataSetChanged()
+                        }
                     }
-                }
+            }
         }
     }
 }

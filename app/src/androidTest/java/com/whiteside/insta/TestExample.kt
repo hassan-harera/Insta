@@ -13,13 +13,4 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class TestExample {
 
-    @Rule
-    @JvmField
-    val rule : ActivityTestRule<WallActivity> = ActivityTestRule(WallActivity::class.java)
-
-    @Test
-    fun testAddImage() {
-        onView(withId(R.id.add_image)).perform(click())
-    }
-
 }

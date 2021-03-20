@@ -7,15 +7,14 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.firebase.auth.FirebaseAuth
 import com.whiteside.insta.R
 import com.whiteside.insta.databinding.FragmentViewProfileBinding
-import com.whiteside.insta.adapter.PostsRecyclerViewAdapter
 
 
 class ProfileFragment : Fragment() {
     private lateinit var bind: FragmentViewProfileBinding
-    private lateinit var viewModel: ProfileFragmentViewModel
+    private lateinit var viewModel: ProfileViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -24,7 +23,8 @@ class ProfileFragment : Fragment() {
     ): View {
 
         bind = DataBindingUtil.inflate(inflater, R.layout.fragment_view_profile, container, false)
-        viewModel = ViewModelProvider(this).get(ProfileFragmentViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
+
         bind.viewModel = viewModel
 
         observeProfile()
@@ -36,7 +36,7 @@ class ProfileFragment : Fragment() {
         viewModel.profile.observe(viewLifecycleOwner) {
             bind.profile = it
         }
-        viewModel.loadProfile()
-        viewModel.loadProfilePosts()
+        viewModel.loadProfile(FirebaseAuth.getInstance().uid)
+        viewModel.loadProfilePosts(FirebaseAuth.getInstance().uid)
     }
 }

@@ -11,24 +11,19 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.whiteside.insta.R
+import com.whiteside.insta.R.*
 import com.whiteside.insta.databinding.FragmentNotificationsBinding
 
 class NotificationsFragment : Fragment() {
     private lateinit var bind: FragmentNotificationsBinding
-    private var recyclerView: RecyclerView? = null
     private lateinit var vieWModel: NotificationsViewModel
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-
-        bind = DataBindingUtil.inflate(layoutInflater, R.layout.fragment_notifications, container, false)
+        bind = DataBindingUtil.inflate(layoutInflater, layout.fragment_notifications, container, false)
         vieWModel = ViewModelProvider(this).get(NotificationsViewModel::class.java)
 
-
-        recyclerView = bind.recyclerViewNotifications
-        recyclerView!!.layoutManager = LinearLayoutManager(context)
-        recyclerView!!.setHasFixedSize(true)
-        recyclerView!!.adapter = NotificationsRecyclerViewAdapter(vieWModel.notifications, context)
+        bind.viewModel = vieWModel
 
         vieWModel.getLikesNotifications()
         vieWModel.getFriendRequests()

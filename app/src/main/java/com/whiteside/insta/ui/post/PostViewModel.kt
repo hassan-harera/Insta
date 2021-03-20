@@ -27,18 +27,20 @@ class PostViewModel : ViewModel() {
 
     companion object {
         @JvmStatic
-        @BindingAdapter("add_image")
+        @BindingAdapter("image")
         fun getImage(view: ImageView, blob: Blob?) {
             if (blob != null)
                 view.setImageBitmap(BlobBitmap.convertBlobToBitmap(blob))
             else
-                view.setImageResource(R.drawable.add_image)
+                view.setImageResource(R.drawable.avatar05)
         }
 
         @JvmStatic
         @BindingAdapter("profile_image")
         fun loadProfilePic(view: ImageView, profile: Profile?) {
-            view.setImageBitmap(BlobBitmap.convertBlobToBitmap(profile?.profilePic))
+            profile?.let {
+                view.setImageBitmap(BlobBitmap.convertBlobToBitmap(it.profilePic))
+            }
         }
 
         @JvmStatic
@@ -71,42 +73,6 @@ class PostViewModel : ViewModel() {
                 view.text = post.likes!!.size.toString()
         }
     }
-//        fun load(postImage: Blob?): Bitmap {
-//            val post = posts[position]
-//            fStore.collection("Users")
-//                .document(post!!.uId!!)
-//                .addSnapshotListener(EventListener { ds, e ->
-//                    if (e != null) {
-//                        e.printStackTrace()
-//                        return@EventListener
-//                    }
-//                    val profile = ds!!.toObject(Profile::class.java)
-//                    holder.profileImage.setImageBitmap(
-//                        BitmapFactory.decodeByteArray(
-//                            profile!!.profilePic!!.toBytes(),
-//                            0, profile.profilePic!!.toBytes().size
-//                        )
-//
-//                })
-//            holder.love.setOnClickListener {
-//                holder.love.isEnabled = false
-//                if (!post.liked!!) {
-//                    post.liked = true
-//                    post.addLike(auth.uid!!)
-//                    holder.love_number.text = post.likes!!.size.toString()
-//                    holder.love.setImageResource(R.drawable.loved)
-//                    setLike(post)
-//                    holder.love.isEnabled = true
-//                } else {
-//                    post.liked = false
-//                    post.removeLike(auth.uid!!)
-//                    holder.love_number.text = post.likes!!.size.toString()
-//                    holder.love.setImageResource(R.drawable.love)
-//                    removeLike(post)
-//                    holder.love.isEnabled = true
-//                }
-//            }
-//        }
 
     fun likeClicked(view: View, post: Post?) {
         if (post != null) {

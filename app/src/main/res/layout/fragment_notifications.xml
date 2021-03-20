@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.whiteside.insta.ui.notifications.NotificationsViewModel" />
+
+    </data>
 
     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
@@ -9,8 +17,11 @@
         tools:context=".ui.notifications.NotificationsFragment">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view_notifications"
+            android:id="@+id/notifications"
+            notifications="@{viewModel.adapter}"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:padding="@dimen/_8sdp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
     </FrameLayout>
 </layout>

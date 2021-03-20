@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.whiteside.insta.R
+import com.whiteside.insta.R.*
 import com.whiteside.insta.databinding.ActivityChatBinding
 
 class ChatActivity : AppCompatActivity() {
@@ -18,7 +18,7 @@ class ChatActivity : AppCompatActivity() {
 
         val UID = intent.extras!!.getString("UID")!!
 
-        bind = DataBindingUtil.setContentView(this, R.layout.activity_chat)
+        bind = DataBindingUtil.setContentView(this, layout.activity_chat)
         viewModel = ViewModelProvider(this).get(ChatViewModel::class.java)
         viewModel.UID = UID
         getProfile()

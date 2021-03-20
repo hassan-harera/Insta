@@ -23,14 +23,12 @@ import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.SetOptions
 import com.squareup.picasso.Picasso
 import com.whiteside.insta.GoogleSignIn.getGoogleSignInClient
 import com.whiteside.insta.model.Profile
 
 
 class LoginViewModel(application: Application) : AndroidViewModel(application) {
-    private val TAG: String = "LOGINVIEWMODEL"
     var auth: FirebaseAuth = FirebaseAuth.getInstance()
     var fStore = FirebaseFirestore.getInstance()
     var loginOperation: Boolean = false
@@ -49,11 +47,11 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
     // TODO Showing Toast from the viewmodel
     fun checkUserIsAlreadyRegistered(email: String) {
         FirebaseAuth
-                .getInstance()
-                .fetchSignInMethodsForEmail(email)
-                .addOnSuccessListener {
-                    loginOperation != it.signInMethods.isNullOrEmpty()
-                }
+            .getInstance()
+            .fetchSignInMethodsForEmail(email)
+            .addOnSuccessListener {
+                loginOperation != it.signInMethods.isNullOrEmpty()
+            }
     }
 
     fun onFacebookLogin(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -73,18 +71,13 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
             e.printStackTrace()
         }
     }
+
     // TODO get Profile information
     fun getFacebookProfileInfo(loginResult: LoginResult) {
         val request = GraphRequest.newMeRequest(loginResult.accessToken) { mProfile, response ->
             profile.name = response.jsonObject.getString("name")
             profile.bio = response.jsonObject.getString("name")
             profile.email = response.jsonObject.getString("email")
-
-//            val picLink = Gson().fromJson(response.jsonObject.getString("profile_pic"), HashMap::class.java).get("url").toString()
-//            val bitmap = LoadProfilePic().execute(Uri.parse(picLink)).get()
-//            profile.profilePic = BlobBitmap.convertBitmapToBlob(bitmap)
-//            val bitmap = LoadProfilePic().execute(Uri.parse("http://graph.facebook.com/${response.jsonObject.getString("id")}/picture")).get()
-//            profile.profilePic = BlobBitmap.convertBitmapToBlob(bitmap)
 
             checkUserIsAlreadyRegistered(profile.email!!)
             val credential = FacebookAuthProvider.getCredential(loginResult.accessToken.token)
@@ -106,16 +99,19 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun addUserToDatabase() {
-        fStore.collection("Users")
-                .document(auth.uid!!)
-                .set(profile, SetOptions.merge())
-                .addOnSuccessListener {
-                    goToFeed()
-                }
-                .addOnFailureListener {
-                    it.printStackTrace()
-                }
+        profile.uid = auth.uid!!
+        profile.friendRequests = HashMap()
+        profile.friends = ArrayList()
 
+        fStore.collection("Users")
+            .document(auth.uid!!)
+            .set(profile)
+            .addOnSuccessListener {
+                goToFeed()
+            }
+            .addOnFailureListener {
+                it.printStackTrace()
+            }
 
         //TODO Showing the image in the profile if his picture is null
 //        val bitmap = BitmapFactory.decodeResource(getApplication<Application>().resources, R.drawable.profile)
@@ -126,22 +122,27 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun connectUserToDatabase() {
-        if (loginOperation) {
-            goToFeed()
-        } else {
-            addUserToDatabase()
-        }
+        fStore.collection("Users")
+            .document(auth.uid!!)
+            .get()
+            .addOnSuccessListener {
+                if (it.toObject(Profile::class.java) != null) {
+                    goToFeed()
+                } else {
+                    addUserToDatabase()
+                }
+            }
     }
 
     private fun authenticateToFirebase(credential: AuthCredential) {
         auth.signOut()
         auth.signInWithCredential(credential)
-                .addOnSuccessListener { connectUserToDatabase() }
-                .addOnFailureListener { e: Exception ->
-                    e.printStackTrace()
-                    Toast.makeText(getApplication(), "an error occurred", Toast.LENGTH_SHORT).show()
-                    LoginManager.getInstance().logOut()
-                }
+            .addOnSuccessListener { connectUserToDatabase() }
+            .addOnFailureListener { e: Exception ->
+                e.printStackTrace()
+                Toast.makeText(getApplication(), "an error occurred", Toast.LENGTH_SHORT).show()
+                LoginManager.getInstance().logOut()
+            }
     }
 
     // TODO Finish Login Activity

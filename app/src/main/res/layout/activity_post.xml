@@ -13,23 +13,40 @@
     </data>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:weightSum="10">
 
         <!--TODO plus mark on the image -->
-        <ImageView
-            android:id="@+id/add_image"
-            add_image="@{post.postImage}"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_gravity="center"
-            android:layout_marginTop="@dimen/_30sdp"
-            android:layout_weight="7"
-            android:padding="@dimen/_10sdp"
-            android:src="@drawable/add_image" />
+            android:layout_weight="7">
+
+            <ImageView
+                android:id="@+id/image"
+                image="@{post.postImage}"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/_30sdp"
+                android:padding="@dimen/_10sdp"
+                android:src="@drawable/avatar05" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/changeImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="@dimen/_10sdp"
+                android:backgroundTint="#FFF"
+                android:contentDescription="@string/todo"
+                android:src="@drawable/add_image" />
+        </RelativeLayout>
+
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/caption"

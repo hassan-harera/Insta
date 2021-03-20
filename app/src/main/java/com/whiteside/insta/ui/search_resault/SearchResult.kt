@@ -9,23 +9,26 @@ import com.whiteside.insta.databinding.ActivitySearchResultBinding
 
 class SearchResult : AppCompatActivity() {
 
-    private lateinit var bind : ActivitySearchResultBinding
-    private lateinit var viewModel: ProfileSearchViewModel
+    lateinit var bind: ActivitySearchResultBinding
+    lateinit var viewModel: ProfileSearchViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         bind = DataBindingUtil.setContentView(this, R.layout.activity_search_result)
         viewModel = ViewModelProvider(this).get(ProfileSearchViewModel::class.java)
 
-        viewModel.profileUID = intent.extras?.getString("search")
+        bind.viewModel = viewModel
+
+        val searchKey = intent.getStringExtra("search")!!
+        viewModel.loadSearchResults(searchKey)
 
         observe()
     }
 
-    private fun observe(){
-        viewModel.profile.observe (this){
-            bind.profile = it
-        }
-        viewModel.loadProfileResult()
+    private fun observe() {
+//        viewModel.profile.observe(this) {
+//            bind.profile = it
+//        }
+//        viewModel.loadSearchResults()
     }
 }

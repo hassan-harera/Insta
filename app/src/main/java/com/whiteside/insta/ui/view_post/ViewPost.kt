@@ -16,12 +16,22 @@ class ViewPost : AppCompatActivity() {
 
         bind = DataBindingUtil.setContentView(this, R.layout.activity_view_post)
         viewModel = ViewModelProvider(this).get(PostViewModel::class.java)
+
         bind.viewModel = viewModel
 
         val bundle = intent.extras
-        val postID = bundle!!.getString("Post ID")
-        val UID = bundle.getString("UID")
+        viewModel.postID = bundle!!.getString("postID")
+        viewModel.UID = bundle.getString("UID")
 
-        viewModel.getPost(UID, postID)
+        viewModel.post.observe(this) {
+            bind.post = it
+        }
+
+        viewModel.profile.observe(this) {
+            bind.profile = it
+        }
+
+        viewModel.getPost()
+        viewModel.loadProfile()
     }
 }

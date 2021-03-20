@@ -1,4 +1,5 @@
-<layout>
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -11,26 +12,32 @@
             type="com.whiteside.insta.model.Profile" />
     </data>
 
-
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/relativeLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:onClick="@{(view) -> viewModel.onChatClicked(view, profile)}"
         android:orientation="horizontal">
 
+        <androidx.cardview.widget.CardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="@dimen/_180sdp">
 
-        <QuickContactBadge
-            android:id="@+id/profile_image"
-            profile_image="@{profile}"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@drawable/animated_button3" />
+            <ImageView
+                android:id="@+id/profile_image"
+                profile_image="@{profile}"
+                android:layout_width="@dimen/_50sdp"
+                android:layout_height="@dimen/_50sdp"
+                android:src="@drawable/avatar05" />
+        </androidx.cardview.widget.CardView>
 
         <TextView
             android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_3sdp"
+            android:layout_margin="@dimen/_5sdp"
+            android:fontFamily="casual"
             android:gravity="center"
             android:text="@{profile.name, default=@string/name}"
             android:textColor="#000"

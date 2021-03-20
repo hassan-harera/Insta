@@ -6,7 +6,7 @@ import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.auth.FirebaseAuth
-import com.whiteside.insta.R
+import com.whiteside.insta.R.*
 import com.whiteside.insta.ui.wall.WallActivity
 import com.whiteside.insta.ui.login.LoginActivity
 
@@ -16,7 +16,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_main)
+        setContentView(layout.activity_main)
 
         val viewModel: MainViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         viewModel.initializeFirebase(this)

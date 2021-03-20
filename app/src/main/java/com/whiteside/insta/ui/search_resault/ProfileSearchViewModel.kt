@@ -1,85 +1,60 @@
 package com.whiteside.insta.ui.search_resault
 
-import android.os.Handler
-import android.widget.QuickContactBadge
+import android.content.Intent
+import android.view.View
 import androidx.databinding.BindingAdapter
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.whiteside.insta.model.BlobBitmap
+import com.whiteside.insta.adapter.ProfileSearchResultsAdapter
 import com.whiteside.insta.model.Profile
-import java.util.*
+import com.whiteside.insta.ui.chat.ChatActivity
 import kotlin.collections.ArrayList
 
 class ProfileSearchViewModel : ViewModel() {
-    var profile: MutableLiveData<Profile?> = MutableLiveData()
-    var profileUID: String? = null
+    private var profileResults: MutableList<Profile?> = ArrayList()
+    var adapter = ProfileSearchResultsAdapter(profileResults)
+
     val auth: FirebaseAuth = FirebaseAuth.getInstance()
     val fStore = FirebaseFirestore.getInstance()
 
+    val emptyResult = MutableLiveData<Boolean>()
+
     companion object {
-        @BindingAdapter("profile_image")
-        fun loadProfilePic(view: QuickContactBadge, profile: Profile) {
-            view.setImageBitmap(BlobBitmap.convertBlobToBitmap(profile.profilePic))
+        @JvmStatic
+        @BindingAdapter("profile_results")
+        fun loadProfilePic(view: RecyclerView, adapter: ProfileSearchResultsAdapter?) {
+            view.adapter = adapter
         }
     }
 
-    fun loadProfileResult() {
+    fun onChatClicked(view: View, profile: Profile?) {
+        profile?.let {
+            val intent = Intent(view.context, ChatActivity::class.java)
+            intent.putExtra("UID", it.uid)
+            view.context.startActivity(intent)
+        }
+    }
+
+    fun loadSearchResults(profileName: String) {
         FirebaseFirestore
             .getInstance()
             .collection("Users")
-            .document(profileUID ?: "")
+            .whereGreaterThan("name", profileName)
             .get()
             .addOnSuccessListener {
-                profile.value = it.toObject(Profile::class.java)
+                it.documents.forEach {
+                    profileResults.add(it.toObject(Profile::class.java))
+                    adapter.notifyDataSetChanged()
+                }
+
+                if (it.documents.isEmpty())
+                    emptyResult.value = true
             }
             .addOnFailureListener {
                 it.printStackTrace()
-            }
-    }
-
-    private fun searchUser(name: String): List<String?> {
-        val q: Queue<String?> = LinkedList()
-        q.add(auth!!.uid)
-        val visited: MutableMap<String?, Boolean> = HashMap()
-        visited[auth!!.uid] = true
-        val count = intArrayOf(1)
-        val list: ArrayList<String> = ArrayList()
-        while (!q.isEmpty() && count[0] < 5000) {
-            val cur = q.poll()
-            count[0]++
-            val p = arrayOfNulls<Profile>(1)
-            fStore!!.collection("Users")
-                .document(cur!!)
-                .get()
-                .addOnSuccessListener { ds ->
-                    p[0] = ds.toObject(Profile::class.java)
-                    if (p[0]!!.name!!.contains(name)) {
-                        list.add(cur)
-                    }
-                }
-            Handler().postDelayed({
-                for (user in p[0]!!.friends!!) {
-                    if (!visited.containsKey(user)) {
-                        q.add(user)
-                        visited[user] = true
-                    }
-                }
-            }, 500)
-        }
-        return list
-    }
-
-    private fun searchProfile(name: String) {
-        fStore.collection("Users")
-            .whereLessThanOrEqualTo("name", name)
-            .get()
-            .addOnSuccessListener { qs ->
-//                    val result = ArrayList<String>()
-                qs.documents.iterator().forEach {
-//                    visit(it.toObject(Profile::class.java)?.name)
-                }
             }
     }
 }

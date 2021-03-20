@@ -10,36 +10,31 @@ import androidx.recyclerview.widget.RecyclerView
 import com.whiteside.insta.R
 import com.whiteside.insta.databinding.ActivityVisitProfileBinding
 import com.whiteside.insta.adapter.PostsRecyclerViewAdapter
+import com.whiteside.insta.ui.profile.ProfileViewModel
 
 class VisitProfile : AppCompatActivity() {
 
     private lateinit var bind: ActivityVisitProfileBinding
-    private lateinit var viewModel: VisitProfileViewModel
-    private var recyclerView: RecyclerView? = null
+    private lateinit var viewModel: ProfileViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         bind = DataBindingUtil.setContentView(this, R.layout.activity_visit_profile)
-        viewModel = ViewModelProvider(this).get(VisitProfileViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
 
         bind.viewModel = viewModel
 
-        recyclerView = bind.profilePosts
-        recyclerView!!.setHasFixedSize(true)
-        recyclerView!!.layoutManager = LinearLayoutManager(this)
-        recyclerView!!.adapter = PostsRecyclerViewAdapter(viewModel.posts)
+        val uid = intent.getStringExtra("UID")
 
-        viewModel.uID = intent.extras!!.getString("result")
-        viewModel.loadProfile()
-        viewModel.loadPosts()
-    }
+        viewModel.profile.observe(this){
+            bind.profile = it
+        }
+        viewModel.loadProfile(uid)
+        viewModel.loadProfilePosts(uid)
 
-    override fun onResume() {
-        super.onResume()
-        viewModel.friendRequestSuccess.observe(this) {
-            if (!it)
-                Toast.makeText(this,resources.getString(R.string.add_friend_failed),Toast.LENGTH_SHORT).show()
+        viewModel.addFriendOperation.observe(this) {
+            Toast.makeText(this, resources.getText(R.string.friend_request_sent), Toast.LENGTH_SHORT).show()
         }
     }
 }

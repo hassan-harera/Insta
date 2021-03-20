@@ -4,40 +4,30 @@ import com.whiteside.insta.model.Profile
 import android.app.Activity
 import android.app.Application
 import android.view.View
-import android.widget.ImageView
 import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.databinding.BindingAdapter
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.Blob
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
-import com.whiteside.insta.model.BlobBitmap
 
 class EditProfileViewModel(application: Application) : AndroidViewModel(application) {
-    var profile = MutableLiveData<Profile>()
+    private val auth = FirebaseAuth.getInstance()
+    var profile = MutableLiveData<Profile?>()
     val finishActivity: MutableLiveData<Boolean> = MutableLiveData<Boolean>()
-
-    companion object {
-        @JvmStatic
-        @BindingAdapter("profile_edit_img")
-        fun getImage(view: ImageView, blob: Blob?) {
-            view.setImageBitmap(BlobBitmap.convertBlobToBitmap(blob))
-        }
-    }
 
     fun loadProfile() {
         FirebaseFirestore
             .getInstance()
             .collection("Users")
-            .document(FirebaseAuth.getInstance().uid!!)
+            .document(auth.uid!!)
             .get()
-            .addOnSuccessListener { ds: DocumentSnapshot ->
-                profile.value = ds.toObject(Profile::class.java)
+            .addOnSuccessListener {
+                profile.value = it.toObject(Profile::class.java)
             }
             .addOnFailureListener {
                 it.printStackTrace()

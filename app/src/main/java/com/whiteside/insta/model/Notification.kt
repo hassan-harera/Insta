@@ -7,10 +7,7 @@ open class Notification(val type: Int)
 class LikeNotification(
     var postID: String,
     var UID: String,
-//    var likeNumbers: Int,
     var date: Timestamp,
-//    var notificationMessage: String,
-//    var profileName: String
 ) : Notification(1)
 
 class FriendRequestNotification(

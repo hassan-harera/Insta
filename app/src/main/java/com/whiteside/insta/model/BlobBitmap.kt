@@ -2,12 +2,7 @@ package com.whiteside.insta.model
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.Drawable
-import androidx.core.content.res.ResourcesCompat
-import com.facebook.internal.Utility
-import com.google.common.io.Resources
 import com.google.firebase.firestore.Blob
-import com.whiteside.insta.R
 import java.io.ByteArrayOutputStream
 
 

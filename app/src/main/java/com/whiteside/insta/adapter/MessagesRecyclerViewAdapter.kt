@@ -28,8 +28,13 @@ class MessagesRecyclerViewAdapter(var messages: List<Message>, var context: Cont
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageHolder {
         return if (viewType == 1) {
-            SenderMessageHolder(LayoutInflater.from(parent.context).inflate(R.layout.card_view_sender_message,
-                    parent, false))
+            val senderMessageHolder = SenderMessageHolder(
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.card_view_sender_message,
+                    parent, false
+                )
+            )
+            senderMessageHolder
         } else {
             ReceiverMessageHolder(LayoutInflater.from(parent.context).inflate(R.layout.card_view_reciever_message,
                     parent, false))

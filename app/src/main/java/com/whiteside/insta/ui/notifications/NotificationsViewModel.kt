@@ -1,47 +1,49 @@
 package com.whiteside.insta.ui.notifications
 
 import android.app.Application
+import androidx.databinding.BindingAdapter
 import androidx.lifecycle.AndroidViewModel
+import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.Source
+import com.whiteside.insta.adapter.NotificationsRecyclerViewAdapter
 import com.whiteside.insta.model.*
+import java.sql.Time
 import kotlin.collections.ArrayList
 
 class NotificationsViewModel(application: Application) : AndroidViewModel(application) {
-    var notifications: ArrayList<Notification?> = ArrayList()
-    var friendRequestNotifications: ArrayList<FriendRequestNotification?> = ArrayList()
-    var likeNotifications: ArrayList<LikeNotification> = ArrayList()
+    var notifications: ArrayList<Notification> = ArrayList()
+    val adapter = NotificationsRecyclerViewAdapter(notifications)
+
     val auth: FirebaseAuth = FirebaseAuth.getInstance()
     val fStore: FirebaseFirestore = FirebaseFirestore.getInstance()
-    var profile: Profile = Profile()
 
     companion object {
         //TODO recycler view Binding Adapter
-    }
-
-    fun getProfile() {
-        fStore.collection("Users")
-            .document(auth.uid!!)
-            .get()
-            .addOnSuccessListener {
-                profile = it.toObject(Profile::class.java)!!
-                getFriendRequests()
-            }
-            .addOnFailureListener {
-                it.printStackTrace()
-            }
+        @JvmStatic
+        @BindingAdapter("notifications")
+        fun loadAdapter(view: RecyclerView, adapter: NotificationsRecyclerViewAdapter) {
+            view.adapter = adapter
+        }
     }
 
     fun getFriendRequests() {
         fStore.collection("Users")
             .document(auth.uid!!)
-            .collection(Firebase.FRIEND_REQUESTS_COLLECTION)
-            .orderBy("date", Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener {
-                it.documents.forEach {
-                    friendRequestNotifications.add(it.toObject(FriendRequestNotification::class.java))
+                val profile = it.toObject(Profile::class.java)
+
+                profile!!.friendRequests!!.forEach {
+                    notifications.add(
+                        FriendRequestNotification(
+                            it.key,
+                            it.value
+                        )
+                    )
+                    adapter.notifyDataSetChanged()
                 }
             }.addOnFailureListener {
                 it.printStackTrace()
@@ -51,19 +53,14 @@ class NotificationsViewModel(application: Application) : AndroidViewModel(applic
     fun getLikesNotifications() {
         fStore.collection("Users")
             .document(auth.uid!!)
-            .collection("Likes")
+            .collection("Posts")
+            .whereGreaterThan("likes", HashMap<String, Timestamp>())
             .get()
             .addOnSuccessListener {
                 it.documents.forEach {
-                    val like = it.toObject(LikeNotification::class.java)
-//
-//                    val likeNotification = LikeNotification(
-//                        post.Id ?: "",
-//                        post.uId ?: "",
-//                        likes.size,
-//                        likes.values.last(),
-//                    )
-                    notifications.plus(like)
+                    val post = it.toObject(Post::class.java)
+                    notifications.add(LikeNotification(post!!.Id!!, post.UID!!, post.likes!!.values.last()))
+                    adapter.notifyDataSetChanged()
                 }
             }.addOnFailureListener {
                 it.printStackTrace()

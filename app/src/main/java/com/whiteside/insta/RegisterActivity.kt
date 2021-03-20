@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.whiteside.insta.R.*
 import com.whiteside.insta.ui.login.LoginActivity
 import com.whiteside.insta.ui.wall.WallActivity
 
@@ -24,13 +25,13 @@ class RegisterActivity : AppCompatActivity() {
     var fStore: FirebaseFirestore? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_register)
-        name = findViewById(R.id.name_register)
-        email = findViewById(R.id.email)
-        password = findViewById(R.id.password_register)
-        repassword = findViewById(R.id.confirm_password_register)
+        setContentView(layout.activity_register)
+        name = findViewById(id.name_register)
+        email = findViewById(id.email)
+        password = findViewById(id.password_register)
+        repassword = findViewById(id.confirm_password_register)
         fStore = FirebaseFirestore.getInstance()
-        register = findViewById(R.id.register_signup)
+        register = findViewById(id.register_signup)
         auth = FirebaseAuth.getInstance()
     }
 

@@ -5,12 +5,11 @@
 
         <variable
             name="viewModel"
-            type="com.whiteside.insta.ui.profile.ProfileFragmentViewModel" />
+            type="com.whiteside.insta.ui.profile.ProfileViewModel" />
 
         <variable
             name="profile"
             type="com.whiteside.insta.model.Profile" />
-
     </data>
 
     <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -21,57 +20,60 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:padding="@dimen/_5sdp">
+            android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/profile_edit_img"
-                profile_edit_img="@{profile.profilePic}"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="20dp"
-                android:elevation="5dp"
-                android:src="@drawable/profile" />
+                android:layout_margin="10dp"
+                app:cardCornerRadius="@dimen/_180sdp">
+
+                <ImageView
+                    android:id="@+id/profile_image"
+                    profile_image="@{profile}"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:layout_gravity="center"
+                    android:elevation="5dp"
+                    android:src="@drawable/profile" />
+            </androidx.cardview.widget.CardView>
 
             <!--TODO Convert the layout to Linear Layout or Constraint Layout-->
             <TextView
                 android:id="@+id/name"
-                android:layout_width="wrap_content"
+                android:layout_width="@dimen/_180sdp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="8dp"
-                android:background="@color/back_transparent"
-                android:maxLength="20"
-                android:text="@={profile.name, default=@string/name}"
-                android:textAlignment="center"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:fontFamily="casual"
+                android:gravity="center"
+                android:text="@{profile.name, default=@string/name}"
                 android:textColor="#000"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/bio"
-                android:layout_width="wrap_content"
+                android:layout_width="@dimen/_180sdp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="10dp"
-                android:autofillHints="bio"
-                android:background="@color/back_transparent"
-                android:maxLength="40"
-                android:singleLine="true"
-                android:text="@={profile.bio, default=@string/bio}"
-                android:textAlignment="center"
-                android:textColor="#000000"
-                android:textSize="12sp" />
+                android:layout_marginTop="@dimen/_10sdp"
+                android:fontFamily="casual"
+                android:gravity="center"
+                android:text="@{profile.bio, default=@string/bio}"
+                android:textColor="#A6000000"
+                android:textSize="14sp" />
 
             <androidx.recyclerview.widget.RecyclerView
-                profile_posts="@{viewModel.adapter}"
-                android:id="@+id/profile_posts"
+                android:id="@+id/posts"
+                posts="@{viewModel.adapter}"
                 android:layout_width="match_parent"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 android:layout_height="match_parent"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:nestedScrollingEnabled="true" />
+                android:layout_marginTop="@dimen/_15sdp"
+                android:nestedScrollingEnabled="true"
+                android:padding="@dimen/_5sdp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </layout>

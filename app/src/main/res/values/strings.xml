@@ -36,6 +36,8 @@
     <string name="todo">TODO</string>
     <string name="add_friend">Add friend</string>
     <string name="add_friend_failed">Failed To Send Friend Request</string>
+    <string name="friend_request_sent">Friend request sent successfully</string>
+    <string name="delete">Delete</string>
     <!--    <string name="default_web_client_id"></string>-->
     <!--    <string name="client_server">N2adcbOG2qnM8lqjBh8je3yS</string>-->
 </resources>

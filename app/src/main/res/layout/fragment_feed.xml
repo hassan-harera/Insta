@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <variable
             name="viewModel"
             type="com.whiteside.insta.ui.feed.FeedViewModel" />
-
-        <variable
-            name="profile"
-            type="com.whiteside.insta.model.Profile" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -19,12 +16,15 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/posts"
+            posts="@{viewModel.adapter}"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="4dp" />
+            android:padding="4dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/card_view_post" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/add_post"
+            android:id="@+id/changeImage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"

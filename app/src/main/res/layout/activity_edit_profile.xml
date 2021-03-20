@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
         <variable
-            name="profile"
-            type="com.whiteside.insta.model.Profile" />
-
-        <variable
             name="viewModel"
             type="com.whiteside.insta.ui.edit_profile.EditProfileViewModel" />
+
+        <variable
+            name="profile"
+            type="com.whiteside.insta.model.Profile" />
     </data>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -20,57 +20,82 @@
         tools:context=".ui.edit_profile.EditProfileActivity">
 
         <!--TODO Convert the layout to Linear Layout or Constraint Layout-->
-        <ImageView
-            android:id="@+id/profile_edit_img"
-            profile_edit_img="@{profile.profilePic}"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:layout_gravity="center"
-            android:layout_marginTop="20dp"
-            android:elevation="5dp"
-            android:onClick="@{(view) -> viewModel.onChangeImageClicked(view)}" />
 
-        <EditText
+        <androidx.cardview.widget.CardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="10dp"
+            app:cardCornerRadius="@dimen/_180sdp">
+
+            <ImageView
+                android:id="@+id/profile_image"
+                profile_image="@{profile}"
+                android:layout_width="@dimen/_100sdp"
+                android:layout_height="@dimen/_100sdp"
+                android:onClick="@{(view) -> viewModel.onChangeImageClicked(view)}" />
+        </androidx.cardview.widget.CardView>
+
+
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="8dp"
-            android:background="@color/back_transparent"
+            android:layout_margin="10dp"
             android:imeOptions="actionNext"
             android:inputType="textPersonName"
             android:maxLength="20"
-            android:text="@={profile.name, default=@string/name}"
             android:textAlignment="center"
             android:textColor="#000"
             android:textSize="14sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            app:hintTextColor="@color/app_color_blue">
 
-        <EditText
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="@dimen/_180sdp"
+                android:layout_height="wrap_content"
+                android:fontFamily="casual"
+                android:hint="@string/name"
+                android:text="@={profile.name}"
+                app:counterEnabled="true"
+                app:counterMaxLength="300" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/bio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="10dp"
-            android:autofillHints="bio"
-            android:background="@color/back_transparent"
-            android:imeOptions="actionDone"
-            android:maxLength="40"
-            android:singleLine="true"
-            android:text="@={profile.bio, default=@string/bio}"
+            android:layout_margin="10dp"
+            android:imeOptions="actionNext"
+            android:inputType="textPersonName"
+            android:maxLength="20"
             android:textAlignment="center"
-            android:textColor="#000000"
-            android:textSize="12sp" />
+            android:textColor="#000"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:hintTextColor="@color/app_color_blue">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="@dimen/_180sdp"
+                android:layout_height="wrap_content"
+                android:fontFamily="casual"
+                android:hint="@string/bio"
+                android:text="@={profile.bio}"
+                app:counterEnabled="true"
+                app:counterMaxLength="300" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
             android:id="@+id/email"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
+            android:layout_margin="10dp"
             android:background="#fff"
             android:elevation="4dp"
             android:padding="20dp"
-            android:text="@{profile.email, default=@string/email}"
+            android:text="@{profile.email}"
             android:textColor="@color/colorPrimary" />
 
         <Button
@@ -79,7 +104,7 @@
             android:layout_height="30dp"
             android:layout_gravity="center"
             android:layout_marginTop="50dp"
-            android:background="@drawable/animated_button"
+            android:background="@drawable/blue_round_button"
             android:onClick="@{(view)-> viewModel.onSaveClicked(view, profile)}"
             android:text="@string/save"
             android:textColor="#FAFAFA" />
