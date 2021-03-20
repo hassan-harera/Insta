@@ -2,6 +2,7 @@ package com.whiteside.insta.ui.post
 
 import com.whiteside.insta.model.Post
 import android.app.Activity
+import android.content.Intent
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -17,6 +18,7 @@ import com.whiteside.insta.R
 import com.whiteside.insta.model.BlobBitmap
 import com.whiteside.insta.model.Date_Time
 import com.whiteside.insta.model.Profile
+import com.whiteside.insta.ui.wall.WallActivity
 
 class PostViewModel : ViewModel() {
 
@@ -143,7 +145,7 @@ class PostViewModel : ViewModel() {
             .addOnSuccessListener {
                 Toast.makeText(view.context, "The image added Successfully", Toast.LENGTH_LONG)
                     .show()
-                (view.context as Activity).startActivity((view.context as Activity).intent)
+                (view.context as Activity).startActivity(Intent(view.context as Activity, WallActivity::class.java))
                 (view.context as Activity).finish()
             }
             .addOnFailureListener {

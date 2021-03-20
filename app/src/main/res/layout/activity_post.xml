@@ -19,6 +19,29 @@
         android:weightSum="10">
 
         <!--TODO plus mark on the image -->
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/AppTheme.AppBarOverlay">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:popupTheme="@style/AppTheme.PopupOverlay">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start|center"
+                    android:text="@string/add_post"
+                    android:textColor="#FFF"
+                    android:textSize="22sp" />
+            </androidx.appcompat.widget.Toolbar>
+        </com.google.android.material.appbar.AppBarLayout>
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -50,8 +73,9 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/caption"
-            android:layout_width="match_parent"
+            android:layout_width="@dimen/_180sdp"
             android:layout_height="0dp"
+            android:layout_gravity="center"
             android:layout_marginStart="@dimen/_10sdp"
             android:layout_marginEnd="@dimen/_10sdp"
             android:layout_weight="2"
@@ -61,23 +85,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:hint="@string/caption"
+                android:imeOptions="actionDone"
+                android:inputType="textCapSentences"
                 android:text='@={post.caption}'
                 app:counterEnabled="true"
                 app:counterMaxLength="300" />
         </com.google.android.material.textfield.TextInputLayout>
-
-        <!--        <EditText-->
-        <!--            android:id="@+id/caption"-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="0dp"-->
-        <!--            android:layout_margin="@dimen/_20sdp"-->
-        <!--            android:background="#FFF"-->
-        <!--            android:gravity="top"-->
-        <!--            android:hint="@string/caption"-->
-        <!--            android:padding="@dimen/_4sdp"-->
-        <!--            android:textColor="#88000000"-->
-        <!--            android:textColorHint="#88000000"-->
-        <!--            android:textSize="@dimen/_18sdp" />-->
 
         <Button
             android:id="@+id/add"

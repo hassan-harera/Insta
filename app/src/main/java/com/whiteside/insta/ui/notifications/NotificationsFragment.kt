@@ -18,9 +18,13 @@ class NotificationsFragment : Fragment() {
     private lateinit var bind: FragmentNotificationsBinding
     private lateinit var vieWModel: NotificationsViewModel
 
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        bind = DataBindingUtil.inflate(layoutInflater, layout.fragment_notifications, container, false)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        bind =
+            DataBindingUtil.inflate(layoutInflater, layout.fragment_notifications, container, false)
         vieWModel = ViewModelProvider(this).get(NotificationsViewModel::class.java)
 
         bind.viewModel = vieWModel
@@ -28,6 +32,16 @@ class NotificationsFragment : Fragment() {
         vieWModel.getLikesNotifications()
         vieWModel.getFriendRequests()
 
+        refresh()
+
         return bind.root
+    }
+
+    fun refresh() {
+        bind.refresh.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+            vieWModel.getLikesNotifications()
+            vieWModel.getFriendRequests()
+            bind.refresh.stopNestedScroll()
+        }
     }
 }

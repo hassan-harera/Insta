@@ -52,6 +52,7 @@ class FeedFragment : Fragment() {
                     "changeImage"
                 ).toBundle()
             )
+            requireActivity().finish()
         }
     }
 }

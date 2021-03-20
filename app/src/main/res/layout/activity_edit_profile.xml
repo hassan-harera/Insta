@@ -107,6 +107,6 @@
             android:background="@drawable/blue_round_button"
             android:onClick="@{(view)-> viewModel.onSaveClicked(view, profile)}"
             android:text="@string/save"
-            android:textColor="#FAFAFA" />
+            android:textColor="#086BB8" />
     </LinearLayout>
 </layout>

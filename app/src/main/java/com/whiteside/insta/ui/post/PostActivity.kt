@@ -16,6 +16,7 @@ import com.whiteside.insta.R.*
 import com.whiteside.insta.databinding.ActivityPostBinding
 import com.whiteside.insta.model.BlobBitmap
 import com.whiteside.insta.ui.edit_profile.EditProfileViewModel
+import com.whiteside.insta.ui.wall.WallActivity
 
 class PostActivity : AppCompatActivity() {
     private lateinit var bind: ActivityPostBinding
@@ -54,5 +55,11 @@ class PostActivity : AppCompatActivity() {
                 .maxResultSize(512, 512)
                 .start()
         }
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        startActivity(Intent(this, WallActivity::class.java))
+        finish()
     }
 }
