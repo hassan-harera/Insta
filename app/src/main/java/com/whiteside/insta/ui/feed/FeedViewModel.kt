@@ -1,61 +1,87 @@
 package com.whiteside.insta.ui.feed
 
-import com.whiteside.insta.model.Post
-import android.app.Application
-import androidx.databinding.BindingAdapter
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
-import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
-import com.whiteside.insta.adapter.PostsRecyclerViewAdapter
-import com.whiteside.insta.model.Profile
-import java.util.ArrayList
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.google.android.gms.tasks.Tasks
+import com.whiteside.insta.db.network.abstract_.AuthManager
+import com.whiteside.insta.db.network.abstract_.PostRepository
+import com.whiteside.insta.db.network.abstract_.ProfileRepository
+import com.whiteside.insta.modelget.FollowRelation
+import com.whiteside.insta.modelget.Post
+import com.whiteside.insta.modelget.Profile
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class FeedViewModel(application: Application) : AndroidViewModel(application) {
-    var profile = MutableLiveData<Profile>()
+@HiltViewModel
+class FeedViewModel @Inject constructor(
+    private val postRepository: PostRepository,
+    private val profileRepository: ProfileRepository,
+    private val authManager: AuthManager,
+) : ViewModel() {
+    val posts = mutableStateOf<List<Post>>(emptyList())
+    var followings = mutableStateOf<List<String>>(emptyList())
 
-    var posts : MutableList<Post?> = ArrayList()
-    val adapter = PostsRecyclerViewAdapter(posts)
-
-    companion object {
-        @JvmStatic
-        @BindingAdapter("posts")
-        fun adaptPosts(view: RecyclerView, adapter: PostsRecyclerViewAdapter?) {
-            view.adapter = adapter
-        }
-    }
-
-    fun loadProfile() {
-        FirebaseFirestore.getInstance()
-            .collection("Users")
-            .document(FirebaseAuth.getInstance().uid!!)
-            .get()
-            .addOnSuccessListener { ds ->
-                profile.value = ds.toObject(Profile::class.java)
+    internal fun getFollowings() {
+        profileRepository
+            .getFollowings(authManager.getCurrentUser()!!.uid)
+            .addOnSuccessListener {
+                it.documents.map {
+                    it.toObject(FollowRelation::class.java)!!.followingUid
+                }.let {
+                    followings.value = (it)
+                }
             }
             .addOnFailureListener {
                 it.printStackTrace()
             }
     }
 
-    fun loadProfilePosts(profile: Profile) {
-        profile.let {
-            it.friends!!.forEach {
-                FirebaseFirestore.getInstance()
-                    .collection("Users")
-                    .document(it)
-                    .collection("Posts")
-                    .orderBy("time", Query.Direction.DESCENDING)
-                    .get()
-                    .addOnSuccessListener {
-                        it.documents.forEach {
-                            posts.add(it.toObject(Post::class.java))
-                            adapter.notifyDataSetChanged()
-                        }
+    fun getPosts() {
+        if (followings.value.isNotEmpty()) {
+            viewModelScope.launch(Dispatchers.IO) {
+                Tasks.await(postRepository.getFeedPosts(followings = followings.value))
+                    .documents.map {
+                        it.toObject(Post::class.java)!!
+                    }.map { post ->
+                        viewModelScope.async(Dispatchers.IO) {
+                            val profile = getPostProfile(post.uid)
+                            val likes = getPostLikes(post.postId)
+                            val comments = getPostComments(post.postId)
+
+                            post.likesNumber = likes.documents.size.toString()
+                            post.commentsNumber = comments.documents.size.toString()
+
+                            post.profileImageUrl = profile
+                                .getString(Profile::profileImageUrl.name)!!
+                            post.profileName = profile.getString(Profile::name.name)!!
+
+                            post
+                        }.await()
+                    }.let {
+                        posts.value = it
                     }
             }
         }
     }
+
+    private suspend fun getPostProfile(uid: String) =
+        viewModelScope.async(Dispatchers.IO) {
+            Tasks.await(profileRepository.getProfile(uid))
+        }.await()
+
+    private suspend fun getPostLikes(postId: String) =
+        viewModelScope.async(Dispatchers.IO) {
+            Tasks.await(
+                postRepository.getPostLikes(postId)
+            )
+        }.await()
+
+    private suspend fun getPostComments(postId: String) =
+        viewModelScope.async(Dispatchers.IO) {
+            Tasks.await(postRepository.getPostComments(postId))
+        }.await()
 }
