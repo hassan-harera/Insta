@@ -1,7 +1,7 @@
-package com.whiteside.dwaa.di
+package com.whiteside.insta.di
 
 import android.app.Application
-import com.whiteside.dwaa.utils.connection.Connectivity
+import com.whiteside.insta.utils.connection.Connectivity
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

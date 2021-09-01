@@ -1,4 +1,4 @@
-package com.whiteside.dwaa.di
+package com.whiteside.insta.di
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase

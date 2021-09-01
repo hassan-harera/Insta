@@ -1,11 +1,7 @@
-package com.whiteside.dwaa.di
+package com.whiteside.insta.di
 
-import com.whiteside.dwaa.network.repository.firebase.FirebaseChatRepository
 import com.whiteside.insta.db.network.abstract_.*
-import com.whiteside.insta.db.network.firebase.FirebaseAuthManager
-import com.whiteside.insta.db.network.firebase.FirebaseNotificationsRepository
-import com.whiteside.insta.db.network.firebase.FirebasePostRepository
-import com.whiteside.insta.db.network.firebase.FirebaseProfileRepository
+import com.whiteside.insta.db.network.firebase.*
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
