@@ -1,8 +1,10 @@
 package com.whiteside.insta;
 
-import org.junit.Test;
+import static org.junit.Assert.assertTrue;
 
-import static org.junit.Assert.*;
+import com.google.firebase.database.FirebaseDatabase;
+
+import org.junit.Test;
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -12,6 +14,13 @@ import static org.junit.Assert.*;
 public class ExampleUnitTest {
     @Test
     public void checkUserAddedToCloudFirestore() {
-        assertEquals();
+        assertTrue(FirebaseDatabase.getInstance().getReference()
+                .child("Users")
+                .child("")
+                .child("")
+                .child("")
+                .push()
+                .setValue("dwdwdw")
+                .isSuccessful());
     }
 }

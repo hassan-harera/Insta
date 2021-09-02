@@ -9,9 +9,10 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -20,30 +21,29 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import coil.annotation.ExperimentalCoilApi
-import com.example.compose1.ui.theme.Grey660
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.PagerState
 import com.whiteside.insta.ui.chats.ChatViewModel
 import com.whiteside.insta.ui.chats.HomeChats
 import com.whiteside.insta.ui.components.HomeTopBar
-import com.whiteside.insta.ui.feed.HomeFeed
 import com.whiteside.insta.ui.feed.FeedViewModel
-import com.whiteside.insta.ui.utils.Arguments.POST_ID
-import com.whiteside.insta.ui.utils.Arguments.UID
+import com.whiteside.insta.ui.feed.HomeFeed
 import com.whiteside.insta.ui.home.HomeNavigation.AddPost
 import com.whiteside.insta.ui.home.HomeNavigation.PostScreen
 import com.whiteside.insta.ui.home.HomeNavigation.VisitProfile
-import com.whiteside.insta.ui.homeprofile.HomeProfile
-import com.whiteside.insta.ui.homeprofile.HomeProfileViewModel
 import com.whiteside.insta.ui.notifications.HomeNotifications
 import com.whiteside.insta.ui.postform.PostForm
+import com.whiteside.insta.ui.profile.home.HomeProfile
+import com.whiteside.insta.ui.profile.home.HomeProfileViewModel
+import com.whiteside.insta.ui.profile.visit.VisitProfile
+import com.whiteside.insta.ui.profile.visit.VisitProfileViewModel
+import com.whiteside.insta.ui.theme.Grey660
+import com.whiteside.insta.ui.utils.Arguments.POST_ID
+import com.whiteside.insta.ui.utils.Arguments.UID
 import com.whiteside.insta.ui.viewpost.PostScreen
 import com.whiteside.insta.ui.viewpost.PostViewModel
-import com.whiteside.insta.ui.visitprofile.VisitProfile
-import com.whiteside.insta.ui.visitprofile.VisitProfileViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -57,15 +57,19 @@ class HomeActivity : AppCompatActivity() {
     private val visitProfileViewModel: VisitProfileViewModel by viewModels()
     private val chatViewModel: ChatViewModel by viewModels()
 
+    @ExperimentalComposeUiApi
+    @ExperimentalCoilApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_UNSPECIFIED);
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
 
         setContent {
             HomeActivityContent()
         }
     }
 
+    @ExperimentalComposeUiApi
+    @ExperimentalCoilApi
     @Composable
     private fun HomeActivityContent() {
         val bottomNavIcons = listOf(
@@ -76,19 +80,28 @@ class HomeActivity : AppCompatActivity() {
         )
 
         val navController = rememberNavController()
+        val currentRoute by navController.currentBackStackEntryAsState()
 
         Scaffold(
             topBar = {
-                HomeTopBar()
+                if (currentRoute?.destination?.route != HomeNavigation.HomeChats) {
+                    HomeTopBar()
+                }
             },
             bottomBar = {
-                HomeBottomNavigation(tabs = bottomNavIcons, navController = navController)
+                if (currentRoute?.destination?.route != HomeNavigation.HomeChats) {
+                    HomeBottomNavigation(
+                        tabs = bottomNavIcons,
+                        navController = navController
+                    )
+                }
             }
         ) {
             HomeNavHost(navController = navController, it)
         }
     }
 
+    @ExperimentalComposeUiApi
     @ExperimentalCoilApi
     @Composable
     private fun HomeNavHost(navController: NavHostController, paddingValues: PaddingValues) {

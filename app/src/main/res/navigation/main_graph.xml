@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_graph.xml"
+    app:startDestination="@id/feedFragment">
+
+    <fragment
+        android:id="@+id/chatsFragment"
+        android:name="com.whiteside.insta.ui.ChatsFragment"
+        android:label="ChatsFragment" />
+    <fragment
+        android:id="@+id/feedFragment"
+        android:name="com.whiteside.insta.ui.feed.FeedFragment"
+        android:label="FeedFragment" />
+    <fragment
+        android:id="@+id/notificationsFragment"
+        android:name="com.whiteside.insta.ui.notifications.NotificationsFragment"
+        android:label="NotificationsFragment" />
+    <fragment
+        android:id="@+id/userProfileFragment"
+        android:name="com.whiteside.insta.ui.profile.UserProfileFragment"
+        android:label="UserProfileFragment" />
+    <fragment
+        android:id="@+id/visitProfileFragment"
+        android:name="com.whiteside.insta.ui.visitprofile.VisitProfileFragment"
+        android:label="VisitProfileFragment" />
+</navigation>

@@ -43,7 +43,7 @@ class FeedViewModel @Inject constructor(
     fun getPosts() {
         if (followings.value.isNotEmpty()) {
             viewModelScope.launch(Dispatchers.IO) {
-                Tasks.await(postRepository.getFeedPosts(followings = followings.value))
+                Tasks.await(postRepository.getFeedPosts(followings = followings.value, limit = 10))
                     .documents.map {
                         it.toObject(Post::class.java)!!
                     }.map { post ->

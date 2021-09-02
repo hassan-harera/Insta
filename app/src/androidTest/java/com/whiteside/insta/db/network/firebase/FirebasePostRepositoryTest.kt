@@ -11,7 +11,10 @@ import com.whiteside.insta.modelset.Like
 import com.whiteside.insta.modelset.Post
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import org.junit.*
+import org.junit.Assert
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
 import javax.inject.Inject
 import kotlin.random.Random
 
@@ -84,7 +87,8 @@ class FirebasePostRepositoryTest {
         val task = postRepository.getFeedPosts(
             arrayListOf(
                 "NKVxniXACjMDET8YApYjSCaHu6u2",
-            )
+            ),
+            10
         )
 
         val size = Tasks.await(task).size()

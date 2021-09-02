@@ -1,7 +1,6 @@
 package com.whiteside.insta.db.network.firebase
 
 import android.graphics.Bitmap
-import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
@@ -15,7 +14,10 @@ import com.whiteside.insta.modelset.FollowRequest
 import com.whiteside.insta.modelset.Profile
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import org.junit.*
+import org.junit.Assert
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
 import javax.inject.Inject
 
 @HiltAndroidTest

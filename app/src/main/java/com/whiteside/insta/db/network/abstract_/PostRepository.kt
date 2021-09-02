@@ -11,7 +11,7 @@ import com.whiteside.insta.modelset.Post
 
 interface PostRepository {
 
-    fun getFeedPosts(followings: List<String>): Task<QuerySnapshot>
+    fun getFeedPosts(followings: List<String>, limit: Int): Task<QuerySnapshot>
     fun getPost(postId: String): Task<DocumentSnapshot>
     fun getProfilePosts(uid: String): Task<QuerySnapshot>
     fun updatePost(post: Post): Task<Void>

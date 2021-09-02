@@ -1,23 +1,23 @@
-package com.whiteside.dwaa.network.repository.firebase
+package com.whiteside.insta.db.network.firebase
 
-import android.os.Messenger
 import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
 import com.whiteside.insta.common.Constansts.CHATS
+import com.whiteside.insta.common.Constansts.MESSAGES
 import com.whiteside.insta.common.Constansts.USERS
 import com.whiteside.insta.db.network.abstract_.AuthManager
 import com.whiteside.insta.db.network.abstract_.ChatRepository
+import com.whiteside.insta.modelset.Chat
 import com.whiteside.insta.modelset.Message
-import com.whiteside.insta.modelset.OpenChat
 import javax.inject.Inject
 
 
 class FirebaseChatRepository @Inject constructor(
-    val firestore: FirebaseFirestore,
-    val dbReferences: FirebaseDatabase,
+    val fStore: FirebaseFirestore,
+    private val dbReferences: FirebaseDatabase,
     val authManager: AuthManager
 ) : ChatRepository {
 
@@ -25,23 +25,29 @@ class FirebaseChatRepository @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    override fun getMessages(uid: String): Task<DataSnapshot> =
-        dbReferences
-            .reference
-            .child(USERS)
-            .child(authManager.getCurrentUser()!!.uid)
-            .child(CHATS)
-            .child(uid)
-            .get()
+    override fun getMessages(receiverUID: String, senderUID: String) =
+        Tasks.await(
+            fStore
+                .collection(MESSAGES)
+                .whereEqualTo(Message::from.name, senderUID)
+                .whereEqualTo(Message::to.name, receiverUID)
+                .get()
+        ).documents
+            .plus(
+                Tasks.await(
+                    fStore
+                        .collection(MESSAGES)
+                        .whereEqualTo(Message::from.name, receiverUID)
+                        .whereEqualTo(Message::to.name, senderUID)
+                        .get()
+                ).documents
+            )
 
     override fun saveMessage(message: Message) =
-        dbReferences.reference
-            .child(USERS)
-            .child(message.from)
-            .child(CHATS)
-            .child(message.to)
-            .push()
-            .setValue(message)
+        fStore
+            .collection(MESSAGES)
+            .document()
+            .set(message)
 
     override fun getOpenChats(uid: String): Task<DataSnapshot> =
         dbReferences.reference
@@ -50,19 +56,37 @@ class FirebaseChatRepository @Inject constructor(
             .child(CHATS)
             .get()
 
-    override fun addChat(uid: String, chat : OpenChat): Task<Void> =
+    override fun addOpenChat(chat: Chat): Task<Void> =
         dbReferences.reference
             .child(USERS)
-            .child(uid)
+            .child(chat.firstUid)
             .child(CHATS)
-            .child(chat.receiver)
-            .setValue(chat)
+            .child(chat.secondUid)
+            .setValue(chat.secondUid)
+            .continueWithTask {
+                dbReferences.reference
+                    .child(USERS)
+                    .child(chat.secondUid)
+                    .child(CHATS)
+                    .child(chat.firstUid)
+                    .setValue(chat.firstUid)
+            }
 
-    override fun getChat(uid: String, messenger: String): Task<DataSnapshot> =
-        dbReferences.reference
-            .child(USERS)
-            .child(uid)
-            .child(CHATS)
-            .child(messenger)
-            .get()
+    override fun getLastMessage(uid2: String, uid1: String) =
+        Tasks.await(
+            fStore
+                .collection(MESSAGES)
+                .whereEqualTo(Message::from.name, uid2)
+                .whereEqualTo(Message::to.name, uid1)
+                .get()
+        ).documents
+            .plus(
+                Tasks.await(
+                    fStore
+                        .collection(MESSAGES)
+                        .whereEqualTo(Message::from.name, uid1)
+                        .whereEqualTo(Message::to.name, uid2)
+                        .get()
+                )
+            )
 }

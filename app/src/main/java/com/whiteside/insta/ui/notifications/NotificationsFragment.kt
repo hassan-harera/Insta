@@ -1,47 +1,51 @@
 package com.whiteside.insta.ui.notifications
 
-import com.whiteside.insta.adapter.NotificationsRecyclerViewAdapter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.whiteside.insta.R
-import com.whiteside.insta.R.*
-import com.whiteside.insta.databinding.FragmentNotificationsBinding
+import com.whiteside.insta.ui.components.FollowRequestCard
+import com.whiteside.insta.ui.components.LikeCard
 
 class NotificationsFragment : Fragment() {
-    private lateinit var bind: FragmentNotificationsBinding
-    private lateinit var vieWModel: NotificationsViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        bind =
-            DataBindingUtil.inflate(layoutInflater, layout.fragment_notifications, container, false)
-        vieWModel = ViewModelProvider(this).get(NotificationsViewModel::class.java)
+        super.onCreateView(inflater, container, savedInstanceState)
 
-        bind.viewModel = vieWModel
-
-        vieWModel.getLikesNotifications()
-        vieWModel.getFriendRequests()
-
-        refresh()
-
-        return bind.root
+        return ComposeView(requireContext())
     }
+}
 
-    fun refresh() {
-        bind.refresh.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
-            vieWModel.getLikesNotifications()
-            vieWModel.getFriendRequests()
-            bind.refresh.stopNestedScroll()
+@Composable
+@Preview
+fun HomeNotifications() {
+    LazyColumn {
+        item {
+            LikeCard()
+        }
+        item {
+            FollowRequestCard()
+        }
+        item {
+            LikeCard()
+        }
+        item {
+            FollowRequestCard()
+        }
+        item {
+            LikeCard()
+        }
+        item {
+            FollowRequestCard()
         }
     }
 }

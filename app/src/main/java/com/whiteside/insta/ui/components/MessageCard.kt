@@ -13,18 +13,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
 import com.whiteside.insta.modelget.Message
 import com.whiteside.insta.ui.data.DummyDate
-import com.whiteside.insta.ui.theme.Grey60
+import com.whiteside.insta.ui.theme.Grey200
 
 @ExperimentalCoilApi
 @Composable
 fun MessageList(messages: List<Message>, chatOwnerId: String) {
-    val context = LocalContext.current
 
     LazyColumn(Modifier.fillMaxSize()) {
         messages.forEachIndexed { id, message ->
@@ -46,7 +44,7 @@ fun MessageCard(message: Message, chatOwnerId: String) {
             .fillMaxWidth()
             .padding(8.dp),
         contentAlignment =
-        if (message.fromUid == chatOwnerId)
+        if (message.from == chatOwnerId)
             Alignment.TopEnd
         else
             Alignment.TopStart
@@ -56,9 +54,9 @@ fun MessageCard(message: Message, chatOwnerId: String) {
             Modifier
                 .background(
                     color =
-                    if (message.fromUid == chatOwnerId)
-                        Color(0xffE02E86DE)
-                    else Grey60,
+                    if (message.from == chatOwnerId)
+                        Color(0xE0579CE2)
+                    else Grey200,
                     shape = RoundedCornerShape(CornerSize(8.dp)),
                 )
                 .padding(8.dp),

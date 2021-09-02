@@ -23,7 +23,7 @@ class FirebasePostRepository @Inject constructor(
     private val firebaseStorage: FirebaseStorage,
 ) : PostRepository {
 
-    override fun getFeedPosts(followings: List<String>): Task<QuerySnapshot> =
+    override fun getFeedPosts(followings: List<String>, limit: Int): Task<QuerySnapshot> =
         fStore
             .collection(PSOTS)
             .whereIn(Post::uid.name, followings)

@@ -8,31 +8,39 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1004201569665:android:926f73a8fe252878088c80",
+        "mobilesdk_app_id": "1:1004201569665:android:498096fdb664071c088c80",
         "android_client_info": {
           "package_name": "com.whiteside.insta"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1004201569665-sgmavtgqffqtghq88nn2n36jd71h81dl.apps.googleusercontent.com",
+          "client_id": "1004201569665-gj7fgeht8eitgq18pvuo72hk4jajqf1l.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.whiteside.insta",
-            "certificate_hash": "624f481adc8c4d1fc03f18403f825042f97a8208"
+            "certificate_hash": "e3287b4ffbc6f51b228c8df2cd2740008df3c9d8"
+          }
+        },
+        {
+          "client_id": "1004201569665-i715sm0lvl61s9ll35btb7mff17noagf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.whiteside.insta",
+            "certificate_hash": "b375860e3d86cc27a9f2f178dd3136480e7d551f"
           }
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyD3bvP7dJKdSUzfs2TB7c6Lc9vXMF7aqOY"
+          "current_key": "AIzaSyA9yooC91kmnAOL4DU9wmwjq7G-KjBfKkw"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "1004201569665-1eb3lga7mja49qpefj9fg9u1v96b0f18.apps.googleusercontent.com",
+              "client_id": "1004201569665-d0vnm1um8phcoi99pjch4fg616v22814.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

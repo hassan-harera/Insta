@@ -1,5 +1,8 @@
 buildscript {
-    ext.kotlin_version = '1.4.30'
+    ext.kotlin_version = '1.5.21'
+    ext.hilt_version = '2.37'
+    ext.accompanist_version = '0.16.0'
+    ext.compose_version = '1.0.1'
     repositories {
         google()
         mavenCentral()
@@ -11,10 +14,11 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'com.google.gms:google-services:4.3.5'
-        classpath 'com.android.tools.build:gradle:4.2.0-beta05'
+        classpath 'com.google.gms:google-services:4.3.10'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "com.google.dagger:hilt-android-gradle-plugin:$hilt_version"
+        classpath 'com.android.tools.build:gradle:7.0.1'
         classpath("org.junit.platform:junit-platform-gradle-plugin:1.0.0-M4")
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.31"
     }
 }
 plugins {
@@ -39,7 +43,7 @@ compileTestKotlin {
 allprojects {
     repositories {
         google()
-        mavenCentral()
-        maven { url "https://www.jitpack.io" }
+        jcenter()
+        maven { url "https://jitpack.io" }
     }
 }

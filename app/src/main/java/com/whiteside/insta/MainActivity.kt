@@ -2,7 +2,6 @@ package com.whiteside.insta
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -21,7 +20,6 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.whiteside.insta.db.network.abstract_.AuthManager
 import com.whiteside.insta.ui.home.HomeActivity
@@ -60,17 +58,13 @@ class MainActivity : AppCompatActivity() {
                 modifier = Modifier
                     .padding(20.dp)
                     .clickable {
-                        Intent(context, HomeActivity::class.java).let {
-                            startActivity(it)
-                        }
+                        startActivity(Intent(context, HomeActivity::class.java))
                         finish()
                     }
             )
 
             if (progress >= 1f) {
-                Intent(context, HomeActivity::class.java).let {
-                    startActivity(it)
-                }
+                startActivity(Intent(context, HomeActivity::class.java))
                 finish()
             }
         }
