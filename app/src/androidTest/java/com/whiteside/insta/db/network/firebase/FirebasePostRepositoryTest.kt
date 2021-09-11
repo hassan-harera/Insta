@@ -51,7 +51,8 @@ class FirebasePostRepositoryTest {
                     uid = "N2duudxGtoVyTwkqzGMW4Al336H3",
                     postId = Random.nextInt(100).toString(),
                     postImageUrl =
-                    "https://firebasestorage.googleapis.com/v0/b/insta-simulator.appspot.com/o/users%2FN2duudxGtoVyTwkqzGMW4Al336H3%2Fposts%2F1234.png?alt=media&token=6e6a625c-83bb-4d9d-9e50-908cffd56f86",
+                    "https://firebasestorage.googleapis.com/v0/b/insta-simulator.appspot.com/" +
+                            "o/users%2FN2duudxGtoVyTwkqzGMW4Al336H3%2Fposts%2F1234.png?alt=media&token=6e6a625c-83bb-4d9d-9e50-908cffd56f86",
                     time = Timestamp.now()
                 )
             )

@@ -1,0 +1,244 @@
+<html>
+<head>
+<title>HomeProfile.kt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #6897bb;}
+.s3 { color: #808080;}
+.s4 { color: #6a8759;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+HomeProfile.kt</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">com.whiteside.insta.ui.homeprofile</span>
+
+<span class="s1">import androidx.compose.foundation.*</span>
+<span class="s1">import androidx.compose.foundation.layout.*</span>
+<span class="s1">import androidx.compose.foundation.shape.CircleShape</span>
+<span class="s1">import androidx.compose.foundation.text.KeyboardActions</span>
+<span class="s1">import androidx.compose.foundation.text.KeyboardOptions</span>
+<span class="s1">import androidx.compose.material.*</span>
+<span class="s1">import androidx.compose.material.icons.Icons</span>
+<span class="s1">import androidx.compose.material.icons.filled.ArrowBack</span>
+<span class="s1">import androidx.compose.material.icons.filled.KeyboardArrowUp</span>
+<span class="s1">import androidx.compose.material.icons.filled.Search</span>
+<span class="s1">import androidx.compose.runtime.*</span>
+<span class="s1">import androidx.compose.runtime.livedata.observeAsState</span>
+<span class="s1">import androidx.compose.ui.Alignment.Companion.BottomEnd</span>
+<span class="s1">import androidx.compose.ui.Modifier</span>
+<span class="s1">import androidx.compose.ui.draw.clip</span>
+<span class="s1">import androidx.compose.ui.graphics.Color</span>
+<span class="s1">import androidx.compose.ui.text.TextStyle</span>
+<span class="s1">import androidx.compose.ui.text.font.FontFamily</span>
+<span class="s1">import androidx.compose.ui.text.font.FontStyle</span>
+<span class="s1">import androidx.compose.ui.text.font.FontWeight</span>
+<span class="s1">import androidx.compose.ui.text.input.ImeAction</span>
+<span class="s1">import androidx.compose.ui.text.style.TextAlign</span>
+<span class="s1">import androidx.compose.ui.tooling.preview.Preview</span>
+<span class="s1">import androidx.compose.ui.unit.dp</span>
+<span class="s1">import androidx.compose.ui.unit.sp</span>
+<span class="s1">import androidx.navigation.NavHostController</span>
+<span class="s1">import coil.annotation.ExperimentalCoilApi</span>
+<span class="s1">import coil.compose.rememberImagePainter</span>
+<span class="s1">import com.example.compose1.ui.theme.Grey660</span>
+<span class="s1">import com.whiteside.insta.modelget.Profile</span>
+<span class="s1">import com.whiteside.insta.ui.components.PostListView</span>
+<span class="s1">import com.whiteside.insta.ui.viewpost.PostViewModel</span>
+<span class="s1">import kotlinx.coroutines.launch</span>
+
+
+<span class="s1">@ExperimentalCoilApi</span>
+<span class="s1">@Composable</span>
+<span class="s0">fun </span><span class="s1">HomeProfile(</span>
+    <span class="s1">homeProfileViewModel: HomeProfileViewModel</span><span class="s0">,</span>
+    <span class="s1">postViewModel: PostViewModel</span><span class="s0">,</span>
+    <span class="s1">navController: NavHostController</span><span class="s0">,</span>
+<span class="s1">) {</span>
+    <span class="s1">homeProfileViewModel.getPosts()</span>
+    <span class="s1">homeProfileViewModel.getProfile()</span>
+
+    <span class="s0">val </span><span class="s1">scrollState = rememberScrollState()</span>
+
+    <span class="s1">HomeProfileContent(</span>
+        <span class="s1">scrollState</span><span class="s0">,</span>
+        <span class="s1">postViewModel</span><span class="s0">,</span>
+        <span class="s1">navController</span><span class="s0">,</span>
+        <span class="s1">homeProfileViewModel</span>
+    <span class="s1">)</span>
+<span class="s1">}</span>
+
+<span class="s1">@ExperimentalCoilApi</span>
+<span class="s1">@Composable</span>
+<span class="s0">fun </span><span class="s1">HomeProfileContent(</span>
+    <span class="s1">scrollState: ScrollState</span><span class="s0">,</span>
+    <span class="s1">postViewModel: PostViewModel</span><span class="s0">,</span>
+    <span class="s1">navController: NavHostController</span><span class="s0">,</span><span class="s1">حق</span>
+    <span class="s1">homeProfileViewModel: HomeProfileViewModel</span><span class="s0">,</span>
+<span class="s1">) {</span>
+    <span class="s0">val </span><span class="s1">profile by homeProfileViewModel.profile</span>
+    <span class="s0">val </span><span class="s1">posts by homeProfileViewModel.posts</span>
+    <span class="s0">val </span><span class="s1">scope = rememberCoroutineScope()</span>
+
+    <span class="s1">Column(</span>
+        <span class="s1">modifier = Modifier</span>
+            <span class="s1">.fillMaxSize()</span>
+            <span class="s1">.background(Color.White)</span>
+            <span class="s1">.verticalScroll(scrollState)</span><span class="s0">,</span>
+    <span class="s1">) {</span>
+        <span class="s1">profile?.let {</span>
+            <span class="s1">ProfileHeader(profile = it)</span>
+        <span class="s1">}</span>
+
+        <span class="s1">Box {</span>
+            <span class="s1">PostListView(</span>
+                <span class="s1">posts</span><span class="s0">,</span>
+                <span class="s1">navController = navController</span><span class="s0">,</span>
+                <span class="s1">postViewModel = postViewModel</span>
+            <span class="s1">)</span>
+
+            <span class="s0">if </span><span class="s1">(scrollState.value &gt; </span><span class="s2">0</span><span class="s1">) {</span>
+                <span class="s1">Box(</span>
+                    <span class="s1">modifier = Modifier</span>
+                        <span class="s1">.align(BottomEnd)</span>
+                        <span class="s1">.padding(end = </span><span class="s2">10</span><span class="s1">.dp</span><span class="s0">, </span><span class="s1">bottom = </span><span class="s2">10</span><span class="s1">.dp)</span><span class="s0">,</span>
+                <span class="s1">) {</span>
+                    <span class="s1">FloatingActionButton(</span>
+                        <span class="s1">onClick = {</span>
+                            <span class="s1">scope.launch {</span>
+                                <span class="s1">scrollState.scrollTo(</span><span class="s2">0</span><span class="s1">)</span>
+                            <span class="s1">}</span>
+                        <span class="s1">}</span><span class="s0">,</span>
+                        <span class="s1">backgroundColor = Grey660</span><span class="s0">,</span>
+                    <span class="s1">) {</span>
+                        <span class="s1">Icon(</span>
+                            <span class="s1">modifier = Modifier.size(</span><span class="s2">30</span><span class="s1">.dp)</span><span class="s0">,</span>
+                            <span class="s1">imageVector = Icons.Default.KeyboardArrowUp</span><span class="s0">,</span>
+                            <span class="s1">contentDescription = </span><span class="s0">null,</span>
+                            <span class="s1">tint = Color.White</span>
+                        <span class="s1">)</span>
+                    <span class="s1">}</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+<span class="s1">}</span>
+
+<span class="s1">@ExperimentalCoilApi</span>
+<span class="s1">@Composable</span>
+<span class="s0">fun </span><span class="s1">ProfileHeader(profile: Profile) {</span>
+    <span class="s1">Row(</span>
+        <span class="s1">modifier = Modifier</span>
+            <span class="s1">.fillMaxWidth()</span>
+            <span class="s1">.height(</span><span class="s2">150</span><span class="s1">.dp)</span>
+            <span class="s1">.padding(top = </span><span class="s2">10</span><span class="s1">.dp</span><span class="s0">, </span><span class="s1">start = </span><span class="s2">10</span><span class="s1">.dp)</span>
+    <span class="s1">) {</span>
+        <span class="s1">Image(</span>
+            <span class="s1">painter = rememberImagePainter(data = profile.profileImageUrl)</span><span class="s0">,</span>
+            <span class="s1">contentDescription = </span><span class="s0">null,</span>
+            <span class="s1">Modifier</span>
+                <span class="s1">.clip(CircleShape)</span>
+                <span class="s1">.fillMaxHeight()</span>
+        <span class="s1">)</span>
+
+        <span class="s1">Spacer(modifier = Modifier.size(</span><span class="s2">10</span><span class="s1">.dp))</span>
+
+        <span class="s1">Column(</span>
+            <span class="s1">Modifier.fillMaxSize()</span><span class="s0">,</span>
+            <span class="s1">verticalArrangement = Arrangement.Center</span>
+        <span class="s1">) {</span>
+            <span class="s1">Text(</span>
+                <span class="s3">//TODO change text value</span>
+                <span class="s1">text = profile.name</span><span class="s0">,</span>
+                <span class="s1">style = TextStyle(</span>
+                    <span class="s1">fontFamily = FontFamily.Default</span><span class="s0">,</span>
+                    <span class="s1">fontSize = </span><span class="s2">22</span><span class="s1">.sp</span><span class="s0">,</span>
+                    <span class="s1">color = Color.Black</span><span class="s0">,</span>
+                    <span class="s1">fontStyle = FontStyle.Normal</span><span class="s0">,</span>
+                <span class="s1">)</span><span class="s0">,</span>
+                <span class="s1">fontWeight = FontWeight.Bold</span><span class="s0">,</span>
+                <span class="s1">modifier = Modifier.fillMaxWidth()</span><span class="s0">,</span>
+                <span class="s1">textAlign = TextAlign.Center</span>
+            <span class="s1">)</span>
+
+            <span class="s1">Spacer(modifier = Modifier.size(</span><span class="s2">5</span><span class="s1">.dp))</span>
+
+            <span class="s1">Text(</span>
+                <span class="s3">//TODO change text value</span>
+                <span class="s1">text = profile.bio</span><span class="s0">,</span>
+                <span class="s1">style = TextStyle(</span>
+                    <span class="s1">fontFamily = FontFamily.Serif</span><span class="s0">,</span>
+                    <span class="s1">fontSize = </span><span class="s2">16</span><span class="s1">.sp</span><span class="s0">,</span>
+                    <span class="s1">color = Color.Black</span><span class="s0">,</span>
+                    <span class="s1">fontStyle = FontStyle.Normal</span><span class="s0">,</span>
+                <span class="s1">)</span><span class="s0">,</span>
+                <span class="s1">textAlign = TextAlign.Center</span><span class="s0">,</span>
+                <span class="s1">fontWeight = FontWeight.Medium</span><span class="s0">,</span>
+                <span class="s1">modifier = Modifier.fillMaxWidth()</span>
+            <span class="s1">)</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+<span class="s1">}</span>
+
+<span class="s1">@Preview</span>
+<span class="s1">@Composable</span>
+<span class="s0">fun </span><span class="s1">ProfileTopBar() {</span>
+    <span class="s0">var </span><span class="s1">searchWord by remember { mutableStateOf(</span><span class="s4">&quot;&quot;</span><span class="s1">) }</span>
+
+    <span class="s1">TopAppBar(</span>
+        <span class="s1">modifier = Modifier.padding(</span><span class="s2">0</span><span class="s1">.dp)</span><span class="s0">,</span>
+        <span class="s1">backgroundColor = Grey660</span><span class="s0">,</span>
+        <span class="s1">contentColor = Grey660</span><span class="s0">,</span>
+        <span class="s1">title = {</span>
+            <span class="s1">TextField(</span>
+                <span class="s1">value = searchWord</span><span class="s0">,</span>
+                <span class="s1">onValueChange = {</span>
+                    <span class="s1">searchWord = it</span>
+                <span class="s1">}</span><span class="s0">,</span>
+                <span class="s1">label = {</span>
+                    <span class="s1">Text(</span>
+                        <span class="s1">text = </span><span class="s4">&quot;Search Any Thing&quot;</span><span class="s0">,</span>
+                        <span class="s1">textAlign = TextAlign.End</span>
+                    <span class="s1">)</span>
+                <span class="s1">}</span><span class="s0">,</span>
+                <span class="s1">leadingIcon = {</span>
+                    <span class="s1">Icon(</span>
+                        <span class="s1">imageVector = Icons.Default.Search</span><span class="s0">,</span>
+                        <span class="s1">contentDescription = </span><span class="s0">null</span>
+                    <span class="s1">)</span>
+                <span class="s1">}</span><span class="s0">,</span>
+                <span class="s1">colors = TextFieldDefaults.textFieldColors(</span>
+                    <span class="s1">cursorColor = Color.Black</span><span class="s0">,</span>
+                    <span class="s1">focusedLabelColor = Color.Black</span><span class="s0">,</span>
+                    <span class="s1">textColor = Color.White</span><span class="s0">,</span>
+                    <span class="s1">trailingIconColor = Color.Black</span><span class="s0">,</span>
+                    <span class="s1">backgroundColor = Color.Unspecified</span>
+                <span class="s1">)</span><span class="s0">,</span>
+                <span class="s1">keyboardActions = KeyboardActions(</span>
+                    <span class="s1">onDone = {</span>
+                        <span class="s3">//TODO call search method</span>
+                    <span class="s1">}</span>
+                <span class="s1">)</span><span class="s0">,</span>
+                <span class="s1">keyboardOptions = KeyboardOptions(</span>
+                    <span class="s1">imeAction = ImeAction.Search</span>
+                <span class="s1">)</span><span class="s0">,</span>
+            <span class="s1">)</span>
+        <span class="s1">}</span><span class="s0">,</span>
+        <span class="s1">navigationIcon = {</span>
+            <span class="s1">IconButton(onClick = { </span><span class="s3">/*TODO*/ </span><span class="s1">}) {</span>
+                <span class="s1">Icon(</span>
+                    <span class="s1">imageVector = Icons.Filled.ArrowBack</span><span class="s0">,</span>
+                    <span class="s1">contentDescription = </span><span class="s4">&quot;&quot;</span>
+                <span class="s1">)</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span><span class="s0">,</span>
+    <span class="s1">)</span>
+<span class="s1">}</span>
+</pre>
+</body>
+</html>

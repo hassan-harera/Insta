@@ -1,4 +1,4 @@
-package com.whiteside.dwaa.profileRepo
+package com.whiteside.insta.db.network.firebase
 
 import com.google.android.gms.tasks.Tasks
 import com.whiteside.insta.db.network.abstract_.AuthManager
