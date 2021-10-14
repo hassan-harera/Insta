@@ -1,2 +1,10 @@
 include ':app'
 rootProject.name = "Insta"
+include ':features'
+include ':features:chat'
+include ':data'
+include ':data:model'
+include ':data:repository'
+include ':ui-components'
+include ':base'
+include ':ui-components:navigation'

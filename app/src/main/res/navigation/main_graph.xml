@@ -6,22 +6,22 @@
 
     <fragment
         android:id="@+id/chatsFragment"
-        android:name="com.whiteside.insta.ui.ChatsFragment"
+        android:name="com.harera.insta.ui.ChatsFragment"
         android:label="ChatsFragment" />
     <fragment
         android:id="@+id/feedFragment"
-        android:name="com.whiteside.insta.ui.feed.FeedFragment"
+        android:name="com.harera.insta.ui.feed.FeedFragment"
         android:label="FeedFragment" />
     <fragment
         android:id="@+id/notificationsFragment"
-        android:name="com.whiteside.insta.ui.notifications.NotificationsFragment"
+        android:name="com.harera.insta.ui.notifications.NotificationsFragment"
         android:label="NotificationsFragment" />
     <fragment
         android:id="@+id/userProfileFragment"
-        android:name="com.whiteside.insta.ui.profile.UserProfileFragment"
+        android:name="com.harera.insta.ui.profile.UserProfileFragment"
         android:label="UserProfileFragment" />
     <fragment
         android:id="@+id/visitProfileFragment"
-        android:name="com.whiteside.insta.ui.visitprofile.VisitProfileFragment"
+        android:name="com.harera.insta.ui.visitprofile.VisitProfileFragment"
         android:label="VisitProfileFragment" />
 </navigation>
