@@ -1,9 +1,9 @@
 <component name="libraryTable">
   <library name="Gradle: androidx.navigation:navigation-compose:2.4.0-alpha10@aar">
     <CLASSES>
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/4a9b9ac0cb0f36cfa8fd1995021675c7/transformed/jetified-navigation-compose-2.4.0-alpha10/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/4a9b9ac0cb0f36cfa8fd1995021675c7/transformed/jetified-navigation-compose-2.4.0-alpha10/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/4a9b9ac0cb0f36cfa8fd1995021675c7/transformed/jetified-navigation-compose-2.4.0-alpha10/AndroidManifest.xml" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/42cd88ed9b4b54397d7b76985a72f1fc/transformed/jetified-navigation-compose-2.4.0-alpha10/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/42cd88ed9b4b54397d7b76985a72f1fc/transformed/jetified-navigation-compose-2.4.0-alpha10/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/42cd88ed9b4b54397d7b76985a72f1fc/transformed/jetified-navigation-compose-2.4.0-alpha10/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

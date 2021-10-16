@@ -34,12 +34,11 @@ import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.harera.base.theme.*
 import com.harera.base.utils.TimeUtils
+import com.harera.compose.CommentView
 import com.harera.model.modelget.Comment
 import com.harera.model.modelget.Post
 import com.harera.insta.R
-import com.harera.insta.ui.components.CommentView
 import com.harera.insta.ui.data.DummyDate
-import com.harera.insta.ui.home.HomeNavigation
 
 
 @ExperimentalCoilApi
@@ -61,13 +60,13 @@ fun PostScreen(
             post = _post,
             comments = comments,
             onPostClicked = {
-                navController.navigate("${HomeNavigation.PostScreen}/${_post.postId}") {
+                navController.navigate("${com.harera.navigation.HomeNavigation.PostScreen}/${_post.postId}") {
                     launchSingleTop = true
                     restoreState = true
                 }
             },
             onProfileClicked = {
-                navController.navigate("${HomeNavigation.VisitProfile}/${_post.uid}") {
+                navController.navigate("${com.harera.navigation.HomeNavigation.VisitProfile}/${_post.uid}") {
                     launchSingleTop = true
                     restoreState = true
                 }

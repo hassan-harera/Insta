@@ -6,9 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.gms.tasks.Tasks
 import com.harera.model.modelget.Post
 import com.harera.model.modelget.Profile
-import com.harera.insta.db.network.abstract_.AuthManager
-import com.harera.insta.db.network.abstract_.PostRepository
-import com.harera.insta.db.network.abstract_.ProfileRepository
+import com.harera.repository.db.network.abstract_.AuthManager
+import com.harera.repository.db.network.abstract_.PostRepository
+import com.harera.repository.db.network.abstract_.ProfileRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async

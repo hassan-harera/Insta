@@ -16,10 +16,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.harera.base.theme.Grey660
 import com.harera.base.theme.Grey700
+import com.harera.compose.TopBar
 import com.vanpra.composematerialdialogs.MaterialDialog
-import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.harera.insta.R
-import com.harera.insta.ui.components.TopBar
+
 
 
 @Preview
@@ -147,27 +147,28 @@ fun EditProfileForm() {
             Text(text = "Date of birth", color = Grey700)
         }
 
-        val dialog = remember { MaterialDialog() }
-        dialog.build(buttons = {
-            positiveButton("Ok")
-            negativeButton("Cancel")
-        }) {
-            datepicker { date ->
+        val dialog = MaterialDialog() {
 
-            }
         }
-
-//        if (dateClicked)
-        dialog.build(
-            buttons = {
-                positiveButton("Ok")
-                negativeButton("Cancel")
-            },
-        ) {
-            datepicker { date ->
-
-            }
-        }
+//        dialog.build(buttons = {
+//            positiveButton("Ok")
+//            negativeButton("Cancel")
+//        }) {
+//            datepicker { date ->
+//
+//            }
+//        }
+//
+////        if (dateClicked)
+//        dialog.build(
+//            buttons = {
+//                positiveButton("Ok")
+//                negativeButton("Cancel")
+//            },
+//        ) {
+//            datepicker { date ->
+//
+//            }
+//        }
     }
-
 }

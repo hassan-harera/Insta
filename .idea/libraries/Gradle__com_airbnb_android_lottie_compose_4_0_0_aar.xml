@@ -1,11 +1,11 @@
 <component name="libraryTable">
   <library name="Gradle: com.airbnb.android:lottie-compose:4.0.0@aar">
     <CLASSES>
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/0f65b1e8eb3c1f40f8f98a84dc3d1019/transformed/jetified-lottie-compose-4.0.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/4eb8be08485caa4c50f4c8501802a996/transformed/jetified-lottie-compose-4.0.0/res" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/73fd7cae2bb7a6b858c1ff3a88a8980d/transformed/jetified-lottie-compose-4.0.0/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/73fd7cae2bb7a6b858c1ff3a88a8980d/transformed/jetified-lottie-compose-4.0.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/73fd7cae2bb7a6b858c1ff3a88a8980d/transformed/jetified-lottie-compose-4.0.0/AndroidManifest.xml" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/e89d0b92d357463d1fd1b49091110ae2/transformed/jetified-lottie-compose-4.0.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/7c34023382810c1896522235a96fdd55/transformed/jetified-lottie-compose-4.0.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/d43c2e9d28fe032406834ed06b91f2c8/transformed/jetified-lottie-compose-4.0.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/d43c2e9d28fe032406834ed06b91f2c8/transformed/jetified-lottie-compose-4.0.0/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/d43c2e9d28fe032406834ed06b91f2c8/transformed/jetified-lottie-compose-4.0.0/jars/classes.jar!/" />
     </CLASSES>
     <JAVADOC>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.airbnb.android/lottie-compose/4.0.0/3995cbc93176874c9c3b20a82d68e373d44df48b/lottie-compose-4.0.0-javadoc.jar!/" />

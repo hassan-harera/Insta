@@ -1,7 +1,7 @@
-apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: ("dagger.hilt.android.plugin")
 apply plugin: 'kotlin-kapt'
+apply plugin: 'com.google.gms.google-services'
 android {
     compileSdkVersion DefaultConfig.compileSdk
 
@@ -12,12 +12,29 @@ android {
         versionName Releases.versionName
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
-
     buildTypes {
-        debug {
-            debuggable true
-            buildConfigField("String", "RootPackage", "\"com.christopher_elias.movies\"")
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion "1.0.0"
+        kotlinCompilerVersion "1.0.0"
+    }
+    packagingOptions {
+        exclude("META-INF/AL2.0")
+        exclude("META-INF/LGPL2.1")
     }
 
     kotlinOptions.jvmTarget = "1.8"

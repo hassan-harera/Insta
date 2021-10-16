@@ -9,6 +9,7 @@ buildscript {
         classpath(Libs.kotlinPlugin)
         classpath(Libs.googleServices)
         classpath(Libs.hiltPlugin)
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.30")
     }
 }
 

@@ -32,10 +32,10 @@ import coil.compose.rememberImagePainter
 import com.harera.base.theme.Grey300
 import com.harera.base.theme.Grey60
 import com.harera.base.theme.Grey700
+import com.harera.insta.chat.ChatViewModel
 import com.harera.model.modelget.Profile
 import com.harera.navigation.NavigationIcon
 import com.harera.repository.data.DummyDate
-
 
 private const val TAG = "ChatScreen"
 

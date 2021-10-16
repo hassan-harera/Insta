@@ -1,4 +1,4 @@
-package com.harera.chat
+package com.harera.insta.chat
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -7,7 +7,6 @@ import com.google.android.gms.tasks.Tasks
 import com.google.firebase.Timestamp
 import com.harera.model.modelget.FollowRelation
 import com.harera.model.modelget.OpenChat
-import com.harera.model.modelget.Message as MessageGet
 import com.harera.model.modelget.Profile
 import com.harera.model.modelset.Message
 import com.harera.repository.db.network.abstract_.AuthManager
@@ -16,6 +15,7 @@ import com.harera.repository.db.network.abstract_.ProfileRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import javax.inject.Inject
+import com.harera.model.modelget.Message as MessageGet
 
 @HiltViewModel
 class ChatViewModel @Inject constructor(
@@ -62,7 +62,7 @@ class ChatViewModel @Inject constructor(
     private suspend fun getLastMessage(uid1: String, uid2: String) =
         viewModelScope.async(Dispatchers.IO) {
             chatRepository.getLastMessage(uid1 = uid1, uid2 = uid2).map {
-                it.toObject(MessageGet::class.java)!!
+                it.toObject(com.harera.model.modelget.Message::class.java)!!
             }.sortedByDescending {
                 it.time
             }[0]

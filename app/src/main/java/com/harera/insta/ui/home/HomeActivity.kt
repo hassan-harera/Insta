@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -26,16 +27,14 @@ import androidx.navigation.compose.rememberNavController
 import coil.annotation.ExperimentalCoilApi
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.harera.base.theme.Grey660
-import com.harera.insta.ui.chats.ChatViewModel
-import com.harera.insta.ui.chats.HomeChats
-import com.harera.insta.ui.components.HomeTopBar
+import com.harera.chat.HomeChats
+import com.harera.compose.HomeTopBar
+import com.harera.insta.chat.ChatViewModel
 import com.harera.insta.ui.feed.FeedViewModel
 import com.harera.insta.ui.feed.HomeFeed
-import com.harera.insta.ui.home.HomeNavigation.AddPost
-import com.harera.insta.ui.home.HomeNavigation.PostScreen
-import com.harera.insta.ui.home.HomeNavigation.VisitProfile
-import com.harera.insta.ui.notifications.HomeNotifications
-import com.harera.insta.ui.notifications.NotificationsViewModel
+import com.harera.navigation.HomeNavigation.AddPost
+import com.harera.notifications.HomeNotifications
+import com.harera.notifications.NotificationsViewModel
 import com.harera.insta.ui.postform.PostForm
 import com.harera.insta.ui.profile.home.HomeProfile
 import com.harera.insta.ui.profile.home.HomeProfileViewModel
@@ -45,6 +44,8 @@ import com.harera.insta.ui.utils.Arguments.POST_ID
 import com.harera.insta.ui.utils.Arguments.UID
 import com.harera.insta.ui.viewpost.PostScreen
 import com.harera.insta.ui.viewpost.PostViewModel
+import com.harera.navigation.HomeNavigation.PostScreen
+import com.harera.navigation.HomeNavigation.VisitProfile
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -75,10 +76,10 @@ class HomeActivity : AppCompatActivity() {
     @Composable
     private fun HomeActivityContent() {
         val bottomNavIcons = listOf(
-            HomeBottomNavigation.Feed,
-            HomeBottomNavigation.Profile,
-            HomeBottomNavigation.Notifications,
-            HomeBottomNavigation.Chats
+            com.harera.navigation.HomeBottomNavigation.Feed,
+            com.harera.navigation.HomeBottomNavigation.Profile,
+            com.harera.navigation.HomeBottomNavigation.Notifications,
+            com.harera.navigation.HomeBottomNavigation.Chats
         )
 
         val navController = rememberNavController()
@@ -86,12 +87,12 @@ class HomeActivity : AppCompatActivity() {
 
         Scaffold(
             topBar = {
-                if (currentRoute?.destination?.route != HomeNavigation.HomeChats) {
+                if (currentRoute?.destination?.route != com.harera.navigation.HomeNavigation.HomeChats) {
                     HomeTopBar()
                 }
             },
             bottomBar = {
-                if (currentRoute?.destination?.route != HomeNavigation.HomeChats) {
+                if (currentRoute?.destination?.route != com.harera.navigation.HomeNavigation.HomeChats) {
                     HomeBottomNavigation(
                         tabs = bottomNavIcons,
                         navController = navController
@@ -108,30 +109,30 @@ class HomeActivity : AppCompatActivity() {
     @Composable
     private fun HomeNavHost(navController: NavHostController, paddingValues: PaddingValues) {
         NavHost(
-            startDestination = HomeNavigation.HomeFeed,
+            startDestination = com.harera.navigation.HomeNavigation.HomeFeed,
             navController = navController,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            composable(HomeNavigation.HomeFeed) {
+            composable(com.harera.navigation.HomeNavigation.HomeFeed) {
                 HomeFeed(
                     feedViewModel = feedViewModel,
                     navController = navController,
                     postViewModel = postViewModel
                 )
             }
-            composable(HomeNavigation.HomeProfile) {
+            composable(com.harera.navigation.HomeNavigation.HomeProfile) {
                 HomeProfile(
                     homeProfileViewModel = homeProfileViewModel,
                     postViewModel = postViewModel,
                     navController = navController
                 )
             }
-            composable(HomeNavigation.HomeNotifications) {
-                HomeNotifications(notificationsViewModel = notificationsViewModel)
+            composable(com.harera.navigation.HomeNavigation.HomeNotifications) {
+                com.harera.notifications.HomeNotifications(notificationsViewModel = notificationsViewModel)
             }
-            composable(HomeNavigation.HomeChats) {
+            composable(com.harera.navigation.HomeNavigation.HomeChats) {
                 HomeChats(chatViewModel = chatViewModel)
             }
             composable("$VisitProfile/{$UID}") { stack ->
@@ -160,7 +161,7 @@ class HomeActivity : AppCompatActivity() {
 
     @Composable
     fun HomeBottomNavigation(
-        tabs: List<HomeBottomNavigation>,
+        tabs: List<com.harera.navigation.HomeBottomNavigation>,
         navController: NavHostController
     ) {
         BottomNavigation(

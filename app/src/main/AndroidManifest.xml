@@ -14,16 +14,18 @@
         android:label="@string/app_name"
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true">
-
+        android:supportsRtl="true"
+        android:theme="@style/TextAppearance.AppCompat">
 
         <activity
+            android:name=".ui.home.HomeActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".MainActivity"
             android:exported="false"
-            android:name="com.harera.insta.ui.home.HomeActivity" />
-
-        <activity
-            android:name="com.harera.insta.MainActivity"
-            android:exported="false">
+            android:label="@string/app_name"
+            android:theme="@style/TextAppearance.AppCompat">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

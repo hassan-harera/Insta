@@ -1,36 +1,9 @@
 import Versions.compose_version
 
-object Releases {
-    const val versionCode = 1
-    const val versionName = "1.0"
-}
-
-object DefaultConfig {
-    const val buildToolsVersion = "30.0.3"
-    const val appId = "com.harera.insta"
-    const val minSdk = 21
-    const val targetSdk = 31
-    const val compileSdk = 31
-}
-
-object UiComponents {
-    const val navigation = ":ui-components:navigation"
-
-}
-
-object Core {
-    const val model = ":data:model"
-    const val repository = ":data:repository"
-    const val base = ":base"
-}
-
-object Features {
-    const val chat = ":features:chat"
-
-}
-
 object Versions {
-    const val compose_version = "1.0.2"
+    const val material_compose = "0.6.1"
+    const val accompanist_version = "0.19.0"
+    const val compose_version = "1.0.4"
     const val Ad_MOB_VERSION = "20.4.0"
     const val ACTIVITY_VERSION = "1.3.1"
     const val PLAY_SERVICE_TASKS = "17.2.1"
@@ -96,25 +69,14 @@ object Versions {
     const val DI_KOIN_VERSION = "3.0.2"
 }
 
-object Compose {
-    //    androidTestImplementation
-    const val composJUnitTest = "androidx.compose.ui:ui-test-junit4:$compose_version"
-
-    //    debugImplementation
-    const val composUiTooling = "androidx.compose.ui:ui-tooling:$compose_version"
-
-    //    implementation
-    const val composeAndroidX = "androidx.compose.ui:ui:$compose_version"
-    const val composeMaterial = "androidx.compose.material:material:$compose_version"
-    const val composePreview = "androidx.compose.ui:ui-tooling-preview:${compose_version}"
-    const val composeActivity = "androidx.activity:activity-compose:1.3.1"
-    const val composeLivedata = "androidx.compose.runtime:runtime-livedata:1.1.0-alpha02"
-    const val composeNavigation = "androidx.navigation:navigation-compose:2.4.0-alpha10"
-}
 
 object Libs {
-    //adMob
+    //facebook login
+//    const val facebookLogin = "com.facebook.android:facebook-android-sdk:${Versions.face}"
+
     const val coilCompose = "io.coil-kt:coil-compose:${Versions.COIL_VERSION}"
+    const val accompanistPager =
+        "com.google.accompanist:accompanist-pager:${Versions.accompanist_version}"
 
     const val lottieCompose = "com.airbnb.android:lottie-compose:4.0.0"
 

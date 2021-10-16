@@ -18,7 +18,11 @@
             <option value="$PROJECT_DIR$/data/repository" />
             <option value="$PROJECT_DIR$/features" />
             <option value="$PROJECT_DIR$/features/chat" />
+            <option value="$PROJECT_DIR$/features/notifications" />
+            <option value="$PROJECT_DIR$/features/posts" />
+            <option value="$PROJECT_DIR$/features/profile" />
             <option value="$PROJECT_DIR$/ui-components" />
+            <option value="$PROJECT_DIR$/ui-components/compose" />
             <option value="$PROJECT_DIR$/ui-components/navigation" />
           </set>
         </option>

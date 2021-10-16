@@ -17,9 +17,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.annotation.ExperimentalCoilApi
 import com.harera.insta.R.drawable
-import com.harera.insta.ui.components.PostListView
-import com.harera.insta.ui.home.HomeNavigation
 import com.harera.insta.ui.viewpost.PostViewModel
+import com.harera.posts.PostListView
 
 @ExperimentalCoilApi
 @Composable
@@ -52,7 +51,7 @@ fun HomeFeed(
                 .padding(2.dp)
                 .fillMaxWidth()
                 .clickable {
-                    navController.navigate(HomeNavigation.AddPost) {
+                    navController.navigate(com.harera.navigation.HomeNavigation.AddPost) {
                         launchSingleTop = true
                         restoreState = true
                     }

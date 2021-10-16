@@ -1,0 +1,17 @@
+<component name="libraryTable">
+  <library name="Gradle: io.github.vanpra.compose-material-dialogs:datetime:0.6.1@aar">
+    <CLASSES>
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/7b21e47fb8dbae05760e9247fd784446/transformed/jetified-datetime-0.6.1/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/7300bfe22c1367d77294b57098aca55a/transformed/jetified-datetime-0.6.1/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/4615884cf95af8c4ba5b3ae82b418342/transformed/jetified-datetime-0.6.1/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/4615884cf95af8c4ba5b3ae82b418342/transformed/jetified-datetime-0.6.1/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/4615884cf95af8c4ba5b3ae82b418342/transformed/jetified-datetime-0.6.1/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.github.vanpra.compose-material-dialogs/datetime/0.6.1/7f2aedcab699b16e4aca9021b7a695869abe8104/datetime-0.6.1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.github.vanpra.compose-material-dialogs/datetime/0.6.1/97238aa8574c31474571b5d81552e3c895d5d67f/datetime-0.6.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

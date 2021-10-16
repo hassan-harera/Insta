@@ -10,7 +10,11 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/data/repository/Insta.data.repository.iml" filepath="$PROJECT_DIR$/.idea/modules/data/repository/Insta.data.repository.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/features/Insta.features.iml" filepath="$PROJECT_DIR$/.idea/modules/features/Insta.features.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/features/chat/Insta.features.chat.iml" filepath="$PROJECT_DIR$/.idea/modules/features/chat/Insta.features.chat.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/features/notifications/Insta.features.notifications.iml" filepath="$PROJECT_DIR$/.idea/modules/features/notifications/Insta.features.notifications.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/features/posts/Insta.features.posts.iml" filepath="$PROJECT_DIR$/.idea/modules/features/posts/Insta.features.posts.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/features/profile/Insta.features.profile.iml" filepath="$PROJECT_DIR$/.idea/modules/features/profile/Insta.features.profile.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/ui-components/Insta.ui-components.iml" filepath="$PROJECT_DIR$/.idea/modules/ui-components/Insta.ui-components.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ui-components/compose/Insta.ui-components.compose.iml" filepath="$PROJECT_DIR$/.idea/modules/ui-components/compose/Insta.ui-components.compose.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/ui-components/navigation/Insta.ui-components.navigation.iml" filepath="$PROJECT_DIR$/.idea/modules/ui-components/navigation/Insta.ui-components.navigation.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Insta_APP.buildSrc.iml" filepath="$PROJECT_DIR$/.idea/modules/Insta_APP.buildSrc.iml" />
     </modules>

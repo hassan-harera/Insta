@@ -29,8 +29,8 @@ import androidx.navigation.NavHostController
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.harera.base.theme.Grey660
+import com.harera.compose.PostListView
 import com.harera.model.modelget.Profile
-import com.harera.insta.ui.components.PostListView
 import com.harera.insta.ui.viewpost.PostViewModel
 import kotlinx.coroutines.launch
 

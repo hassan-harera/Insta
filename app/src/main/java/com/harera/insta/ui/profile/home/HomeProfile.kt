@@ -29,7 +29,7 @@ import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.harera.base.theme.Grey660
 import com.harera.model.modelget.Profile
-import com.harera.insta.ui.components.PostListView
+import com.harera.compose.components.PostListView
 import com.harera.insta.ui.data.DummyDate
 import com.harera.insta.ui.viewpost.PostViewModel
 import kotlinx.coroutines.launch
