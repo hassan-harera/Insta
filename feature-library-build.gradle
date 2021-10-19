@@ -1,0 +1,60 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+
+android {
+    compileSdk = DefaultConfig.compileSdk
+    buildToolsVersion = DefaultConfig.buildToolsVersion
+
+    defaultConfig {
+        minSdk = DefaultConfig.minSdk
+        targetSdk = DefaultConfig.targetSdk
+        versionCode = Releases.versionCode
+        versionName = Releases.versionName
+    }
+
+    buildFeatures {
+        compose = true
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+        useIR = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = Versions.compose_version
+    }
+    packagingOptions {
+        exclude("META-INF/AL2.0")
+        exclude("META-INF/LGPL2.1")
+    }
+}
+
+dependencies{
+    implementation(Libs.coilCompose)
+
+    implementation(Compose.composeActivity)
+    implementation(Compose.composeAndroidX)
+    implementation(Compose.composUiTooling)
+    implementation(Compose.composeLivedata)
+    implementation(Compose.composeMaterial)
+    api(Compose.composeNavigation)
+    implementation(Compose.composePreview)
+    implementation(Compose.composJUnitTest)
+    implementation(Libs.coilCompose)
+    implementation(Libs.hiltFragment)
+
+    implementation project(Core.base)
+    implementation project(Core.components)
+    implementation project(Core.navigation)
+    implementation project(Core.repository)
+
+    implementation(Libs.hiltAndroid)
+    implementation(Libs.hiltCompose)
+    kapt(Libs.hiltAndroidCompiler)
+
+    implementation("androidx.hilt:hilt-navigation-fragment:1.0.0")
+}
