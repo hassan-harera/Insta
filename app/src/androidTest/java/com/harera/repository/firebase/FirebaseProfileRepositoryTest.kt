@@ -44,10 +44,11 @@ class FirebaseProfileRepositoryTest {
     fun addProfile() {
         val task = profileRepository.addProfile(
             Profile(
-                uid = "owTzknHIzYQWODTJu9OO1S0p8y42",
+                uid = "UnpL3Oj9ysc2bF8Zlbfz2kMogaY2",
                 bio = "Hassan",
                 email = "hassan.shaban.harera@gmail.com",
                 name = "Hassan",
+                profileImageUrl = imageUrl
             )
         )
         Tasks.await(task)
@@ -97,7 +98,7 @@ class FirebaseProfileRepositoryTest {
     fun addFollowing() {
         val task = profileRepository.addFollowing(
             FollowRelation(
-                "NKVxniXACjMDET8YApYjSCaHu6u2",
+                "UnpL3Oj9ysc2bF8Zlbfz2kMogaY2",
                 "N2duudxGtoVyTwkqzGMW4Al336H3",
                 Timestamp.now(),
             )
