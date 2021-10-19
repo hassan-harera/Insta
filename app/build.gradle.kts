@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     kotlin("android")
     id("kotlin-kapt")
+    id ("com.google.gms.google-services")
     id("dagger.hilt.android.plugin")
 }
 android {
@@ -15,7 +16,7 @@ android {
         versionCode = Releases.versionCode
         versionName = Releases.versionName
 
-//        testInstrumentationRunner = "com.codingwithmitch.dotainfo.CustomTestRunner"
+        testInstrumentationRunner = "com.harera.repository.HiltTestRunner"
     }
 
     buildTypes {
@@ -44,16 +45,22 @@ android {
 }
 
 dependencies {
-    implementation(Libs.appcompat)
-
-    implementation(project(Features.chat))
-    implementation(project(Features.posts))
-    implementation(project(Features.notifications))
-
     implementation(project(Core.repository))
     implementation(project(Core.base))
     implementation(project(Core.navigation))
     implementation(project(Core.components))
+
+    implementation(project(Features.chat))
+    implementation(project(Features.notifications))
+    implementation(project(Features.editProfile))
+    implementation(project(Features.profile))
+    implementation(project(Features.visitProfile))
+    implementation(project(Features.post))
+    implementation(project(Features.posting))
+    implementation(project(Features.feed))
+
+    implementation(Libs.appcompat)
+    implementation(Libs.playServicesTasks)
 
     implementation(Compose.composeMaterial)
     implementation(Libs.coilCompose)
@@ -61,8 +68,16 @@ dependencies {
     implementation(Compose.composUiTooling)
     implementation(Compose.composeDialog)
 
-    implementation(Libs.hiltAndroid)
+    //hilt
     kapt(Libs.hiltAndroidCompiler)
+    implementation(Libs.hiltAndroid)
+    implementation(Libs.testRunner)
+
+    androidTestImplementation(Libs.hiltTesting)
+    kaptAndroidTest(Libs.hiltAndroidCompiler)
+
+    testImplementation(Libs.hiltTesting)
+    kaptTest(Libs.hiltAndroidCompiler)
 }
 
 
