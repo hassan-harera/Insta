@@ -1,4 +1,4 @@
-package com.harera.posts
+package com.harera.feed
 
 import org.junit.Test
 
