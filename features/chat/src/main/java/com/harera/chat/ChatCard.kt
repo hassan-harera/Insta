@@ -58,7 +58,6 @@ fun ChatCard(
             verticalAlignment = (Alignment.CenterVertically)
         ) {
             Image(
-                //TODO replace image painter with link
                 painter = rememberImagePainter(openChat.profileImageUrl),
                 contentDescription = null,
                 modifier = Modifier

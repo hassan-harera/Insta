@@ -2,17 +2,19 @@ package com.harera.chat
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import coil.annotation.ExperimentalCoilApi
-import com.harera.insta.ui.utils.Arguments
+import com.harera.base.utils.Arguments
+import com.harera.insta.chat.ChatViewModel
 
 @ExperimentalComposeUiApi
 @ExperimentalCoilApi
 @Composable
 fun HomeChats(
-    chatViewModel: ChatViewModel
+    chatViewModel: ChatViewModel = hiltViewModel()
 ) {
     val navController = rememberNavController()
 

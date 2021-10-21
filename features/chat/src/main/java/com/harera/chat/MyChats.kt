@@ -12,6 +12,7 @@ import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -19,14 +20,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import coil.annotation.ExperimentalCoilApi
+import com.harera.compose.ChatCard
+import com.harera.insta.chat.ChatViewModel
 import com.harera.model.modelget.OpenChat
-import com.harera.insta.ui.components.ChatCard
-import com.harera.insta.ui.data.DummyDate
+import com.harera.repository.data.DummyDate
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @ExperimentalCoilApi
 @Composable
 fun MyChats(
-    chatViewModel: ChatViewModel,
+    chatViewModel: ChatViewModel = hiltViewModel(),
     navController: NavHostController
 ) {
     chatViewModel.getOpenChats()

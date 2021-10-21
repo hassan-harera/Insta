@@ -1,30 +1,29 @@
 package com.harera.feed
 
-import android.util.Log
 import android.widget.Toast
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.annotation.ExperimentalCoilApi
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
+import com.harera.feed.post.PostListView
 import com.harera.model.modelget.Post
-import com.harera.navigation.HomeNavigation
-import com.harera.post.PostListView
+import com.harera.base.navigation.HomeNavigation
 
 @ExperimentalCoilApi
 @Composable
@@ -36,7 +35,6 @@ fun HomeFeed(
     val intent = remember { FeedIntent.FetchPosts }
 
     LaunchedEffect(intent) {
-        Log.d("HomeFeed", "Intent Called")
         feedViewModel.intent.send(intent)
     }
 
@@ -49,11 +47,18 @@ fun HomeFeed(
             ).show()
         }
 
-        is FeedState.Posts -> {
-            Log.d("HomeFeed", "Posts observed")
+        is FeedState.LoadingMore -> {
             HomeFeedContent(
-                state.postList,
-                navController
+                posts = feedViewModel.posts.value,
+                loadingMore = state.state,
+                navController = navController
+            )
+        }
+
+        is FeedState.Posts -> {
+            HomeFeedContent(
+                posts = feedViewModel.posts.value,
+                navController = navController
             )
         }
 
@@ -70,6 +75,7 @@ fun HomeFeed(
 @Composable
 fun HomeFeedContent(
     posts: List<Post>,
+    loadingMore: Boolean = true,
     navController: NavHostController
 ) {
     val scrollState = rememberScrollState()
@@ -108,18 +114,19 @@ fun HomeFeedContent(
             navController = navController
         )
 
-        if (posts.isEmpty()) {
-            EmptyPostList()
+        if (loadingMore) {
+            val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loading))
+            val progress by animateLottieCompositionAsState(composition)
+
+            Box {
+                LottieAnimation(
+                    composition = composition,
+                    progress = progress,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.1f)
+                )
+            }
         }
     }
-
-}
-
-@Composable
-fun EmptyPostList() {
-    Image(
-        painter = painterResource(id = R.drawable.empty_list),
-        contentDescription = null,
-        modifier = Modifier.fillMaxSize()
-    )
 }

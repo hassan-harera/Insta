@@ -11,9 +11,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
-import com.harera.compose.ProfileCard
 import com.harera.insta.chat.ChatViewModel
 import com.harera.model.modelget.Profile
+import com.harera.profile.ProfileCard
 import com.harera.repository.data.DummyDate
 
 @Composable

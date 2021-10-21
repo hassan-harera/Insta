@@ -27,6 +27,10 @@ class FeedViewModel @Inject constructor(
     val state: StateFlow<FeedState>
         get() = this._state
 
+    private var _posts: MutableStateFlow<List<Post>> = MutableStateFlow(emptyList())
+    val posts: MutableStateFlow<List<Post>>
+        get() = this._posts
+
     init {
         processIntent()
     }
@@ -71,18 +75,24 @@ class FeedViewModel @Inject constructor(
 
             val posts = ArrayList<Post>()
 
-            getFollowings().forEach { uid ->
-                getUserPosts(uid).forEach { post ->
-                    Log.d("getPostDetails", "getPostDetails")
+            val followings = getFollowings()
+            followings.forEach { uid ->
+
+                val userPosts = getUserPosts(uid)
+                userPosts.forEachIndexed { index, post ->
+
                     withContext(Dispatchers.Default) {
                         getPostDetails(post).join()
-                        Log.d("after getPostDetails", "after getPostDetails")
                         posts.add(post)
                     }
+
+                    this@FeedViewModel._state.value = (FeedState.Posts)
+                    this@FeedViewModel._posts.value = posts
                     this@FeedViewModel._state.value = (FeedState.Idle)
-                    this@FeedViewModel._state.value = (FeedState.Posts(posts))
                 }
             }
+
+//            this@FeedViewModel._state.value = FeedState.LoadingMore(false)
         }
     }
 
@@ -95,11 +105,11 @@ class FeedViewModel @Inject constructor(
             }
 
             getPostNumbers(post.postId).let { likes ->
-                post.likesNumber = likes.toString()
+                post.likesNumber = likes
             }
 
             getPostCommentNumbers(post.postId).let { size ->
-                post.commentsNumber = size.toString()
+                post.commentsNumber = size
             }
         }
 
@@ -133,8 +143,8 @@ class FeedViewModel @Inject constructor(
     }.await()
 
     private suspend fun getPostCommentNumbers(postId: String): Int =
-        viewModelScope.async(Dispatchers.IO) {
+        withContext(viewModelScope.coroutineContext + Dispatchers.IO) {
             Tasks.await(postRepository.getPostComments(postId)).documents.size
-        }.await()
+        }
 
 }
