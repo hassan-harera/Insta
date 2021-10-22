@@ -5,11 +5,9 @@ import com.facebook.login.LoginManager
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.*
-import com.harera.base.utils.config.GoogleSignIn
 import com.harera.repository.db.network.abstract_.AuthManager
-import javax.inject.Inject
-
-class FirebaseAuthManager @Inject constructor(
+import com.harera.repository.db.network.config.GoogleSignIn
+class FirebaseAuthManager constructor(
     private val auth: FirebaseAuth,
     private val application: Application
 ) : AuthManager {
@@ -46,4 +44,14 @@ class FirebaseAuthManager @Inject constructor(
 
     override fun signInWithEmailAndRandomPassword(email: String): Task<AuthResult> =
         auth.signInWithEmailAndPassword(email, "harera")
+
+    override fun signUpWithEmailAndPassword(email: String, password: String): Task<AuthResult> =
+        auth.createUserWithEmailAndPassword(email, password)
+
+    override fun signInWithEmailAndPassword(email: String, password: String): Task<AuthResult> =
+        auth.signInWithEmailAndPassword(email, password)
+
+    override fun sendEmailVerificationCode(email: String): Task<Void> =
+        auth.sendPasswordResetEmail(email)
 }
+

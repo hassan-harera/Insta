@@ -10,16 +10,11 @@ import com.harera.model.modelget.FollowRequest
 import com.harera.model.modelget.Like
 import com.harera.repository.db.network.abstract_.AuthManager
 import com.harera.repository.db.network.abstract_.NotificationsRepository
-import com.harera.repository.db.network.abstract_.PostRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class NotificationsViewModel @Inject constructor(
-    private val postRepository: PostRepository,
+class NotificationsViewModel(
     private val notificationsRepository: NotificationsRepository,
     private val authManager: AuthManager,
 ) : ViewModel() {

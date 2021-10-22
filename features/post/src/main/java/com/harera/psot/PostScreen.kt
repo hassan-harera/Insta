@@ -29,7 +29,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
@@ -42,12 +41,13 @@ import com.harera.model.modelget.Post
 import com.harera.psot.PostViewModel
 import com.harera.psot.R
 import com.harera.repository.data.DummyDate
+import org.koin.androidx.compose.getViewModel
 
 
 @ExperimentalCoilApi
 @Composable
 fun PostScreen(
-    postViewModel: PostViewModel = hiltViewModel(),
+    postViewModel: PostViewModel = getViewModel(),
     postId: String,
     navController: NavHostController
 ) {

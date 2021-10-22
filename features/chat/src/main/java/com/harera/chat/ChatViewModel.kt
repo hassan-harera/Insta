@@ -1,4 +1,4 @@
-package com.harera.insta.chat
+package com.harera.chat
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -12,16 +12,13 @@ import com.harera.model.modelset.Message
 import com.harera.repository.db.network.abstract_.AuthManager
 import com.harera.repository.db.network.abstract_.ChatRepository
 import com.harera.repository.db.network.abstract_.ProfileRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
-import javax.inject.Inject
 import com.harera.model.modelget.Message as MessageGet
 
-@HiltViewModel
-class ChatViewModel @Inject constructor(
+class ChatViewModel constructor(
     private val chatRepository: ChatRepository,
     private val profileRepository: ProfileRepository,
-    authManager: AuthManager,
+    private val authManager: AuthManager,
 ) : ViewModel() {
     val profile = mutableStateOf<Profile?>(null)
     val openChats = mutableStateOf<List<OpenChat>>(emptyList())

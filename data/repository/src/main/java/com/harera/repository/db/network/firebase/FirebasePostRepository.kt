@@ -16,9 +16,8 @@ import com.harera.repository.common.Constansts.UID
 import com.harera.repository.common.Constansts.USERS
 import com.harera.repository.db.network.abstract_.PostRepository
 import java.io.ByteArrayOutputStream
-import javax.inject.Inject
 
-class FirebasePostRepository @Inject constructor(
+class FirebasePostRepository  constructor(
     private val fStore: FirebaseFirestore,
     private val firebaseStorage: FirebaseStorage,
 ) : PostRepository {
@@ -36,9 +35,10 @@ class FirebasePostRepository @Inject constructor(
             .document(postId)
             .get()
 
-    override fun getProfilePosts(uid: String): Task<QuerySnapshot> =
+    override fun getUserPosts(uid: String, limit: Int): Task<QuerySnapshot> =
         fStore.collection(PSOTS)
             .whereEqualTo(UID, uid)
+            .limit(limit.toLong())
             .get()
 
     override fun updatePost(post: Post): Task<Void> =

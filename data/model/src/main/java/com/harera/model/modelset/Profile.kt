@@ -5,5 +5,5 @@ data class Profile(
     var email: String,
     var bio: String,
     var uid: String,
-    var profileImageUrl: String? = null,
+    var profileImageUrl: String
 )

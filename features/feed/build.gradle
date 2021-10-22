@@ -1,9 +1,7 @@
-apply from:("$rootDir/feature-library-build.gradle")
-apply plugin: 'dagger.hilt.android.plugin'
-dependencies {
-    "implementation"(project(Core.repository))
+apply from: ("$rootDir/feature-library-build.gradle")
 
-    implementation(Libs.hiltAndroid)
-    kapt(Libs.hiltAndroidCompiler)
+dependencies {
+    implementation(project(Core.repository))
+    implementation(project(UiComponents.post))
     implementation Libs.playServicesTasks
 }

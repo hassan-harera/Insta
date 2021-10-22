@@ -13,7 +13,6 @@ interface PostRepository {
 
     fun getFeedPosts(followings: List<String>, limit: Int): Task<QuerySnapshot>
     fun getPost(postId: String): Task<DocumentSnapshot>
-    fun getProfilePosts(uid: String): Task<QuerySnapshot>
     fun updatePost(post: Post): Task<Void>
     fun searchPosts(searchWord: String): Task<QuerySnapshot>
     fun getNewPostId(uid: String): String
@@ -25,4 +24,5 @@ interface PostRepository {
     fun getPostComments(postId: String): Task<QuerySnapshot>
     fun addComment(comment: Comment): Task<Void>
     fun getPostLike(postId: String, uid: String): Task<QuerySnapshot>
+    fun getUserPosts(uid: String, limit: Int = 5) : Task<QuerySnapshot>
 }

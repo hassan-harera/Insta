@@ -25,21 +25,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
-import com.harera.post.PostViewModel
 import com.harera.base.theme.Grey660
+import com.harera.feed.post.PostCardViewModel
 import com.harera.model.modelget.Profile
 import com.harera.post.PostListView
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.getViewModel
 
 @ExperimentalCoilApi
 @Composable
 fun VisitProfile(
-    visitProfileViewModel: VisitProfileViewModel = hiltViewModel(),
-    postViewModel: PostViewModel = hiltViewModel(),
+    visitProfileViewModel: VisitProfileViewModel = getViewModel(),
+    postCardViewModel: PostCardViewModel =  getViewModel(),
     navController: NavHostController,
     uid: String
 ) {

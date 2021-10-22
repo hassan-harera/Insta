@@ -8,10 +8,9 @@ import com.harera.repository.common.Constansts.FOLLOW_REQUESTS
 import com.harera.repository.common.Constansts.LIKES
 import com.harera.repository.common.Constansts.NOTIFICATIONS
 import com.harera.repository.db.network.abstract_.NotificationsRepository
-import javax.inject.Inject
 
-class FirebaseNotificationsRepository @Inject constructor(
-    val fStore: FirebaseFirestore,
+class FirebaseNotificationsRepository constructor(
+    private val fStore: FirebaseFirestore,
 ) : NotificationsRepository {
 
     override fun getFollowRequests(uid: String): Task<QuerySnapshot> =

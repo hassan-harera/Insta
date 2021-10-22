@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.harera.base.theme.Grey660
-import com.harera.navigation.HomeBottomNavigation
+import com.harera.base.navigation.HomeBottomNavigation
 
 
 @Composable

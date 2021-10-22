@@ -4,6 +4,14 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/Harera/AndroidStudioProjects/Insta APP/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.221875" />
+        <entry key="..\:/Users/Harera/AndroidStudioProjects/Insta APP/base/src/main/res/drawable/ic_launcher_background.xml" value="0.3828125" />
+        <entry key="..\:/Users/Harera/AndroidStudioProjects/Insta APP/base/src/main/res/drawable/menu.xml" value="0.3828125" />
+        <entry key="..\:/Users/Harera/AndroidStudioProjects/Insta APP/base/src/main/res/drawable/selector_button.xml" value="0.221875" />
+        <entry key="..\:/Users/Harera/AndroidStudioProjects/Insta APP/base/src/main/res/drawable/sender_bck.xml" value="0.3828125" />
+        <entry key="..\:/Users/Harera/AndroidStudioProjects/Insta APP/base/src/main/res/drawable/seneder_bck.xml" value="0.3828125" />
+        <entry key="..\:/Users/Harera/AndroidStudioProjects/Insta APP/base/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.3828125" />
+        <entry key="..\:/Users/Harera/AndroidStudioProjects/Insta APP/base/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.22135416666666666" />
+        <entry key="..\:/Users/Harera/AndroidStudioProjects/Insta APP/features/login/src/main/res/layout/activity_login.xml" value="0.22" />
       </map>
     </option>
   </component>

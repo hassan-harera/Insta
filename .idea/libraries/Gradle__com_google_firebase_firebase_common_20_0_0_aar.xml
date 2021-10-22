@@ -1,24 +1,13 @@
 <component name="libraryTable">
   <library name="Gradle: com.google.firebase:firebase-common:20.0.0@aar">
     <CLASSES>
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/1a0fd9a19a670728809f4465f867c55b/transformed/jetified-firebase-common-20.0.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/ceb85e74aa6248fec4f35e63a28f9993/transformed/jetified-firebase-common-20.0.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/0e45948e9fe852d2aaf4018de656e732/transformed/jetified-firebase-common-20.0.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/3da08dcebd36a02c96b5e17d7f157b22/transformed/jetified-firebase-common-20.0.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/a131a4694a60d25c750d6652c30c8894/transformed/jetified-firebase-common-20.0.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/e8644940b48471522478744f51e9d33a/transformed/jetified-firebase-common-20.0.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/22a05b9ad7b58a22cca8327fa3af3190/transformed/jetified-firebase-common-20.0.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/dfda1624fe53571b0619e52e661f5d94/transformed/jetified-firebase-common-20.0.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/bd47f006c5d11619f6621ec2a4686018/transformed/jetified-firebase-common-20.0.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/b8670b3d1f15d7225794302c3b3b6ff8/transformed/jetified-firebase-common-20.0.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/1d1f79f1811fbac18060f9b7c103dae7/transformed/jetified-firebase-common-20.0.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/114aa0bf62c3b4c0ddb9a28c9aadbd58/transformed/jetified-firebase-common-20.0.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/be13572f4430a6ee530761eecb483b82/transformed/jetified-firebase-common-20.0.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/e950e6864a5c50fe36f39f848b394c56/transformed/jetified-firebase-common-20.0.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/b254b08421308fd0bc234cc6f8fdd7f3/transformed/jetified-firebase-common-20.0.0/res" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/4fb879128ae4311543c4b2531f897696/transformed/jetified-firebase-common-20.0.0/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/4fb879128ae4311543c4b2531f897696/transformed/jetified-firebase-common-20.0.0/AndroidManifest.xml" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/4fb879128ae4311543c4b2531f897696/transformed/jetified-firebase-common-20.0.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/af73e9fc563e0d2658a69a88b663654c/transformed/jetified-firebase-common-20.0.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/4bce388ec347d11b55b9426db9108be4/transformed/jetified-firebase-common-20.0.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/988607c5c0674b61220d0d6b479e7e7d/transformed/jetified-firebase-common-20.0.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/73f121b6a58bc1cd767525e0b98a2ccd/transformed/jetified-firebase-common-20.0.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/f0450dcd2bc177f438de303b58191b21/transformed/jetified-firebase-common-20.0.0/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/73f121b6a58bc1cd767525e0b98a2ccd/transformed/jetified-firebase-common-20.0.0/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/73f121b6a58bc1cd767525e0b98a2ccd/transformed/jetified-firebase-common-20.0.0/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.firebase/firebase-common/20.0.0/35a489d6cdcfa34dd756120fe574500e30a62d8a/firebase-common-20.0.0-javadoc.jar!/" />

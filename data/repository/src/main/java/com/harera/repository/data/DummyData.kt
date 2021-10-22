@@ -9,8 +9,8 @@ object DummyDate {
         this.caption = "Caption"
         this.uid = "uid"
         this.profileName = "Hassan"
-        this.likesNumber = "53"
-        this.commentsNumber = "66"
+        this.likesNumber = 53
+        this.commentsNumber =  66
         this.profileImageUrl =
             "https://firebasestorage.googleapis.com/v0/b/insta-simulator.appspot.com/o/users%2FDedESk6CTHa0B94FJyRLoBMX9IT2%2Fimage%20(55).jpg?alt=media&token=1c373fd7-6fa9-4ef2-96b0-e1647bd3640e"
         this.postImageUrl =

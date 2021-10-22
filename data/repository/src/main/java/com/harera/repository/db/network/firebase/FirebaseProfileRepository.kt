@@ -17,9 +17,8 @@ import com.harera.repository.common.Constansts.PROFILE_PIC
 import com.harera.repository.common.Constansts.USERS
 import com.harera.repository.db.network.abstract_.ProfileRepository
 import java.io.ByteArrayOutputStream
-import javax.inject.Inject
 
-class FirebaseProfileRepository @Inject constructor(
+class FirebaseProfileRepository  constructor(
     private val firebaseStorage: FirebaseStorage,
     private val fStore: FirebaseFirestore
 ) : ProfileRepository {

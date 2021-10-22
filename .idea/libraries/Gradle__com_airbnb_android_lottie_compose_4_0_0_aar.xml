@@ -1,11 +1,13 @@
 <component name="libraryTable">
   <library name="Gradle: com.airbnb.android:lottie-compose:4.0.0@aar">
     <CLASSES>
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/e89d0b92d357463d1fd1b49091110ae2/transformed/jetified-lottie-compose-4.0.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/7c34023382810c1896522235a96fdd55/transformed/jetified-lottie-compose-4.0.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/d43c2e9d28fe032406834ed06b91f2c8/transformed/jetified-lottie-compose-4.0.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/d43c2e9d28fe032406834ed06b91f2c8/transformed/jetified-lottie-compose-4.0.0/AndroidManifest.xml" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/d43c2e9d28fe032406834ed06b91f2c8/transformed/jetified-lottie-compose-4.0.0/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/8cbf8eb8392b512f55a68d44ce4a6fa2/transformed/jetified-lottie-compose-4.0.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/526f5bcfa12ba480a158e0dbd5c15e0d/transformed/jetified-lottie-compose-4.0.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/11045d24a7dc5d143725670a252651b1/transformed/jetified-lottie-compose-4.0.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/2f7c635491abb84cdce328eef4291a81/transformed/jetified-lottie-compose-4.0.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/46f82578b2c80d79997e0263518733c1/transformed/jetified-lottie-compose-4.0.0/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/2f7c635491abb84cdce328eef4291a81/transformed/jetified-lottie-compose-4.0.0/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/2f7c635491abb84cdce328eef4291a81/transformed/jetified-lottie-compose-4.0.0/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.airbnb.android/lottie-compose/4.0.0/3995cbc93176874c9c3b20a82d68e373d44df48b/lottie-compose-4.0.0-javadoc.jar!/" />

@@ -1,11 +1,13 @@
 <component name="libraryTable">
   <library name="Gradle: io.github.vanpra.compose-material-dialogs:core:0.6.1@aar">
     <CLASSES>
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/e9bd5f3dcab36c7d368994e37dbd3eea/transformed/jetified-core-0.6.1/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/8fd31d6b70b7d0324de86d5779489dce/transformed/jetified-core-0.6.1/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/d71bafaf5ffa404f7343e9ff1e11aedb/transformed/jetified-core-0.6.1/res" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/d71bafaf5ffa404f7343e9ff1e11aedb/transformed/jetified-core-0.6.1/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/d71bafaf5ffa404f7343e9ff1e11aedb/transformed/jetified-core-0.6.1/AndroidManifest.xml" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/469fb1bc2a4ceb6a39de0a0111c5384b/transformed/jetified-core-0.6.1/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/fa16fc3feb68a72cb1354d588509fc93/transformed/jetified-core-0.6.1/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/d39d3906536093ddf69df10f030c9564/transformed/jetified-core-0.6.1/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/0e7b479546d6f02db0af691597d78eaa/transformed/jetified-core-0.6.1/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/addce5e21ff5006d84a746f285ba18ae/transformed/jetified-core-0.6.1/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/0e7b479546d6f02db0af691597d78eaa/transformed/jetified-core-0.6.1/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/0e7b479546d6f02db0af691597d78eaa/transformed/jetified-core-0.6.1/jars/classes.jar!/" />
     </CLASSES>
     <JAVADOC>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.github.vanpra.compose-material-dialogs/core/0.6.1/1f95fe4195464b8b024e7b433f66590dec5a5c93/core-0.6.1-javadoc.jar!/" />

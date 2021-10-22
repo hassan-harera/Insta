@@ -13,6 +13,7 @@ object Constansts {
     val COMMENTS = "comments"
     val POST_TIME = "time"
     val UID = "uid"
+    val POST_ID = "postId"
     val FOLLOWERS = "followers"
     val FOLLOW_REQUESTS = "followRequests"
     val NOTIFICATIONS = "notifications"

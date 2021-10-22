@@ -1,0 +1,19 @@
+apply from: "$rootDir/feature-library-build.gradle"
+android {
+    buildFeatures {
+        viewBinding true
+    }
+}
+
+dependencies {
+    implementation project(Core.base)
+    implementation(project(Core.repository))
+
+    implementation Libs.liveData
+    implementation Libs.androidxCore
+
+    implementation Libs.playServicesTasks
+
+    implementation Libs.navigationFragment
+    implementation Libs.materialDesign
+}

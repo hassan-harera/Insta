@@ -10,15 +10,12 @@ import com.harera.model.modelset.Message
 import com.harera.repository.common.Constansts.CHATS
 import com.harera.repository.common.Constansts.MESSAGES
 import com.harera.repository.common.Constansts.USERS
-import com.harera.repository.db.network.abstract_.AuthManager
 import com.harera.repository.db.network.abstract_.ChatRepository
-import javax.inject.Inject
 
 
-class FirebaseChatRepository @Inject constructor(
-    val fStore: FirebaseFirestore,
+class FirebaseChatRepository  constructor(
+    private val fStore: FirebaseFirestore,
     private val dbReferences: FirebaseDatabase,
-    val authManager: AuthManager
 ) : ChatRepository {
 
     override fun getMessage(messageId: String): Task<Void> {

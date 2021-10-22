@@ -12,6 +12,6 @@ class Post {
     lateinit var uid: String
     lateinit var profileName: String
     lateinit var profileImageUrl: String
-    lateinit var likesNumber: String
-    lateinit var commentsNumber: String
+    var likesNumber: Int = 0
+    var commentsNumber: Int = 0
 }

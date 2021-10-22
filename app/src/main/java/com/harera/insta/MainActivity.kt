@@ -21,17 +21,11 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.google.firebase.auth.FirebaseUser
-import com.harera.insta.ui.home.HomeActivity
 import com.harera.repository.db.network.abstract_.AuthManager
-import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
+import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 
-@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-
-    private val mainViewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,7 +36,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     @Composable
-    fun SplashScreen() {
+    fun SplashScreen(
+        mainViewModel: MainViewModel = getViewModel()
+    ) {
         val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.splash))
         val progress by animateLottieCompositionAsState(composition)
         val user by mainViewModel.user
@@ -75,9 +71,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    @HiltViewModel
-    internal class MainViewModel @Inject constructor(
-        val authManager: AuthManager,
+    class MainViewModel constructor(
+        private val authManager: AuthManager,
     ) : ViewModel() {
         var user = mutableStateOf<FirebaseUser?>(null)
 

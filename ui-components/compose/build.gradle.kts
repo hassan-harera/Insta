@@ -18,5 +18,4 @@ dependencies {
 
     "implementation"(project(Core.base))
     "implementation"(project(Core.repository))
-    "implementation"(project(Core.navigation))
 }

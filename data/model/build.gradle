@@ -29,11 +29,6 @@ android {
 }
 
 dependencies {
-    implementation(Libs.playServicesMaps)
     //firebase
-    api platform(Libs.firebaseBom)
-    api Libs.firebaseAuth
-    api Libs.firebaseDatabase
-    api Libs.firebaseFirestore
-    api Libs.firebaseStorage
+    implementation(Libs.firebaseFirestore)
 }

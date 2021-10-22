@@ -1,6 +1,5 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
 
 android {
     compileSdk = DefaultConfig.compileSdk
@@ -47,10 +46,10 @@ dependencies{
     implementation(Libs.coilCompose)
 
     implementation project(Core.base)
-    implementation project(Core.components)
-    implementation project(Core.navigation)
     implementation project(Core.repository)
 
-    implementation(Libs.hiltAndroid)
-    kapt(Libs.hiltAndroidCompiler)
+    //Koin
+    implementation (DI.koinCore)
+    implementation(DI.koinCompose)
+    implementation(DI.koinAndroid)
 }

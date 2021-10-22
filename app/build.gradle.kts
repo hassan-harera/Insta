@@ -1,9 +1,7 @@
 plugins {
     id("com.android.application")
     kotlin("android")
-    id("kotlin-kapt")
     id ("com.google.gms.google-services")
-    id("dagger.hilt.android.plugin")
 }
 android {
     compileSdk = DefaultConfig.compileSdk
@@ -47,10 +45,10 @@ android {
 dependencies {
     implementation(project(Core.repository))
     implementation(project(Core.base))
-    implementation(project(Core.navigation))
     implementation(project(Core.components))
 
     implementation(project(Features.chat))
+    implementation(project(Features.login))
     implementation(project(Features.notifications))
     implementation(project(Features.editProfile))
     implementation(project(Features.profile))
@@ -58,6 +56,8 @@ dependencies {
     implementation(project(Features.post))
     implementation(project(Features.posting))
     implementation(project(Features.feed))
+
+    implementation(project(UiComponents.post))
 
     implementation(Libs.appcompat)
     implementation(Libs.playServicesTasks)
@@ -68,16 +68,10 @@ dependencies {
     implementation(Compose.composUiTooling)
     implementation(Compose.composeDialog)
 
-    //hilt
-    kapt(Libs.hiltAndroidCompiler)
-    implementation(Libs.hiltAndroid)
-    implementation(Libs.testRunner)
-
-    androidTestImplementation(Libs.hiltTesting)
-    kaptAndroidTest(Libs.hiltAndroidCompiler)
-
-    testImplementation(Libs.hiltTesting)
-    kaptTest(Libs.hiltAndroidCompiler)
+    //Koin
+    implementation (DI.koinCore)
+    implementation(DI.koinCompose)
+    implementation(DI.koinAndroid)
 }
 
 

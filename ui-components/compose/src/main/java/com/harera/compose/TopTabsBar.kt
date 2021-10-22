@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Icon
 import androidx.compose.material.LeadingIconTab
 import androidx.compose.material.TabRow
-import androidx.compose.material.TabRowDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -15,10 +14,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerState
-import com.google.accompanist.pager.pagerTabIndicatorOffset
 import com.google.accompanist.pager.rememberPagerState
 import com.harera.base.theme.Grey660
-import com.harera.navigation.HomeBottomNavigation
+import com.harera.base.navigation.HomeBottomNavigation
 import kotlinx.coroutines.launch
 
 
@@ -30,12 +28,6 @@ fun Tabs(tabs: List<HomeBottomNavigation>, pagerState: PagerState) {
         modifier = Modifier.fillMaxWidth(),
         selectedTabIndex = pagerState.currentPage,
         backgroundColor = Grey660,
-        indicator = { tabPositions ->
-            TabRowDefaults.Indicator(
-                Modifier.pagerTabIndicatorOffset(pagerState, tabPositions),
-                color = Color.Black
-            )
-        },
         contentColor = Color.Unspecified,
     ) {
         tabs.forEachIndexed { index, tab ->
@@ -72,6 +64,6 @@ fun TabsPreview() {
         HomeBottomNavigation.Chats
     )
 
-    val pagerState = rememberPagerState(pageCount = tabs.size)
+    val pagerState = rememberPagerState(initialPage = 0)
     Tabs(tabs = tabs, pagerState = pagerState)
 }

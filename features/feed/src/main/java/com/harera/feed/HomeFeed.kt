@@ -14,21 +14,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.annotation.ExperimentalCoilApi
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.harera.feed.post.PostListView
 import com.harera.model.modelget.Post
 import com.harera.base.navigation.HomeNavigation
+import com.harera.post.PostListView
+import org.koin.androidx.compose.getViewModel
 
 @ExperimentalCoilApi
 @Composable
 fun HomeFeed(
-    feedViewModel: FeedViewModel = hiltViewModel(),
+    feedViewModel: FeedViewModel = getViewModel(),
     navController: NavHostController,
 ) {
     val state = feedViewModel.state.collectAsState().value

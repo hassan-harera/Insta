@@ -10,14 +10,11 @@ import com.harera.model.modelget.Profile
 import com.harera.repository.db.network.abstract_.AuthManager
 import com.harera.repository.db.network.abstract_.PostRepository
 import com.harera.repository.db.network.abstract_.ProfileRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
-import javax.inject.Inject
 
-@HiltViewModel
-class FeedViewModel @Inject constructor(
+class FeedViewModel constructor(
     private val postRepository: PostRepository,
     private val profileRepository: ProfileRepository,
     private val authManager: AuthManager,

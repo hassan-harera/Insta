@@ -15,4 +15,7 @@ interface AuthManager {
     fun getGoogleSignInIntent(): Intent
     fun loginAnonymously(): Task<AuthResult>
     fun signInWithEmailAndRandomPassword(email: String): Task<AuthResult>
+    fun signInWithEmailAndPassword(email: String, password: String): Task<AuthResult>
+    fun sendEmailVerificationCode(email: String): Task<Void>
+    fun signUpWithEmailAndPassword(email: String, password: String): Task<AuthResult>
 }

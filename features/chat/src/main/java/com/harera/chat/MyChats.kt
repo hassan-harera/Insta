@@ -21,15 +21,14 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import coil.annotation.ExperimentalCoilApi
 import com.harera.compose.ChatCard
-import com.harera.insta.chat.ChatViewModel
 import com.harera.model.modelget.OpenChat
 import com.harera.repository.data.DummyDate
-import androidx.hilt.navigation.compose.hiltViewModel
+import org.koin.androidx.compose.getViewModel
 
 @ExperimentalCoilApi
 @Composable
 fun MyChats(
-    chatViewModel: ChatViewModel = hiltViewModel(),
+    chatViewModel: ChatViewModel = getViewModel(),
     navController: NavHostController
 ) {
     chatViewModel.getOpenChats()

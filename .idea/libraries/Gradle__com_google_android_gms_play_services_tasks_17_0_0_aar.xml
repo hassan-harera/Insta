@@ -1,24 +1,13 @@
 <component name="libraryTable">
   <library name="Gradle: com.google.android.gms:play-services-tasks:17.0.0@aar">
     <CLASSES>
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/a04e1dd6929cd4c6113a1c352f3ae8b0/transformed/jetified-play-services-tasks-17.0.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/6f2ed6b5b6314ffc94eda7b041ade595/transformed/jetified-play-services-tasks-17.0.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/0ef331d35545bf7ea3c614abe176f2fd/transformed/jetified-play-services-tasks-17.0.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/32d4dbc0d3a5ad3b49b2679d403023c4/transformed/jetified-play-services-tasks-17.0.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/59dc69afd2a1254790cea6f01399b410/transformed/jetified-play-services-tasks-17.0.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/ce7181c3f4cdd5d09fd1e6cff79a8b6d/transformed/jetified-play-services-tasks-17.0.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/94c4c03313c71f94e37797507270dcb1/transformed/jetified-play-services-tasks-17.0.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/bf25b9a62790b7af295dad2543077f63/transformed/jetified-play-services-tasks-17.0.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/5d6f8497625b9d8944f1d90628a4975a/transformed/jetified-play-services-tasks-17.0.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/a0874f67f29238521d4e3079f14da106/transformed/jetified-play-services-tasks-17.0.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/0786ef9d007bc6fd052a294a56cf9d63/transformed/jetified-play-services-tasks-17.0.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/7642ebd082c7d8ae21b075664bb4e71c/transformed/jetified-play-services-tasks-17.0.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/58be1ddd4e19ae5f330b41d6a693f191/transformed/jetified-play-services-tasks-17.0.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/be82cd4a8791299d9760ade74f0ce13c/transformed/jetified-play-services-tasks-17.0.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/64a073b5dd3206d797412bb48e5f12db/transformed/jetified-play-services-tasks-17.0.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/c9edaf64363ebc68603fabb5631d803a/transformed/jetified-play-services-tasks-17.0.0/res" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/c9edaf64363ebc68603fabb5631d803a/transformed/jetified-play-services-tasks-17.0.0/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/c9edaf64363ebc68603fabb5631d803a/transformed/jetified-play-services-tasks-17.0.0/AndroidManifest.xml" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/0276ad216478bc8505fd7f5b8c713a8f/transformed/jetified-play-services-tasks-17.0.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/b39544424f51bceb0e9ba9f6b6adb915/transformed/jetified-play-services-tasks-17.0.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/6ff8d885942a320cdd4a33676458aa03/transformed/jetified-play-services-tasks-17.0.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/506c31f67e65f526dc6b2872cb34a1c4/transformed/jetified-play-services-tasks-17.0.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/9edd7ec6fa9f02d1f0ccd266dd5199ca/transformed/jetified-play-services-tasks-17.0.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/506c31f67e65f526dc6b2872cb34a1c4/transformed/jetified-play-services-tasks-17.0.0/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/506c31f67e65f526dc6b2872cb34a1c4/transformed/jetified-play-services-tasks-17.0.0/jars/classes.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

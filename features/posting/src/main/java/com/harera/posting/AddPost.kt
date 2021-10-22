@@ -24,15 +24,15 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.harera.base.theme.Grey660
+import org.koin.androidx.compose.getViewModel
 
 
 @Composable
 fun PostForm(
     navController: NavHostController,
-    addPostViewModel: AddPostViewModel = hiltViewModel()
+    addPostViewModel: AddPostViewModel = getViewModel()
 ) {
     var imageUri by remember { mutableStateOf<Uri?>(null) }
     var bitmap by remember { mutableStateOf<Bitmap?>(null) }

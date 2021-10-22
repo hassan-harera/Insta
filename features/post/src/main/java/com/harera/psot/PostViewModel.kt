@@ -14,17 +14,14 @@ import com.harera.model.modelset.Like
 import com.harera.repository.db.network.abstract_.AuthManager
 import com.harera.repository.db.network.abstract_.PostRepository
 import com.harera.repository.db.network.abstract_.ProfileRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 import com.harera.model.modelset.Comment as CommentSet
 import com.harera.model.modelset.Post as PostSet
 
-@HiltViewModel
-class PostViewModel @Inject constructor(
+class PostViewModel constructor(
     private val postRepository: PostRepository,
     private val profileRepository: ProfileRepository,
     private val authManager: AuthManager,
