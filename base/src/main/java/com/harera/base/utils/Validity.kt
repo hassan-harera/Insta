@@ -30,6 +30,9 @@ class Validity {
             code.matches(Regex("^[0-9]{6}\$"))
 
         fun checkEmail(email: String): Boolean =
-            email.matches(Regex("^[\\w]+@([\\w]+\\.)+[\\w]{2,4}\$"))
+            email.matches(Regex("^[.\\w]+@([\\w]+\\.)+[\\w]{2,4}\$"))
+                .and(!email.contains(".@"))
+                .and(!email.contains(Regex("^[.]")))
+                .and(!email.contains(Regex("[.]{2,}")))
     }
 }
