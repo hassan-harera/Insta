@@ -1,19 +1,14 @@
 package com.harera.repository.db.network.firebase
 
-import android.app.Application
 import com.facebook.login.LoginManager
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.*
 import com.harera.repository.db.network.abstract_.AuthManager
-import com.harera.repository.db.network.config.GoogleSignIn
 class FirebaseAuthManager constructor(
     private val auth: FirebaseAuth,
-    private val application: Application
+    private val googleSignInClient: GoogleSignInClient,
 ) : AuthManager {
-
-    private val googleSignInClient: GoogleSignInClient =
-        GoogleSignIn.getGoogleSignInClient(context = application.baseContext)
 
     override fun login(credecitial: AuthCredential) =
         auth.signInWithCredential(credecitial)

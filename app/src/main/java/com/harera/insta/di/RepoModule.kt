@@ -4,7 +4,7 @@ import com.harera.repository.db.network.abstract_.*
 import com.harera.repository.db.network.firebase.*
 import org.koin.dsl.module
 
-val AppModule = module {
+val RepoModule = module {
 
     single<PostRepository> {
         FirebasePostRepository(get(), get())

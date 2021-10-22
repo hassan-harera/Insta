@@ -16,4 +16,21 @@ dependencies {
 
     implementation Libs.navigationFragment
     implementation Libs.materialDesign
+
+/* Testing */
+    implementation(Libs.playServicesAuth)
+    //Koin
+    implementation(DI.koinAndroid)
+    implementation(DI.koinCore)
+    implementation(DI.koinCompose)
+
+    testImplementation(DI.koinTest)
+    testImplementation(DI.koinJUnit4)
+
+    androidTestImplementation(DI.koinTest)
+    androidTestImplementation(DI.koinJUnit4)
+
+    implementation(Libs.truth)
+    implementation(Libs.testRunner)
+/* Testing */
 }

@@ -1,10 +1,7 @@
 package com.harera.insta
 
 import android.app.Application
-import com.harera.insta.di.AppModule
-import com.harera.insta.di.FirebaseModule
-import com.harera.insta.di.UtilsModule
-import com.harera.insta.di.ViewModel
+import com.harera.insta.di.*
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -18,9 +15,10 @@ class InstaApp : Application() {
             androidLogger()
             androidContext(this@InstaApp)
             modules(
-                AppModule,
+                RepoModule,
                 FirebaseModule,
                 ViewModel,
+                AppModule,
                 UtilsModule
             )
         }

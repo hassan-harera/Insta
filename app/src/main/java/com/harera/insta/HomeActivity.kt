@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -42,11 +41,10 @@ import com.harera.repository.common.Constansts.UID
 import com.harera.visit_profile.VisitProfile
 
 
-@OptIn(ExperimentalPagerApi::class, ExperimentalMaterialApi::class)
+@ExperimentalComposeUiApi
+@OptIn(ExperimentalPagerApi::class, ExperimentalMaterialApi::class, ExperimentalCoilApi::class)
 class HomeActivity : AppCompatActivity() {
 
-    @ExperimentalComposeUiApi
-    @ExperimentalCoilApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
@@ -56,8 +54,6 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
-    @ExperimentalComposeUiApi
-    @ExperimentalCoilApi
     @Composable
     private fun HomeActivityContent() {
         val bottomNavIcons = listOf(
@@ -89,8 +85,6 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
-    @ExperimentalComposeUiApi
-    @ExperimentalCoilApi
     @Composable
     private fun HomeNavHost(navController: NavHostController, paddingValues: PaddingValues) {
         NavHost(

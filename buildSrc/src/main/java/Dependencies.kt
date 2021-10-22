@@ -8,6 +8,8 @@ object Libs {
     //facebook login
     const val facebookLogin = "com.facebook.android:facebook-login:12.0.1"
 
+    const val truth = "com.google.truth:truth:1.1.3"
+
     const val coilCompose = "io.coil-kt:coil-compose:${Versions.COIL_VERSION}"
     const val accompanistPager =
         "com.google.accompanist:accompanist-pager:${Versions.accompanist_version}"

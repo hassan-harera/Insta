@@ -1,7 +1,7 @@
 plugins {
     id("com.android.application")
     kotlin("android")
-    id ("com.google.gms.google-services")
+    id("com.google.gms.google-services")
 }
 android {
     compileSdk = DefaultConfig.compileSdk
@@ -14,7 +14,7 @@ android {
         versionCode = Releases.versionCode
         versionName = Releases.versionName
 
-        testInstrumentationRunner = "com.harera.repository.HiltTestRunner"
+        testInstrumentationRunner = "com.harera.repository.KoinTestRunner"
     }
 
     buildTypes {
@@ -68,10 +68,22 @@ dependencies {
     implementation(Compose.composUiTooling)
     implementation(Compose.composeDialog)
 
+
+    /* Testing */
+    implementation(Libs.playServicesAuth)
+
     //Koin
-    implementation (DI.koinCore)
-    implementation(DI.koinCompose)
     implementation(DI.koinAndroid)
+    implementation(DI.koinCore)
+    implementation(DI.koinCompose)
+
+    testImplementation(DI.koinTest)
+    testImplementation(DI.koinJUnit4)
+
+    androidTestImplementation(DI.koinTest)
+    androidTestImplementation(DI.koinJUnit4)
+
+    implementation(Libs.testRunner)
 }
 
 
