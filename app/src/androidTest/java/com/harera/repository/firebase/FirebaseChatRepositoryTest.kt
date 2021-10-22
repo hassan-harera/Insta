@@ -3,29 +3,38 @@ package com.harera.repository.firebase
 import android.util.Log
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.Timestamp
+import com.harera.insta.di.FirebaseModule
+import com.harera.insta.di.RepoModule
+import com.harera.insta.di.UtilsModule
+import com.harera.insta.di.ViewModel
 import com.harera.model.modelset.Chat
 import com.harera.model.modelset.Message
+import com.harera.repository.db.network.abstract_.AuthManager
 import com.harera.repository.db.network.abstract_.ChatRepository
-import dagger.hilt.android.testing.HiltAndroidRule
-import dagger.hilt.android.testing.HiltAndroidTest
+import com.harera.repository.di.AppModule
 import org.junit.Assert
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
-import javax.inject.Inject
+import org.koin.core.context.loadKoinModules
+import org.koin.test.KoinTest
+import org.koin.test.inject
 
-@HiltAndroidTest
-class FirebaseChatRepositoryTest {
+class FirebaseChatRepositoryTest : KoinTest {
 
-    @get:Rule
-    var hiltRule = HiltAndroidRule(this)
-
-    @Inject
-    lateinit var chatRepository: ChatRepository
+    private val authManager: AuthManager by inject()
+    private val chatRepository: ChatRepository by inject()
 
     @Before
-    fun init() {
-        hiltRule.inject()
+    fun setup() {
+        loadKoinModules(
+            modules = arrayListOf(
+                AppModule,
+                FirebaseModule,
+                ViewModel,
+                RepoModule,
+                UtilsModule
+            )
+        )
     }
 
     @Test

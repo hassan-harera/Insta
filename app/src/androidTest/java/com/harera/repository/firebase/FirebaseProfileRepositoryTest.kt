@@ -4,6 +4,10 @@ import android.graphics.Bitmap
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
+import com.harera.insta.di.FirebaseModule
+import com.harera.insta.di.RepoModule
+import com.harera.insta.di.UtilsModule
+import com.harera.insta.di.ViewModel
 import com.harera.model.modelget.Post
 import com.harera.model.modelset.FollowRelation
 import com.harera.model.modelset.FollowRequest
@@ -12,33 +16,34 @@ import com.harera.repository.common.Constansts.FOLLOWERS
 import com.harera.repository.common.Constansts.POSTS
 import com.harera.repository.db.network.abstract_.AuthManager
 import com.harera.repository.db.network.abstract_.ProfileRepository
-import dagger.hilt.android.testing.HiltAndroidRule
-import dagger.hilt.android.testing.HiltAndroidTest
+import com.harera.repository.di.AppModule
 import org.junit.Assert
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
-import javax.inject.Inject
+import org.koin.core.context.loadKoinModules
+import org.koin.test.KoinTest
+import org.koin.test.inject
 
-@HiltAndroidTest
-class FirebaseProfileRepositoryTest {
+class FirebaseProfileRepositoryTest : KoinTest {
+
+    private val authManager: AuthManager by inject()
+    private val profileRepository: ProfileRepository by inject()
+
+    @Before
+    fun setup() {
+        loadKoinModules(
+            modules = arrayListOf(
+                AppModule,
+                FirebaseModule,
+                ViewModel,
+                RepoModule,
+                UtilsModule
+            )
+        )
+    }
 
     private var imageUrl: String =
         "https://firebasestorage.googleapis.com/v0/b/insta-simulator.appspot.com/o/users%2FN2duudxGtoVyTwkqzGMW4Al336H3%2FprofilePic?alt=media&token=7694a651-c0cb-4ee4-9152-c3aed36eab02"
-
-    @get:Rule
-    var hiltRule = HiltAndroidRule(this)
-
-    @Inject
-    lateinit var profileRepository: ProfileRepository
-
-    @Inject
-    lateinit var authManager: AuthManager
-
-    @Before
-    fun init() {
-        hiltRule.inject()
-    }
 
     @Test
     fun addProfile() {
