@@ -54,6 +54,7 @@ dependencies {
     implementation(DI.koinCompose)
     implementation(DI.koinAndroid)
 
-    implementation("com.google.truth:truth:1.1.3")
+    implementation(Libs.truth)
 
+    implementation(Libs.junit4)
 }

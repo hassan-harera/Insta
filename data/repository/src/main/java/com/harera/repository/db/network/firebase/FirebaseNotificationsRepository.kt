@@ -13,21 +13,21 @@ class FirebaseNotificationsRepository constructor(
     private val fStore: FirebaseFirestore,
 ) : NotificationsRepository {
 
-    override fun getFollowRequests(uid: String): Task<QuerySnapshot> =
+    override suspend fun getFollowRequests(uid: String): Task<QuerySnapshot> =
         fStore
             .collection(NOTIFICATIONS)
             .document(uid)
             .collection(FOLLOW_REQUESTS)
             .get()
 
-    override fun getLikes(uid: String): Task<QuerySnapshot> =
+    override suspend fun getLikes(uid: String): Task<QuerySnapshot> =
         fStore
             .collection(NOTIFICATIONS)
             .document(uid)
             .collection(LIKES)
             .get()
 
-    override fun removeFriendRequest(followRequest: FollowRequest): Task<Void> =
+    override suspend fun removeFriendRequest(followRequest: FollowRequest): Task<Void> =
         fStore
             .collection(NOTIFICATIONS)
             .document(followRequest.toUid)

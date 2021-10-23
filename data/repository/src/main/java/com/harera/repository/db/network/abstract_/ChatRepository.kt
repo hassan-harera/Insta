@@ -8,10 +8,10 @@ import com.harera.model.modelset.Message
 
 interface ChatRepository {
 
-    fun getMessage(messageId: String): Task<Void>
-    fun getMessages(receiverUID: String, senderUID: String): List<DocumentSnapshot>
-    fun saveMessage(message: Message): Task<Void>
-    fun getOpenChats(uid: String): Task<DataSnapshot>
-    fun addOpenChat(chat: Chat): Task<Void>
-    fun getLastMessage(uid2: String, uid1: String): List<DocumentSnapshot>
+    suspend fun getMessage(messageId: String): Task<Void>
+    suspend fun getMessages(receiverUID: String, senderUID: String): List<DocumentSnapshot>
+    suspend fun saveMessage(message: Message): Task<Void>
+    suspend fun getOpenChats(uid: String): Task<DataSnapshot>
+    suspend fun addOpenChat(chat: Chat): Task<Void>
+    suspend fun getLastMessage(uid2: String, uid1: String): List<DocumentSnapshot>
 }

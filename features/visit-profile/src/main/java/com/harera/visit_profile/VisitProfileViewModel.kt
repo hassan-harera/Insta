@@ -38,14 +38,10 @@ class VisitProfileViewModel constructor(
             }
     }
 
-    fun getPosts() {
+    suspend fun getPosts() {
         postRepository
             .getUserPosts(uid)
-            .addOnSuccessListener {
-                viewModelScope.launch(Dispatchers.IO) {
-                    it.documents.map {
-                        it.toObject(Post::class.java)!!
-                    }.map { post ->
+            .forEach { post ->
                         viewModelScope.async(Dispatchers.IO) {
                             val profile = Tasks.await(getPostProfileDetails(post = post))
                             val likes = Tasks.await(getPostLikes(post = post))

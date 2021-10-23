@@ -22,7 +22,7 @@ import org.koin.test.KoinTest
 import org.koin.test.inject
 import kotlin.random.Random
 
-class FirebasePostRepositoryTest : KoinTest {
+class FakePostRepositoryTest : KoinTest {
 
     private val authManager: AuthManager by inject()
     private val postRepository: PostRepository by inject()

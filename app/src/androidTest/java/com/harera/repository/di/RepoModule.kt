@@ -7,11 +7,11 @@ import org.koin.dsl.module
 val RepoModule = module {
 
     single<PostRepository> {
-        FirebasePostRepository(get(), get())
+        FakePostRepository(get(), get())
     }
 
     single<ProfileRepository> {
-        FirebaseProfileRepository(get(), get())
+        FakeProfileRepository(get(), get())
     }
 
     single<NotificationsRepository> {

@@ -10,43 +10,43 @@ class FirebaseAuthManager constructor(
     private val googleSignInClient: GoogleSignInClient,
 ) : AuthManager {
 
-    override fun login(credecitial: AuthCredential) =
+    override suspend fun login(credecitial: AuthCredential) =
         auth.signInWithCredential(credecitial)
 
-    override fun createCredential(verificationId: String, code: String) =
+    override suspend fun createCredential(verificationId: String, code: String) =
         PhoneAuthProvider.getCredential(verificationId, code)
 
-    override fun getCurrentUser(): FirebaseUser? =
+    override suspend fun getCurrentUser(): FirebaseUser? =
         auth.currentUser
 
-    override fun signOut() {
+    override suspend fun signOut() {
         auth.signOut()
         LoginManager.getInstance().logOut()
         googleSignInClient.signOut()
     }
 
-    override fun signInWithCredential(credential: AuthCredential): Task<AuthResult> =
+    override suspend fun signInWithCredential(credential: AuthCredential): Task<AuthResult> =
         auth.signInWithCredential(credential)
 
-    override fun getSignInMethods(email: String) =
+    override suspend fun getSignInMethods(email: String) =
         auth.fetchSignInMethodsForEmail(email)
 
-    override fun getGoogleSignInIntent() =
+    override suspend fun getGoogleSignInIntent() =
         googleSignInClient.signInIntent
 
-    override fun loginAnonymously(): Task<AuthResult> =
+    override suspend fun loginAnonymously(): Task<AuthResult> =
         auth.signInAnonymously()
 
-    override fun signInWithEmailAndRandomPassword(email: String): Task<AuthResult> =
+    override suspend fun signInWithEmailAndRandomPassword(email: String): Task<AuthResult> =
         auth.signInWithEmailAndPassword(email, "harera")
 
-    override fun signUpWithEmailAndPassword(email: String, password: String): Task<AuthResult> =
+    override suspend fun signUpWithEmailAndPassword(email: String, password: String): Task<AuthResult> =
         auth.createUserWithEmailAndPassword(email, password)
 
-    override fun signInWithEmailAndPassword(email: String, password: String): Task<AuthResult> =
+    override suspend fun signInWithEmailAndPassword(email: String, password: String): Task<AuthResult> =
         auth.signInWithEmailAndPassword(email, password)
 
-    override fun sendEmailVerificationCode(email: String): Task<Void> =
+    override suspend fun sendEmailVerificationCode(email: String): Task<Void> =
         auth.sendPasswordResetEmail(email)
 }
 

@@ -18,11 +18,11 @@ class FirebaseChatRepository  constructor(
     private val dbReferences: FirebaseDatabase,
 ) : ChatRepository {
 
-    override fun getMessage(messageId: String): Task<Void> {
+    override suspend fun getMessage(messageId: String): Task<Void> {
         TODO("Not yet implemented")
     }
 
-    override fun getMessages(receiverUID: String, senderUID: String) =
+    override suspend fun getMessages(receiverUID: String, senderUID: String) =
         Tasks.await(
             fStore
                 .collection(MESSAGES)
@@ -40,20 +40,20 @@ class FirebaseChatRepository  constructor(
                 ).documents
             )
 
-    override fun saveMessage(message: Message) =
+    override suspend fun saveMessage(message: Message) =
         fStore
             .collection(MESSAGES)
             .document()
             .set(message)
 
-    override fun getOpenChats(uid: String): Task<DataSnapshot> =
+    override suspend fun getOpenChats(uid: String): Task<DataSnapshot> =
         dbReferences.reference
             .child(USERS)
             .child(uid)
             .child(CHATS)
             .get()
 
-    override fun addOpenChat(chat: Chat): Task<Void> =
+    override suspend fun addOpenChat(chat: Chat): Task<Void> =
         dbReferences.reference
             .child(USERS)
             .child(chat.firstUid)
@@ -69,7 +69,7 @@ class FirebaseChatRepository  constructor(
                     .setValue(chat.firstUid)
             }
 
-    override fun getLastMessage(uid2: String, uid1: String) =
+    override suspend fun getLastMessage(uid2: String, uid1: String) =
         Tasks.await(
             fStore
                 .collection(MESSAGES)

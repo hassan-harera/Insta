@@ -24,7 +24,7 @@ import org.koin.core.context.loadKoinModules
 import org.koin.test.KoinTest
 import org.koin.test.inject
 
-class FirebaseProfileRepositoryTest : KoinTest {
+class FakeProfileRepositoryTest : KoinTest {
 
     private val authManager: AuthManager by inject()
     private val profileRepository: ProfileRepository by inject()

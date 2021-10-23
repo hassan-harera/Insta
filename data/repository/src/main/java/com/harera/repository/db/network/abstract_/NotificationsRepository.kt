@@ -6,7 +6,7 @@ import com.harera.model.modelset.FollowRequest
 
 interface NotificationsRepository {
 
-    fun getFollowRequests(uid: String): Task<QuerySnapshot>
-    fun getLikes(uid: String): Task<QuerySnapshot>
-    fun removeFriendRequest(followRequest: FollowRequest): Task<Void>
+    suspend fun getFollowRequests(uid: String): Task<QuerySnapshot>
+    suspend fun getLikes(uid: String): Task<QuerySnapshot>
+    suspend fun removeFriendRequest(followRequest: FollowRequest): Task<Void>
 }

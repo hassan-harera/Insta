@@ -45,26 +45,7 @@ class FeedViewModel constructor(
     }
 
     private suspend fun getFollowings() =
-        viewModelScope.async(Dispatchers.IO) {
-
-            val task = profileRepository.getFollowings(authManager.getCurrentUser()!!.uid)
-
-            Tasks.await(task)
-
-            if (task.isSuccessful)
-                Tasks.await(task)
-                    .documents.map {
-                        it.get(FollowRelation::followingUid.name, String::class.java)!!
-                    }.let {
-                        return@async it
-                    }
-
-            task.exception?.let {
-                this@FeedViewModel._state.value = (FeedState.Error(it.message))
-            }
-
-            emptyList()
-        }.await()
+        profileRepository.getFollowings(authManager.getCurrentUser()!!.uid)
 
     private fun getPosts() {
         viewModelScope.launch(Dispatchers.IO) {

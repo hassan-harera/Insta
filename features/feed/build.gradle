@@ -4,4 +4,12 @@ dependencies {
     implementation(project(Core.repository))
     implementation(project(UiComponents.post))
     implementation Libs.playServicesTasks
+
+    testImplementation(DI.koinTest)
+    testImplementation(DI.koinJUnit4)
+
+    androidTestImplementation(DI.koinTest)
+    androidTestImplementation(DI.koinJUnit4)
+
+    implementation(Libs.testRunner)
 }

@@ -17,10 +17,7 @@ import com.harera.model.modelget.FollowRelation as FollowRelationGet
 import com.harera.model.modelget.FollowRequest as FollowRequestGet
 import com.harera.model.modelget.Profile as ProfileGet
 
-class FirebaseProfileRepository constructor(
-    private val firebaseStorage: FirebaseStorage,
-    private val fStore: FirebaseFirestore
-) : ProfileRepository {
+class FakeProfileRepository : ProfileRepository {
 
     override suspend fun getFollowers(uid: String): List<FollowRelationGet> =
         try {

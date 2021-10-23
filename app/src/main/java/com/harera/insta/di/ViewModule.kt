@@ -1,5 +1,6 @@
 package com.harera.insta.di
 
+import androidx.compose.ui.ExperimentalComposeUiApi
 import com.harera.chat.ChatViewModel
 import com.harera.feed.FeedViewModel
 import com.harera.feed.post.PostCardViewModel
@@ -14,6 +15,7 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 
+@OptIn(ExperimentalComposeUiApi::class)
 val ViewModel = module {
 
     viewModel {
