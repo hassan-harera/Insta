@@ -1,0 +1,30 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdk = DefaultConfig.compileSdk
+    buildToolsVersion = DefaultConfig.buildToolsVersion
+
+    defaultConfig {
+        minSdk = DefaultConfig.minSdk
+        targetSdk = DefaultConfig.targetSdk
+        versionCode = Releases.versionCode
+        versionName = Releases.versionName
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+        useIR = true
+    }
+}
+
+
+dependencies {
+    implementation(Libs.coroutinesAndroid)
+    implementation(Libs.coroutinesCore)
+
+}
