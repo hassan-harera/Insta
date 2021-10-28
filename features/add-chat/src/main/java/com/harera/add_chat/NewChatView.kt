@@ -1,31 +1,48 @@
-package com.harera.chat
+package com.harera.add_chat
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
+import com.harera.base.navigation.ChatsNavigation
+import com.harera.model.modelget.Message
 import com.harera.model.modelget.Profile
 import com.harera.profile.ProfileCard
 import com.harera.repository.data.DummyDate
+import org.koin.androidx.compose.getViewModel
 
 @Composable
-fun AllChats(
-    chatViewModel: ChatViewModel,
+fun NewChat(
+    chatViewModel: NewChatViewModel = getViewModel(),
     navController: NavHostController
 ) {
-    chatViewModel.getAllConnections()
-    val connections by chatViewModel.connectionProfiles
+    val state = chatViewModel.newChatState.collectAsState().value
+    var intent = remember<NewChatIntent> { NewChatIntent.Free }
+    var connections = remember<List<Profile>> { emptyList() }
+
+    LaunchedEffect(intent) {
+        chatViewModel.newChatIntent.send(intent)
+    }
+
+    intent = NewChatIntent.GetConnections
+
+    when (state) {
+        is NewChatState.Connections -> {
+            connections = state.profiles
+        }
+        is NewChatState.Idle -> {
+
+        }
+    }
 
     AllChatsContent(
         navController = navController,
-        chatViewModel = chatViewModel,
         connections = connections
     )
 }
@@ -33,7 +50,6 @@ fun AllChats(
 @Composable
 fun AllChatsContent(
     connections: List<Profile>,
-    chatViewModel: ChatViewModel,
     navController: NavHostController
 ) {
     Box(
