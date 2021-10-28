@@ -1,18 +1,21 @@
 package com.harera.feed
 
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.android.gms.tasks.Tasks
-import com.harera.model.modelget.FollowRelation
 import com.harera.model.modelget.Post
 import com.harera.model.modelget.Profile
 import com.harera.repository.db.network.abstract_.AuthManager
 import com.harera.repository.db.network.abstract_.PostRepository
 import com.harera.repository.db.network.abstract_.ProfileRepository
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.launch
 
 class FeedViewModel constructor(
     private val postRepository: PostRepository,
@@ -20,20 +23,15 @@ class FeedViewModel constructor(
     private val authManager: AuthManager,
 ) : ViewModel() {
     var intent = Channel<FeedIntent>()
-    private var _state: MutableStateFlow<FeedState> = MutableStateFlow(FeedState.Idle)
-    val state: StateFlow<FeedState>
-        get() = this._state
-
-    private var _posts: MutableStateFlow<List<Post>> = MutableStateFlow(emptyList())
-    val posts: MutableStateFlow<List<Post>>
-        get() = this._posts
+    var state by mutableStateOf<FeedState>(FeedState.Idle)
+        private set
 
     init {
         processIntent()
     }
 
     private fun processIntent() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             intent.consumeAsFlow().collect { intent ->
                 when (intent) {
                     is FeedIntent.FetchPosts -> {
@@ -45,84 +43,54 @@ class FeedViewModel constructor(
     }
 
     private suspend fun getFollowings() =
-        profileRepository.getFollowings(authManager.getCurrentUser()!!.uid)
+        profileRepository.getFollowings(authManager.getCurrentUser()!!.uid).map { it.followingUid }
 
-    private fun getPosts() {
-        viewModelScope.launch(Dispatchers.IO) {
-            this@FeedViewModel._state.value = (FeedState.Loading())
+    private suspend fun getPosts() {
+        this.state = FeedState.Loading()
 
-            val posts = ArrayList<Post>()
+        val posts = ArrayList<Post>()
 
-            val followings = getFollowings()
-            followings.forEach { uid ->
+        val followings = getFollowings()
+        followings.forEach { uid ->
 
-                val userPosts = getUserPosts(uid)
-                userPosts.forEachIndexed { index, post ->
+            getUserPosts(uid).onFailure {
 
-                    withContext(Dispatchers.Default) {
-                        getPostDetails(post).join()
-                        posts.add(post)
-                    }
+            }.onSuccess {
+                it.forEach { post ->
+                    getPostDetails(post)
+                    posts.add(post)
 
-                    this@FeedViewModel._state.value = (FeedState.Posts)
-                    this@FeedViewModel._posts.value = posts
-                    this@FeedViewModel._state.value = (FeedState.Idle)
+                    this.state = (FeedState.Posts(posts))
                 }
             }
-
-//            this@FeedViewModel._state.value = FeedState.LoadingMore(false)
         }
     }
 
-    private fun getPostDetails(post: Post) =
-        viewModelScope.launch(Dispatchers.IO) {
-            getPostProfile(post.uid).let { profile ->
-                Log.d("getPostDetails", profile.profileImageUrl)
-                post.profileImageUrl = profile.profileImageUrl
-                post.profileName = profile.name
-            }
-
-            getPostNumbers(post.postId).let { likes ->
-                post.likesNumber = likes
-            }
-
-            getPostCommentNumbers(post.postId).let { size ->
-                post.commentsNumber = size
-            }
+    private suspend fun getPostDetails(post: Post) {
+        getPostProfile(post.uid).let { profile ->
+            Log.d("getPostDetails", profile.profileImageUrl)
+            post.profileImageUrl = profile.profileImageUrl
+            post.profileName = profile.name
         }
+
+        getPostNumbers(post.postId).let { likes ->
+            post.likesNumber = likes
+        }
+
+        getPostCommentNumbers(post.postId).let { size ->
+            post.commentsNumber = size
+        }
+    }
 
     private suspend fun getUserPosts(uid: String) =
-        viewModelScope.async(Dispatchers.IO) {
-            val task = postRepository.getUserPosts(uid)
-            Tasks.await(task)
-
-            if (task.isSuccessful)
-                Tasks.await(task)
-                    .documents.map {
-                        it.toObject(Post::class.java)!!
-                    }.let {
-                        return@async it
-                    }
-
-            task.exception?.let {
-                this@FeedViewModel._state.value = (FeedState.Error(it.message))
-            }
-
-            emptyList()
-        }.await()
+        postRepository.getUserPosts(uid)
 
     private suspend fun getPostProfile(uid: String): Profile =
-        viewModelScope.async(Dispatchers.IO) {
-            Tasks.await(profileRepository.getProfile(uid)).toObject(Profile::class.java)!!
-        }.await()
+        profileRepository.getProfile(uid)
 
-    private suspend fun getPostNumbers(postId: String): Int = viewModelScope.async(Dispatchers.IO) {
-        Tasks.await(postRepository.getPostLikes(postId)).documents.size
-    }.await()
+    private suspend fun getPostNumbers(postId: String): Int =
+        postRepository.getPostLikes(postId).size
 
     private suspend fun getPostCommentNumbers(postId: String): Int =
-        withContext(viewModelScope.coroutineContext + Dispatchers.IO) {
-            Tasks.await(postRepository.getPostComments(postId)).documents.size
-        }
-
+        postRepository.getPostComments(postId).size
 }

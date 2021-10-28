@@ -20,8 +20,8 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.harera.model.modelget.Post
 import com.harera.base.navigation.HomeNavigation
+import com.harera.model.modelget.Post
 import com.harera.post.PostListView
 import org.koin.androidx.compose.getViewModel
 
@@ -31,12 +31,13 @@ fun HomeFeed(
     feedViewModel: FeedViewModel = getViewModel(),
     navController: NavHostController,
 ) {
-    val state = feedViewModel.state.collectAsState().value
-    val intent = remember { FeedIntent.FetchPosts }
+    val state = feedViewModel.state
+    var intent = remember<FeedIntent> { FeedIntent.Free }
 
     LaunchedEffect(intent) {
         feedViewModel.intent.send(intent)
     }
+    intent = FeedIntent.FetchPosts
 
     when (state) {
         is FeedState.Error -> {
@@ -48,16 +49,15 @@ fun HomeFeed(
         }
 
         is FeedState.LoadingMore -> {
-            HomeFeedContent(
-                posts = feedViewModel.posts.value,
-                loadingMore = state.state,
-                navController = navController
+            LoadingRecipeListShimmer(
+                imageHeight = 300.dp,
+                padding = 5.dp
             )
         }
 
         is FeedState.Posts -> {
             HomeFeedContent(
-                posts = feedViewModel.posts.value,
+                posts = state.posts,
                 navController = navController
             )
         }
