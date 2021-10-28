@@ -1,4 +1,4 @@
-package com.harera.chat
+package com.harera.mychats
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -20,7 +20,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import coil.annotation.ExperimentalCoilApi
-import com.harera.compose.ChatCard
+import com.harera.base.navigation.ChatsNavigation.ALL_CHATS
+import com.harera.chat.ChatCard
 import com.harera.model.modelget.OpenChat
 import com.harera.repository.data.DummyDate
 import org.koin.androidx.compose.getViewModel
@@ -28,10 +29,9 @@ import org.koin.androidx.compose.getViewModel
 @ExperimentalCoilApi
 @Composable
 fun MyChats(
-    chatViewModel: ChatViewModel = getViewModel(),
+    chatViewModel: MyChatsViewModel = getViewModel(),
     navController: NavHostController
 ) {
-    chatViewModel.getOpenChats()
     val openChats by chatViewModel.openChats
 
     Scaffold(
@@ -39,7 +39,7 @@ fun MyChats(
             FloatingActionButton(
                 modifier = Modifier.fillMaxWidth(0.15f),
                 onClick = {
-                    navController.navigate(ChatsNavigation.ALL_CHATS) {
+                    navController.navigate(ALL_CHATS) {
                         popUpTo(navController.graph.findStartDestination().id) {
                             saveState = true
                         }

@@ -1,4 +1,4 @@
-package com.harera.compose
+package com.harera.chat
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

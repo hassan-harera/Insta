@@ -1,4 +1,4 @@
-package com.harera.chat
+package com.harera.chat_navigaton
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -6,15 +6,16 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import coil.annotation.ExperimentalCoilApi
+import com.harera.add_chat.NewChat
+import com.harera.base.navigation.ChatsNavigation
 import com.harera.base.utils.Arguments
-import org.koin.androidx.compose.getViewModel
+import com.harera.chat.ChatScreen
+import com.harera.mychats.MyChats
 
 @ExperimentalComposeUiApi
 @ExperimentalCoilApi
 @Composable
-fun HomeChats(
-    chatViewModel: ChatViewModel = getViewModel()
-) {
+fun HomeChats() {
     val navController = rememberNavController()
 
     NavHost(
@@ -23,21 +24,18 @@ fun HomeChats(
     ) {
         composable(ChatsNavigation.MY_CHATS) {
             MyChats(
-                chatViewModel = chatViewModel,
                 navController = navController,
             )
         }
 
         composable(ChatsNavigation.ALL_CHATS) {
-            AllChats(
-                chatViewModel = chatViewModel,
+            NewChat(
                 navController = navController
             )
         }
 
         composable("${ChatsNavigation.CHAT}/{${Arguments.UID}}") {
             ChatScreen(
-                chatViewModel = chatViewModel,
                 navController = navController,
                 uid = it.arguments!!.getString(Arguments.UID)!!,
             )

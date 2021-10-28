@@ -29,12 +29,14 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
+import com.harera.base.navigation.NavigationIcon
 import com.harera.base.theme.Grey300
 import com.harera.base.theme.Grey60
 import com.harera.base.theme.Grey700
+import com.harera.model.modelget.Message
 import com.harera.model.modelget.Profile
-import com.harera.base.navigation.NavigationIcon
 import com.harera.repository.data.DummyDate
+import org.koin.androidx.compose.getViewModel
 
 private const val TAG = "ChatScreen"
 
@@ -43,23 +45,43 @@ private const val TAG = "ChatScreen"
 @Composable
 fun ChatScreen(
     uid: String,
-    chatViewModel: ChatViewModel,
+    chatViewModel: ChatViewModel = getViewModel(),
     navController: NavHostController
 ) {
-    val profile by chatViewModel.profile
+    val state = chatViewModel.chatState.collectAsState().value
+    var intent = remember<ChatIntent> { ChatIntent.Free }
+    var profile = remember<Profile?> { null }
+    var messages = remember<List<Message>> { emptyList() }
 
-    if (profile == null) {
-        chatViewModel.getProfile(uid = uid)
+    LaunchedEffect(intent) {
+        chatViewModel.intent.send(intent)
     }
 
-    profile?.let { _profile ->
-        ChatScreenContent(
-            profile = _profile,
-            navController = navController,
-            chatViewModel = chatViewModel,
-            receiverUID = uid,
-            senderUID = chatViewModel.uid
-        )
+    intent = ChatIntent.GetProfile(uid)
+    intent = ChatIntent.GetMessages(uid)
+
+    when (state) {
+        is ChatState.ProfileState -> {
+            profile = state.profile
+        }
+
+        is ChatState.Messages -> {
+            messages = state.messages
+        }
+
+        is ChatState.Idle -> {
+//            TODO add loading
+        }
+    }
+
+    ChatScreenContent(
+        profile = profile,
+        messages = messages,
+        navController = navController,
+        receiverUID = uid,
+        senderUID = chatViewModel.uid
+    ) {
+        intent = ChatIntent.SendMessage(message = it)
     }
 }
 
@@ -67,32 +89,26 @@ fun ChatScreen(
 @ExperimentalCoilApi
 @Composable
 fun ChatScreenContent(
-    profile: Profile,
+    profile: Profile?,
     navController: NavHostController,
-    chatViewModel: ChatViewModel,
+    messages: List<Message> = emptyList(),
     receiverUID: String,
     senderUID: String,
+    sendMessage : (message : String) -> Unit,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     var message by remember { mutableStateOf("") }
-    val messages by chatViewModel.messages
-
-    Log.d(TAG, messages.toString())
-    Log.d(TAG, receiverUID)
-    Log.d(TAG, senderUID)
-
-    //TODO check viewmodel creation
-    val scope = rememberCoroutineScope()
-    chatViewModel.getMessages(senderUID, receiverUID)
 
     Scaffold(
         topBar = {
-            ChatTopBar(
-                profile = profile,
-                onBackClicked = {
-                    navController.popBackStack()
-                }
-            )
+            profile?.let {
+                ChatTopBar(
+                    profile = profile,
+                    onBackClicked = {
+                        navController.popBackStack()
+                    }
+                )
+            }
         },
         bottomBar = {
             ChatBottomBar(
@@ -102,7 +118,7 @@ fun ChatScreenContent(
                 },
                 onMessageSendClicked = {
                     keyboardController?.hide()
-                    chatViewModel.sendMessage(message, senderUID, receiverUID)
+                    sendMessage(message)
                     message = ""
                 }
             )
@@ -114,7 +130,7 @@ fun ChatScreenContent(
                 modifier = Modifier.fillMaxWidth(0.15f),
                 onClick = {
                     keyboardController?.hide()
-                    chatViewModel.sendMessage(message, senderUID, receiverUID)
+                    sendMessage(message)
                     message = ""
                 },
                 shape = CircleShape,
@@ -131,7 +147,7 @@ fun ChatScreenContent(
             .fillMaxSize()
             .background(Color.White)
     ) {
-        messages?.let {
+        messages.let {
             MessageList(messages = it, senderUID)
         }
     }
