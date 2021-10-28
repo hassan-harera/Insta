@@ -1,0 +1,7 @@
+apply from:"$rootDir/compose-navigation-build.gradle"
+
+dependencies {
+    api(project(Features.chat))
+    api(project(Features.addChat))
+    api(project(Features.myChats))
+}
