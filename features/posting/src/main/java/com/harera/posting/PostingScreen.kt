@@ -1,10 +1,6 @@
 package com.harera.posting
 
-import android.graphics.Bitmap
-import android.graphics.ImageDecoder
 import android.net.Uri
-import android.os.Build
-import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
@@ -14,6 +10,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
@@ -22,22 +19,88 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.harera.base.navigation.HomeNavigation
 import com.harera.base.theme.Grey660
+import com.harera.base.utils.image.ImageUtils
+import com.harera.compose.Toast
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 
 
 @Composable
-fun PostForm(
+fun PostingNavigation(
     navController: NavHostController,
-    addPostViewModel: AddPostViewModel = getViewModel()
+    postingViewModel: PostingViewModel = getViewModel()
 ) {
-    var imageUri by remember { mutableStateOf<Uri?>(null) }
-    var bitmap by remember { mutableStateOf<Bitmap?>(null) }
-    var caption by remember { mutableStateOf("") }
+    val scope = rememberCoroutineScope()
+    val state = postingViewModel.state
+    var loading by remember { mutableStateOf(value = false) }
+
+    when (state) {
+        is PostingState.Error -> {
+            Toast(message = state.message)
+        }
+
+        is PostingState.Loading -> {
+            loading = true
+        }
+
+        is PostingState.PostingCompleted -> {
+            navController.navigate(
+                "${HomeNavigation.PostScreen}/${state.postId}"
+            ) {
+                launchSingleTop = true
+                restoreState = false
+            }
+        }
+    }
+
+    if (loading)
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+    else
+        PostForm(
+            onPostingClicked = { uri, caption ->
+                scope.launch {
+                    postingViewModel.sendIntent(
+                        PostingIntent.Post(
+                            caption = caption,
+                            imageUri = uri
+                        )
+                    )
+                }
+            },
+        )
+}
+
+@Preview
+@Composable
+fun PostFormPreview() {
+    PostForm(
+        onPostingClicked = { uri: Uri, caption: String ->
+
+        }
+    )
+}
+
+@Composable
+fun PostForm(
+    onPostingClicked: (uri: Uri, caption: String) -> Unit
+) {
     val scrollState = rememberScrollState()
+    var caption by remember { mutableStateOf("") }
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        imageUri = uri
+    }
 
     Scaffold(
         bottomBar = {
@@ -58,9 +121,9 @@ fun PostForm(
                 actions = {
                     IconButton(
                         onClick = {
-                            addPostViewModel.addPost(caption, bitmap!!)
+                            onPostingClicked(imageUri!!, caption)
                         },
-                        enabled = bitmap != null
+                        enabled = imageUri != null
                     ) {
                         Text(
                             text = stringResource(id = R.string.post),
@@ -72,13 +135,6 @@ fun PostForm(
             )
         },
     ) {
-        val context = LocalContext.current
-        val launcher = rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.GetContent()
-        ) { uri ->
-            imageUri = uri
-        }
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -116,20 +172,7 @@ fun PostForm(
                     .height(15.dp)
             )
 
-            imageUri?.let {
-                if (Build.VERSION.SDK_INT < 28) {
-                    bitmap = MediaStore
-                        .Images
-                        .Media
-                        .getBitmap(context.contentResolver, it)
-                } else {
-                    val source = ImageDecoder
-                        .createSource(context.contentResolver, it)
-                    bitmap = ImageDecoder.decodeBitmap(source)
-                }
-            }
-
-            PostImage(bitmap) {
+            PostImage(imageUri) {
                 launcher.launch("image/*")
             }
         }
@@ -138,12 +181,15 @@ fun PostForm(
 
 @Composable
 fun PostImage(
-    bitmap: Bitmap?,
+    uri: Uri?,
     onImageClicked: () -> Unit
 ) {
-    if (bitmap != null)
+    val context = LocalContext.current
+    val bitmap = ImageUtils.getImageFromUri(uri, context = context)
+
+    if (uri != null) {
         Image(
-            bitmap = bitmap.asImageBitmap(),
+            bitmap = bitmap!!.asImageBitmap(),
             contentDescription = null,
             modifier = Modifier
                 .fillMaxWidth()
@@ -152,7 +198,7 @@ fun PostImage(
                     onImageClicked()
                 },
         )
-    else
+    } else {
         Image(
             painterResource(id = R.drawable.add_image),
             contentDescription = null,
@@ -163,4 +209,5 @@ fun PostImage(
                     onImageClicked()
                 },
         )
+    }
 }
