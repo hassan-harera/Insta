@@ -1,22 +1,22 @@
 package com.harera.profile
 
+import android.content.ContentValues.TAG
+import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.android.gms.tasks.Tasks
 import com.harera.model.modelget.Post
 import com.harera.model.modelget.Profile
 import com.harera.repository.db.network.abstract_.AuthManager
 import com.harera.repository.db.network.abstract_.PostRepository
 import com.harera.repository.db.network.abstract_.ProfileRepository
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class HomeProfileViewModel constructor(
     private val profileRepository: ProfileRepository,
@@ -27,24 +27,15 @@ class HomeProfileViewModel constructor(
 
     var intent = Channel<ProfileIntent>()
 
-    private var _state: MutableStateFlow<ProfileState> = MutableStateFlow(ProfileState.Idle)
-    val state: StateFlow<ProfileState>
-        get() = this._state
-
-    private var _profile: MutableStateFlow<Profile?> = MutableStateFlow(null)
-    val profile: StateFlow<Profile?>
-        get() = this._profile
-
-    private var _posts: MutableStateFlow<List<Post>> = MutableStateFlow(emptyList())
-    val posts: StateFlow<List<Post>>
-        get() = this._posts
+    var state by mutableStateOf<ProfileState>(ProfileState.Idle)
+        private set
 
     init {
         processIntent()
     }
 
     private fun processIntent() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             intent.consumeAsFlow().collect { intent ->
                 when (intent) {
                     is ProfileIntent.GetProfile -> {
@@ -59,89 +50,59 @@ class HomeProfileViewModel constructor(
         }
     }
 
-    private fun getProfile() {
-        _state.value = ProfileState.Loading()
+    private suspend fun getProfile() {
+//        state = ProfileState.Loading()
+
         profileRepository
             .getProfile(uid)
-            .addOnSuccessListener {
-                it.toObject(Profile::class.java)!!.let { profile ->
-                    _state.value = ProfileState.ProfilePrepared(profile)
-                    _profile.value = profile
-                }
-            }
-            .addOnFailureListener {
-                _state.value = ProfileState.Error(it.message)
-                it.printStackTrace()
+            .let { profile ->
+                state = ProfileState.ProfilePrepared(profile)
             }
     }
 
-    private fun getPosts() {
-        viewModelScope.launch(Dispatchers.IO) {
-            _state.value = (ProfileState.Loading())
+    private suspend fun getPosts() {
+        val posts = ArrayList<Post>()
 
-            val posts = ArrayList<Post>()
-
-            getUserPosts(uid).forEach { post ->
-                withContext(Dispatchers.Default) {
-                    getPostDetails(post).join()
+        postRepository
+            .getUserPosts(uid)
+            .onSuccess {
+                it.forEach { post ->
+                    getPostDetails(post).getOrNull()
                     posts.add(post)
-                }
 
-                _state.value = ProfileState.Idle
-                _state.value = ProfileState.Posts(emptyList())
-                _posts.value = (posts)
+                    state = ProfileState.PostsFetched(posts)
+                }
             }
-        }
+            .onFailure {
+                state = ProfileState.Loading(it.message)
+            }
     }
 
-    private fun getPostDetails(post: Post) =
-        viewModelScope.launch(Dispatchers.IO) {
-            getPostProfile(post.uid).let { profile ->
-                post.profileImageUrl = profile.profileImageUrl
-                post.profileName = profile.name
-            }
-
-            getPostNumbers(post.postId).let { likes ->
-                post.likesNumber = likes
-            }
-
-            getPostCommentNumbers(post.postId).let { size ->
-                post.commentsNumber = size
-            }
+    private suspend fun getPostDetails(post: Post) = viewModelScope.runCatching {
+        getPostProfile(post.uid).let { profile ->
+            post.profileImageUrl = profile.profileImageUrl
+            post.profileName = profile.name
         }
 
-    private suspend fun getUserPosts(uid: String) =
-        viewModelScope.async(Dispatchers.IO) {
-            val task = postRepository.getUserPosts(uid)
-            Tasks.await(task)
+        getPostNumbers(post.postId).let { likes ->
+            post.likesNumber = likes
+        }
 
-            if (task.isSuccessful)
-                Tasks.await(task)
-                    .documents.map {
-                        it.toObject(Post::class.java)!!
-                    }.let {
-                        return@async it
-                    }
-
-            task.exception?.let {
-                _state.value = ProfileState.Error(it.message)
-            }
-
-            emptyList()
-        }.await()
+        getPostCommentNumbers(post.postId).let { size ->
+            post.commentsNumber = size
+        }
+    }
 
     private suspend fun getPostProfile(uid: String): Profile =
-        viewModelScope.async(Dispatchers.IO) {
-            Tasks.await(profileRepository.getProfile(uid)).toObject(Profile::class.java)!!
-        }.await()
+        profileRepository.getProfile(uid)
 
-    private suspend fun getPostNumbers(postId: String): Int = viewModelScope.async(Dispatchers.IO) {
-        Tasks.await(postRepository.getPostLikes(postId)).documents.size
-    }.await()
+    private suspend fun getPostNumbers(postId: String): Int =
+        postRepository.getPostLikes(postId).size
+
 
     private suspend fun getPostCommentNumbers(postId: String): Int =
-        viewModelScope.async(Dispatchers.IO) {
-            Tasks.await(postRepository.getPostComments(postId)).documents.size
-        }.await()
+        postRepository.getPostComments(postId).size
 
 }
+
+

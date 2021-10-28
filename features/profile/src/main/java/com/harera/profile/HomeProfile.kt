@@ -1,10 +1,14 @@
 package com.harera.profile
 
-import androidx.compose.foundation.*
+import android.util.Log
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -26,8 +30,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.annotation.ExperimentalCoilApi
-import coil.compose.rememberImagePainter
+import com.harera.base.theme.Grey200
 import com.harera.base.theme.Grey660
+import com.harera.compose.Toast
 import com.harera.model.modelget.Post
 import com.harera.model.modelget.Profile
 import com.harera.post.PostListView
@@ -35,6 +40,7 @@ import com.harera.repository.data.DummyDate
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 
+private const val TAG = "HomeProfile"
 
 @ExperimentalCoilApi
 @Composable
@@ -42,34 +48,46 @@ fun HomeProfile(
     homeProfileViewModel: HomeProfileViewModel = getViewModel(),
     navController: NavHostController,
 ) {
-    val state = homeProfileViewModel.state.collectAsState().value
-    val profile = homeProfileViewModel.profile.collectAsState().value
-    val posts = homeProfileViewModel.posts.collectAsState().value
+    var profile by remember { mutableStateOf<Profile?>(null) }
+    var posts by remember { mutableStateOf<List<Post>>(emptyList()) }
 
-    val initialIntent = remember {
-        arrayListOf(
-            ProfileIntent.GetPosts,
-            ProfileIntent.GetProfile,
-        )
+    LaunchedEffect(true) {
+        homeProfileViewModel.intent.send(ProfileIntent.GetPosts)
+        homeProfileViewModel.intent.send(ProfileIntent.GetProfile)
     }
 
-    LaunchedEffect(initialIntent) {
-        initialIntent.forEach {
-            homeProfileViewModel.intent.send(it)
-        }
-    }
-
+    val state = homeProfileViewModel.state
     when (state) {
         is ProfileState.Loading -> {
             Shimmer()
         }
+
+        is ProfileState.Error -> {
+            Toast(message = state.message)
+        }
+
+        is ProfileState.PostsFetched -> {
+            posts = state.postList
+            HomeProfileContent(
+                profile,
+                posts,
+                navController,
+            )
+        }
+
+        is ProfileState.ProfilePrepared -> {
+            profile = state.profile
+            HomeProfileContent(
+                profile,
+                posts,
+                navController,
+            )
+        }
     }
 
-    HomeProfileContent(
-        profile,
-        posts,
-        navController,
-    )
+    Log.d(TAG, "Profile: ${profile.toString()}")
+    Log.d(TAG, "posts: ${posts.toMutableList()}")
+    Log.d(TAG, "State: ${state::class.java.name}")
 }
 
 @Composable
@@ -86,6 +104,8 @@ fun HomeProfileContent(
 ) {
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
+    Log.d("HomeProfileContent: ", profile.toString())
+    Log.d("HomeProfileContent: ", posts.size.toString())
 
     Column(
         modifier = Modifier
@@ -130,7 +150,8 @@ fun HomeProfileContent(
     }
 }
 
-@Preview
+@ExperimentalCoilApi
+@Preview(showBackground = true)
 @Composable
 fun ProfileHeaderPreview() {
     ProfileHeader(profile = DummyDate.PROFILE)
@@ -143,14 +164,16 @@ fun ProfileHeader(profile: Profile) {
         modifier = Modifier
             .fillMaxWidth()
             .height(150.dp)
-            .padding(top = 10.dp, start = 10.dp)
+            .background(Grey200)
+            .padding(top = 10.dp, start = 10.dp),
     ) {
         Image(
-            painter = rememberImagePainter(data = profile.profileImageUrl),
+            imageVector = Icons.Default.Search,
             contentDescription = null,
             Modifier
-                .fillMaxHeight()
                 .clip(CircleShape)
+                .fillMaxHeight(0.8f)
+                .fillMaxWidth(0.3f)
         )
 
         Spacer(modifier = Modifier.size(10.dp))
@@ -160,7 +183,6 @@ fun ProfileHeader(profile: Profile) {
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                //TODO change text value
                 text = profile.name,
                 style = TextStyle(
                     fontFamily = FontFamily.Default,
@@ -176,7 +198,6 @@ fun ProfileHeader(profile: Profile) {
             Spacer(modifier = Modifier.size(5.dp))
 
             Text(
-                //TODO change text value
                 text = profile.bio,
                 style = TextStyle(
                     fontFamily = FontFamily.Serif,
