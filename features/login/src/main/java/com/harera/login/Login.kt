@@ -9,7 +9,7 @@
 //import androidx.core.content.ContextCompat.startActivity
 //import androidx.hilt.navigation.compose.hiltViewModel
 //import androidx.navigation.NavHostController
-//import com.harera.base.navigation.HomeNavigation
+//import com.harera.base.navigation.home.HomeNavigation
 //import com.harera.insta.HomeActivity
 //
 //@Preview

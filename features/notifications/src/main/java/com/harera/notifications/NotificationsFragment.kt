@@ -20,7 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.harera.compose.LikeCard
-import com.harera.model.modelget.Like
+import com.harera.model.model.Like
 import org.koin.androidx.compose.getViewModel
 
 @Composable
@@ -75,7 +75,7 @@ fun LikeNotifications(
             }
 
             LikeCard(
-                like = likeNotifications[i] as Like,
+                like = likeNotifications[i],
                 onNotificationClicked = {
 
                 }

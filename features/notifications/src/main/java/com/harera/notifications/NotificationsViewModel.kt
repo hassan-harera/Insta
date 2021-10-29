@@ -5,9 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.tasks.Tasks
-import com.harera.model.modelget.Comment
-import com.harera.model.modelget.FollowRequest
-import com.harera.model.modelget.Like
+import com.harera.model.model.Comment
+import com.harera.model.model.FollowRequest
+import com.harera.model.model.Like
 import com.harera.repository.db.network.abstract_.AuthManager
 import com.harera.repository.db.network.abstract_.NotificationsRepository
 import kotlinx.coroutines.Dispatchers

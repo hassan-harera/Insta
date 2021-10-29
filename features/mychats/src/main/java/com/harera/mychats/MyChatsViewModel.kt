@@ -4,14 +4,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Timestamp
-import com.harera.model.modelget.OpenChat
-import com.harera.model.modelget.Profile
-import com.harera.model.modelset.Message
+import com.harera.model.model.Message
+import com.harera.model.model.OpenChat
+import com.harera.model.model.Profile
 import com.harera.repository.db.network.abstract_.AuthManager
 import com.harera.repository.db.network.abstract_.ChatRepository
 import com.harera.repository.db.network.abstract_.ProfileRepository
 import kotlinx.coroutines.*
-import com.harera.model.modelget.Message as MessageGet
+import java.util.*
+import kotlin.collections.HashSet
 
 class MyChatsViewModel constructor(
     private val chatRepository: ChatRepository,
@@ -20,7 +21,7 @@ class MyChatsViewModel constructor(
 ) : ViewModel() {
     val profile = mutableStateOf<Profile?>(null)
     val openChats = mutableStateOf<List<OpenChat>>(emptyList())
-    val messages = mutableStateOf<List<MessageGet>?>(null)
+    val messages = mutableStateOf<List<Message>?>(null)
     val connectionProfiles = mutableStateOf<List<Profile>>(emptyList())
     val uid = authManager.getCurrentUser()!!.uid
 
@@ -67,7 +68,7 @@ class MyChatsViewModel constructor(
     private suspend fun getLastMessage(uid1: String, uid2: String) =
         viewModelScope.async(Dispatchers.IO) {
             chatRepository.getLastMessage(uid1 = uid1, uid2 = uid2).map {
-                it.toObject(com.harera.model.modelget.Message::class.java)!!
+                it.toObject(Message::class.java)!!
             }.sortedByDescending {
                 it.time
             }[0]
@@ -125,10 +126,10 @@ class MyChatsViewModel constructor(
             chatRepository
                 .saveMessage(
                     Message(
-                        time = Timestamp.now(),
-                        from = senderUID,
-                        to = receiverUID,
-                        message = handledMessage
+                        senderUID,
+                        receiverUID,
+                        handledMessage,
+                        Date(),
                     )
                 )
         }
@@ -161,7 +162,7 @@ class MyChatsViewModel constructor(
                     senderUID = senderUID,
                     receiverUID = receiverUID
                 ).map {
-                    it.toObject(MessageGet::class.java)!!
+                    it.toObject(Message::class.java)!!
                 }
                 .let {
                     messages.value = it.sortedBy {

@@ -1,6 +1,6 @@
 package com.harera.add_chat
 
-import com.harera.model.modelget.Profile
+import com.harera.model.model.Profile
 
 sealed class NewChatState {
     object Idle : NewChatState()

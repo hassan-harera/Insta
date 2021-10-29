@@ -1,14 +1,12 @@
 package com.harera.profile
 
-import android.content.ContentValues.TAG
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.harera.model.modelget.Post
-import com.harera.model.modelget.Profile
+import com.harera.model.model.Post
+import com.harera.model.model.Profile
 import com.harera.repository.db.network.abstract_.AuthManager
 import com.harera.repository.db.network.abstract_.PostRepository
 import com.harera.repository.db.network.abstract_.ProfileRepository

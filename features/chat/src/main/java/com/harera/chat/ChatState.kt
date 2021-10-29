@@ -1,7 +1,7 @@
 package com.harera.chat
 
-import com.harera.model.modelget.Message
-import com.harera.model.modelget.Profile
+import com.harera.model.model.Message
+import com.harera.model.model.Profile
 
 sealed class ChatState {
     object Idle : ChatState()

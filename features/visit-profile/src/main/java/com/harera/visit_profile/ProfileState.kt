@@ -1,4 +1,4 @@
-package com.harera.profile
+package com.harera.visit_profile
 
 import com.harera.model.model.Post
 import com.harera.model.model.Profile

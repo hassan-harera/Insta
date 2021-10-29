@@ -10,10 +10,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
-import com.harera.base.navigation.ChatsNavigation
-import com.harera.model.modelget.Message
-import com.harera.model.modelget.Profile
-import com.harera.profile.ProfileCard
+import com.harera.base.navigation.chat.ChatsNavigation
+import com.harera.model.model.Profile
+import com.harera.compose.ProfileCard
 import com.harera.repository.data.DummyDate
 import org.koin.androidx.compose.getViewModel
 

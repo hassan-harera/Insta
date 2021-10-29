@@ -1,6 +1,5 @@
 package com.harera.chat
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -29,12 +28,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
-import com.harera.base.navigation.NavigationIcon
+import com.harera.base.navigation.chat.NavigationIcon
 import com.harera.base.theme.Grey300
 import com.harera.base.theme.Grey60
 import com.harera.base.theme.Grey700
-import com.harera.model.modelget.Message
-import com.harera.model.modelget.Profile
+import com.harera.model.model.Message
+import com.harera.model.model.Profile
 import com.harera.repository.data.DummyDate
 import org.koin.androidx.compose.getViewModel
 

@@ -20,9 +20,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import coil.annotation.ExperimentalCoilApi
-import com.harera.base.navigation.ChatsNavigation.ALL_CHATS
-import com.harera.chat.ChatCard
-import com.harera.model.modelget.OpenChat
+import com.harera.base.navigation.chat.ChatsNavigation.ALL_CHATS
+import com.harera.compose.ChatCard
+import com.harera.model.model.OpenChat
 import com.harera.repository.data.DummyDate
 import org.koin.androidx.compose.getViewModel
 

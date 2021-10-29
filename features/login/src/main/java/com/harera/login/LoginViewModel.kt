@@ -47,7 +47,7 @@ class LoginViewModel constructor(
         checkFormValidity()
     }
 
-    fun login() {
+    suspend fun login() {
         _loading.value = true
         authManager
             .signInWithEmailAndPassword(email = email.value!!, password = password.value!!)

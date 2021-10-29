@@ -33,8 +33,8 @@ import coil.annotation.ExperimentalCoilApi
 import com.harera.base.theme.Grey200
 import com.harera.base.theme.Grey660
 import com.harera.compose.Toast
-import com.harera.model.modelget.Post
-import com.harera.model.modelget.Profile
+import com.harera.model.model.Post
+import com.harera.model.model.Profile
 import com.harera.post.PostListView
 import com.harera.repository.data.DummyDate
 import kotlinx.coroutines.launch

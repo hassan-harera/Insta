@@ -3,8 +3,8 @@ package com.harera.chat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Timestamp
-import com.harera.model.modelget.Profile
-import com.harera.model.modelset.Message
+import com.harera.model.model.Profile
+import com.harera.model.model.Message
 import com.harera.repository.db.network.abstract_.AuthManager
 import com.harera.repository.db.network.abstract_.ChatRepository
 import com.harera.repository.db.network.abstract_.ProfileRepository
@@ -14,7 +14,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow
-import com.harera.model.modelget.Message as MessageGet
+import java.util.*
+import com.harera.model.model.Message as MessageGet
 
 class ChatViewModel constructor(
     private val chatRepository: ChatRepository,
@@ -69,12 +70,12 @@ class ChatViewModel constructor(
 
             chatRepository
                 .saveMessage(
-                    Message(
-                        time = Timestamp.now(),
-                        from = senderUID,
-                        to = receiverUID,
-                        message = handledMessage
-                    )
+                    Message().apply {
+                        time = Date()
+                        from = senderUID
+                        to = receiverUID
+                        this.message = handledMessage
+                    }
                 )
         }
     }

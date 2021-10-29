@@ -5,5 +5,4 @@ dependencies {
     implementation(project (Core.repository))
     implementation(project (Core.components))
     implementation(Compose.composeNavigation)
-    implementation project(UiComponents.chat)
 }

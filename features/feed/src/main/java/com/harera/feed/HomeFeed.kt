@@ -20,8 +20,8 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.harera.base.navigation.HomeNavigation
-import com.harera.model.modelget.Post
+import com.harera.base.navigation.home.HomeNavigation
+import com.harera.model.model.Post
 import com.harera.post.PostListView
 import org.koin.androidx.compose.getViewModel
 

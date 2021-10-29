@@ -7,9 +7,11 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.lifecycle.lifecycleScope
 import coil.annotation.ExperimentalCoilApi
 import com.harera.base.utils.afterTextChanged
 import com.harera.login.databinding.ActivityLoginBinding
+import kotlinx.coroutines.launch
 
 @ExperimentalCoilApi
 @ExperimentalComposeUiApi
@@ -91,7 +93,9 @@ class LoginActivity : AppCompatActivity() {
         }
 
         bind.login.setOnClickListener {
-            loginViewModel.login()
+            lifecycleScope.launch {
+                loginViewModel.login()
+            }
             bind.login.isEnabled = false
         }
     }

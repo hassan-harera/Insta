@@ -1,6 +1,6 @@
 package com.harera.feed
 
-import com.harera.model.modelget.Post
+import com.harera.model.model.Post
 
 
 sealed class FeedState() {

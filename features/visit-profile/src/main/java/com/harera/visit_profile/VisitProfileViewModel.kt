@@ -1,91 +1,109 @@
 package com.harera.visit_profile
 
-import androidx.lifecycle.MutableLiveData
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.android.gms.tasks.Tasks
-import com.harera.model.modelget.Post
-import com.harera.model.modelget.Profile
+import com.harera.model.model.Post
+import com.harera.model.model.Profile
 import com.harera.repository.db.network.abstract_.AuthManager
 import com.harera.repository.db.network.abstract_.PostRepository
 import com.harera.repository.db.network.abstract_.ProfileRepository
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class VisitProfileViewModel constructor(
-    private val authManager: AuthManager,
     private val profileRepository: ProfileRepository,
+    private val authManager: AuthManager,
     private val postRepository: PostRepository,
 ) : ViewModel() {
-
-    var followButtonState = MutableLiveData(false)
     private lateinit var uid: String
-    val profile = MutableLiveData<Profile>()
-    val posts = MutableLiveData<List<Post>>(emptyList())
-
-    fun getProfile() {
-        profileRepository
-            .getProfile(uid)
-            .addOnSuccessListener {
-                it.toObject(Profile::class.java)!!.let {
-                    profile.value = it
-                }
-            }
-            .addOnFailureListener {
-                it.printStackTrace()
-            }
-    }
-
-    suspend fun getPosts() {
-        postRepository
-            .getUserPosts(uid)
-            .forEach { post ->
-                        viewModelScope.async(Dispatchers.IO) {
-                            val profile = Tasks.await(getPostProfileDetails(post = post))
-                            val likes = Tasks.await(getPostLikes(post = post))
-                            val comments = Tasks.await(getPostComments(post = post))
-
-                            post.likesNumber = likes.documents.size
-                            post.commentsNumber = comments.documents.size
-                            post.profileImageUrl = profile
-                                .getString(Profile::profileImageUrl.name)!!
-                            post.profileName = profile.getString(Profile::name.name)!!
-
-                            post
-                        }.await()
-                    }.let {
-                        withContext(Dispatchers.Main) {
-                            posts.value = it
-                        }
-                    }
-                }
-            }
-    }
-
-    private fun getPostProfileDetails(post: Post) =
-        profileRepository
-            .getProfile(post.uid)
-
-    private fun getPostLikes(post: Post) =
-        postRepository
-            .getPostLikes(post.postId)
-
-    private fun getPostComments(post: Post) =
-        postRepository
-            .getPostComments(post.postId)
-
-    fun getFollowButtonState() {
-        profileRepository
-            .getFollower(uid, authManager.getCurrentUser()!!.uid)
-            .addOnSuccessListener {
-                followButtonState.value =
-                    (uid) != authManager.getCurrentUser()!!.uid && (it.documents.isNullOrEmpty())
-            }
-    }
-
     fun setUid(uid: String) {
         this.uid = uid
     }
+
+    var intent = Channel<ProfileIntent>()
+
+    var state by mutableStateOf<ProfileState>(ProfileState.Idle)
+        private set
+
+    init {
+        processIntent()
+    }
+
+    private fun processIntent() {
+        viewModelScope.launch(Dispatchers.IO) {
+            intent.consumeAsFlow().collect { intent ->
+                when (intent) {
+                    is ProfileIntent.GetProfile -> {
+                        getProfile()
+                    }
+
+                    is ProfileIntent.GetPosts -> {
+                        getPosts()
+                    }
+                }
+            }
+        }
+    }
+
+    private suspend fun getProfile() {
+        state = ProfileState.Loading()
+
+        profileRepository
+            .getProfile(uid)
+            .let { profile ->
+                state = ProfileState.ProfilePrepared(profile)
+            }
+    }
+
+    private suspend fun getPosts() {
+        val posts = ArrayList<Post>()
+
+        postRepository
+            .getUserPosts(uid)
+            .onSuccess {
+                it.forEach { post ->
+                    getPostDetails(post).getOrNull()
+                    posts.add(post)
+
+                    state = ProfileState.PostsFetched(posts)
+                }
+            }
+            .onFailure {
+                state = ProfileState.Loading(it.message)
+            }
+    }
+
+    private suspend fun getPostDetails(post: Post) = viewModelScope.runCatching {
+        getPostProfile(post.uid).let { profile ->
+            post.profileImageUrl = profile.profileImageUrl
+            post.profileName = profile.name
+        }
+
+        getPostNumbers(post.postId).let { likes ->
+            post.likesNumber = likes
+        }
+
+        getPostCommentNumbers(post.postId).let { size ->
+            post.commentsNumber = size
+        }
+    }
+
+    private suspend fun getPostProfile(uid: String): Profile =
+        profileRepository.getProfile(uid)
+
+    private suspend fun getPostNumbers(postId: String): Int =
+        postRepository.getPostLikes(postId).size
+
+
+    private suspend fun getPostCommentNumbers(postId: String): Int =
+        postRepository.getPostComments(postId).size
+
 }
+
+

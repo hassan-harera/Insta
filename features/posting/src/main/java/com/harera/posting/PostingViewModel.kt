@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Timestamp
+import com.harera.model.model.Post
 import com.harera.repository.db.network.abstract_.AuthManager
 import com.harera.repository.db.network.abstract_.PostRepository
 import com.harera.repository.db.network.abstract_.ProfileRepository
@@ -15,7 +16,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.launch
-import com.harera.model.modelset.Post as PostSet
+import java.util.*
 
 class PostingViewModel constructor(
     private val postRepository: PostRepository,
@@ -75,13 +76,13 @@ class PostingViewModel constructor(
 
     private suspend fun uploadPost(postId: String, caption: String, postImageUrl: String) {
         postRepository.addPost(
-            PostSet(
-                postId = postId,
-                time = Timestamp.now(),
-                uid = uid,
-                caption = caption,
-                postImageUrl = postImageUrl,
-            )
+            Post().apply {
+                this.postId = postId
+                this.time = Date()
+                this.uid = this@PostingViewModel.uid
+                this.caption = caption
+                this.postImageUrl = postImageUrl
+            }
         ).onSuccess {
             state = PostingState.PostingCompleted(postId = postId)
         }.onFailure {

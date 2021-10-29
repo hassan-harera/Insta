@@ -17,7 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
 import com.harera.base.theme.Grey200
-import com.harera.model.modelget.Message
+import com.harera.model.model.Message
 import com.harera.repository.data.DummyDate
 
 @ExperimentalCoilApi

@@ -23,7 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.harera.base.navigation.HomeNavigation
+import com.harera.base.navigation.home.HomeNavigation
 import com.harera.base.theme.Grey660
 import com.harera.base.utils.image.ImageUtils
 import com.harera.compose.Toast
