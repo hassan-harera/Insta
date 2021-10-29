@@ -1,4 +1,4 @@
-package com.harera.model.modelset
+package com.harera.base.utils
 
 import android.content.Context
 import android.net.ConnectivityManager

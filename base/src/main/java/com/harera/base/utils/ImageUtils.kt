@@ -1,4 +1,4 @@
-package com.harera.model.modelset
+package com.harera.base.utils
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
