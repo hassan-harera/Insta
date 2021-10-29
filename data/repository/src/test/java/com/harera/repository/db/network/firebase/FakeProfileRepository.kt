@@ -1,11 +1,9 @@
 package com.harera.repository.db.network.firebase
 
 import android.graphics.Bitmap
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
-import com.harera.model.modelset.FollowRelation
-import com.harera.model.modelset.FollowRequest
-import com.harera.model.modelset.Profile
+import com.harera.model.model.FollowRelation
+import com.harera.model.model.FollowRequest
+import com.harera.model.model.Profile
 import com.harera.repository.common.Constansts.FOLLOWERS
 import com.harera.repository.common.Constansts.FOLLOW_REQUESTS
 import com.harera.repository.common.Constansts.NAME
@@ -13,9 +11,9 @@ import com.harera.repository.common.Constansts.PROFILE_PIC
 import com.harera.repository.common.Constansts.USERS
 import com.harera.repository.db.network.abstract_.ProfileRepository
 import java.io.ByteArrayOutputStream
-import com.harera.model.modelget.FollowRelation as FollowRelationGet
-import com.harera.model.modelget.FollowRequest as FollowRequestGet
-import com.harera.model.modelget.Profile as ProfileGet
+import com.harera.model.model.FollowRelation as FollowRelationGet
+import com.harera.model.model.FollowRequest as FollowRequestGet
+import com.harera.model.model.Profile as ProfileGet
 
 class FakeProfileRepository : ProfileRepository {
 

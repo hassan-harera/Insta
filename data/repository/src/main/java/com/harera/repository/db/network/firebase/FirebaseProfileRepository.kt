@@ -1,11 +1,12 @@
 package com.harera.repository.db.network.firebase
 
 import android.graphics.Bitmap
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
-import com.harera.model.modelset.FollowRelation
-import com.harera.model.modelset.FollowRequest
-import com.harera.model.modelset.Profile
+import com.harera.model.model.FollowRelation
+import com.harera.model.model.FollowRequest
+import com.harera.model.model.Profile
 import com.harera.repository.common.Constansts.FOLLOWERS
 import com.harera.repository.common.Constansts.FOLLOW_REQUESTS
 import com.harera.repository.common.Constansts.NAME
@@ -13,9 +14,9 @@ import com.harera.repository.common.Constansts.PROFILE_PIC
 import com.harera.repository.common.Constansts.USERS
 import com.harera.repository.db.network.abstract_.ProfileRepository
 import java.io.ByteArrayOutputStream
-import com.harera.model.modelget.FollowRelation as FollowRelationGet
-import com.harera.model.modelget.FollowRequest as FollowRequestGet
-import com.harera.model.modelget.Profile as ProfileGet
+import com.harera.model.model.FollowRelation as FollowRelationGet
+import com.harera.model.model.FollowRequest as FollowRequestGet
+import com.harera.model.model.Profile as ProfileGet
 
 class FirebaseProfileRepository constructor(
     private val firebaseStorage: FirebaseStorage,
@@ -27,7 +28,9 @@ class FirebaseProfileRepository constructor(
             fStore.collection(FOLLOWERS)
                 .whereEqualTo(FollowRelation::followingUid.name, uid)
                 .get()
-                .result
+                .let{
+                    Tasks.await(it)
+                }
                 .map {
                     it.toObject(FollowRelationGet::class.java)
                 }
@@ -42,7 +45,9 @@ class FirebaseProfileRepository constructor(
                 .collection(FOLLOWERS)
                 .whereEqualTo(FollowRelation::followerUid.name, uid)
                 .get()
-                .result
+                .let{
+                    Tasks.await(it)
+                }
                 .map {
                     it.toObject(FollowRelationGet::class.java)
                 }
@@ -56,7 +61,10 @@ class FirebaseProfileRepository constructor(
             fStore.collection(USERS)
                 .document(profile.uid)
                 .set(profile)
-                .isSuccessful
+                .let{
+                    Tasks.await(it)
+                    it.isSuccessful
+                }
         } catch (e: Exception) {
             throw e
         }
@@ -70,7 +78,9 @@ class FirebaseProfileRepository constructor(
                 .whereEqualTo(FollowRelation::followerUid.name, followerUid)
                 .whereEqualTo(FollowRelation::followingUid.name, followingUid)
                 .get()
-                .result
+                .let {
+                    Tasks.await(it)
+                }
                 .isEmpty
                 .not()
         } catch (e: Exception) {
@@ -88,7 +98,9 @@ class FirebaseProfileRepository constructor(
                 .whereIn(FollowRelation::followingUid.name, followingsList)
                 .whereEqualTo(FollowRelation::followerUid.name, uid)
                 .get()
-                .result
+                .let {
+                    Tasks.await(it)
+                }
                 .map {
                     it.toObject(FollowRelationGet::class.java)
                 }
@@ -107,7 +119,10 @@ class FirebaseProfileRepository constructor(
                 .child(uid)
                 .child(PROFILE_PIC)
                 .putBytes(inputStream.toByteArray())
-                .isSuccessful
+                .let {
+                    Tasks.await(it)
+                    it.isSuccessful
+                }
         } catch (e: Exception) {
             throw e
         }
@@ -118,7 +133,9 @@ class FirebaseProfileRepository constructor(
                 .document(uid)
                 .collection(FOLLOW_REQUESTS)
                 .get()
-                .result
+                .let {
+                    Tasks.await(it)
+                }
                 .map {
                     it.toObject(FollowRequestGet::class.java)
                 }
@@ -132,7 +149,10 @@ class FirebaseProfileRepository constructor(
             fStore.collection(USERS)
                 .document(uid)
                 .update(Profile::profileImageUrl.name, profileImageUrl)
-                .isSuccessful
+                .let {
+                    Tasks.await(it)
+                    it.isSuccessful
+                }
         } catch (e: Exception) {
             throw e
         }
@@ -143,7 +163,9 @@ class FirebaseProfileRepository constructor(
             fStore.collection(USERS)
                 .document(uid)
                 .get()
-                .result
+                .let {
+                    Tasks.await(it)
+                }
                 .toObject(ProfileGet::class.java)!!
         } catch (e: Exception) {
             throw e
@@ -160,7 +182,10 @@ class FirebaseProfileRepository constructor(
                 .apply {
                     followRequest.id = id
                 }.set(followRequest)
-                .isSuccessful
+                .let {
+                    Tasks.await(it)
+                    it.isSuccessful
+                }
         } catch (e: Exception) {
             throw e
         }
@@ -172,7 +197,9 @@ class FirebaseProfileRepository constructor(
                 .collection(USERS)
                 .whereGreaterThanOrEqualTo(NAME, searchWord)
                 .get()
-                .result
+                .let {
+                    Tasks.await(it)
+                }
                 .map {
                     it.toObject(ProfileGet::class.java)
                 }
@@ -187,7 +214,10 @@ class FirebaseProfileRepository constructor(
                 .collection(USERS)
                 .document(profile.uid)
                 .set(profile)
-                .isSuccessful
+                .let {
+                    Tasks.await(it)
+                    it.isSuccessful
+                }
         } catch (e: Exception) {
             throw e
         }
@@ -201,7 +231,10 @@ class FirebaseProfileRepository constructor(
                     followRelation.followId = id
                 }
                 .set(followRelation)
-                .isSuccessful
+                .let {
+                    Tasks.await(it)
+                    it.isSuccessful
+                }
         } catch (e: Exception) {
             throw e
         }
@@ -216,7 +249,10 @@ class FirebaseProfileRepository constructor(
                     followRelation.followId = id
                 }
                 .set(followRelation)
-                .isSuccessful
+                .let {
+                    Tasks.await(it)
+                    it.isSuccessful
+                }
         } catch (e: Exception) {
             throw e
         }

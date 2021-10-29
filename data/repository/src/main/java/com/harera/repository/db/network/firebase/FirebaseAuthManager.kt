@@ -16,7 +16,7 @@ class FirebaseAuthManager constructor(
     override suspend fun createCredential(verificationId: String, code: String) =
         PhoneAuthProvider.getCredential(verificationId, code)
 
-    override suspend fun getCurrentUser(): FirebaseUser? =
+    override fun getCurrentUser(): FirebaseUser? =
         auth.currentUser
 
     override suspend fun signOut() {

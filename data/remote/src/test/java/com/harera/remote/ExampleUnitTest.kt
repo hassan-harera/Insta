@@ -1,4 +1,4 @@
-package com.harera.post
+package com.harera.remote
 
 import org.junit.Test
 

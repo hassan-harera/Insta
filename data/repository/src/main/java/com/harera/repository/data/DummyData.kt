@@ -1,11 +1,12 @@
 package com.harera.repository.data
 
 import com.google.firebase.Timestamp
-import com.harera.model.modelget.*
+import com.harera.model.model.*
+import java.util.*
 
 object DummyDate {
     val POST : Post =  Post().apply {
-        time = Timestamp.now()
+        time = Date()
         this.caption = "Caption"
         this.uid = "uid"
         this.profileName = "Hassan"
@@ -20,14 +21,14 @@ object DummyDate {
     val COMMENT : Comment = Comment().apply {
         comment = "Comment"
         commentId = "55"
-        time = Timestamp.now()
+        time = Date()
         postId = "83"
         uid = "11"
     }
 
     val MESSAGE : Message = Message().apply {
         message = "Message"
-        time = Timestamp.now()
+        time = Date()
         from = "123"
         to = "123"
     }
@@ -48,7 +49,7 @@ object DummyDate {
 
     val OPEN_CHAT : OpenChat = OpenChat().apply {
         profileName = "Profile Name"
-        time = Timestamp.now()
+        time = Date()
         lastMessage = "Hello guys"
         uid = "Uid"
         profileImageUrl =

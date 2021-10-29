@@ -2,7 +2,7 @@ package com.harera.repository.db.network.abstract_
 
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.QuerySnapshot
-import com.harera.model.modelset.FollowRequest
+import com.harera.model.model.FollowRequest
 
 interface NotificationsRepository {
 

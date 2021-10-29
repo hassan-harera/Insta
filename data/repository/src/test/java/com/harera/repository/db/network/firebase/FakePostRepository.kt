@@ -1,19 +1,15 @@
 package com.harera.repository.db.network.firebase
 
 import android.graphics.Bitmap
-import com.google.firebase.firestore.SetOptions
-import com.harera.model.modelset.Comment
-import com.harera.model.modelset.Like
-import com.harera.model.modelset.Post
+import com.harera.model.model.Comment
+import com.harera.model.model.Like
+import com.harera.model.model.Post
 import com.harera.repository.common.Constansts.COMMENTS
 import com.harera.repository.common.Constansts.LIKES
 import com.harera.repository.common.Constansts.POSTS
-import com.harera.repository.common.Constansts.USERS
 import com.harera.repository.db.network.abstract_.PostRepository
-import java.io.ByteArrayOutputStream
-import com.harera.model.modelget.Comment as CommentGet
-import com.harera.model.modelget.Like as LikeGet
-import com.harera.model.modelget.Post as PostGet
+import com.harera.model.model.Like as LikeGet
+import com.harera.model.model.Post as PostGet
 
 
 class FakePostRepository : PostRepository {
@@ -60,7 +56,7 @@ class FakePostRepository : PostRepository {
         }
 
 
-    override suspend fun removeLike(likeId: String): Boolean =
+    override suspend fun removeLike(likeId: String, postUid: String, uid: String): Boolean =
         try {
             likes.removeIf {
                 it.likeId == likeId
@@ -108,14 +104,14 @@ class FakePostRepository : PostRepository {
         }
 
 
-    override suspend fun getPostComments(postId: String): List<CommentGet> =
+    override suspend fun getPostComments(postId: String): List<Comment> =
         try {
             fStore.collection(COMMENTS)
                 .whereEqualTo(Post::postId.name, postId)
                 .get()
                 .result
                 .map {
-                    it.toObject(CommentGet::class.java)
+                    it.toObject(Comment::class.java)
                 }
         } catch (e: Exception) {
             throw e

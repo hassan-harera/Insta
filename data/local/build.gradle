@@ -1,0 +1,9 @@
+apply from: "$rootDir/android-library-build.gradle"
+apply plugin: 'kotlin-kapt'
+
+dependencies {
+    api(project(Core.model))
+    api(project(Core.base))
+    implementation(Room.roomRuntime)
+    kapt(Room.roomCompiler)
+}

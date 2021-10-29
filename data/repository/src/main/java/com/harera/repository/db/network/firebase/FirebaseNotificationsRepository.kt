@@ -3,7 +3,7 @@ package com.harera.repository.db.network.firebase
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
-import com.harera.model.modelset.FollowRequest
+import com.harera.model.model.FollowRequest
 import com.harera.repository.common.Constansts.FOLLOW_REQUESTS
 import com.harera.repository.common.Constansts.LIKES
 import com.harera.repository.common.Constansts.NOTIFICATIONS

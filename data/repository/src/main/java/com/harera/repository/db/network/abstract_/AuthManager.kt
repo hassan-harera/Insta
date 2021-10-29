@@ -8,7 +8,7 @@ interface AuthManager {
 
     suspend fun login(credecitial: AuthCredential): Task<AuthResult>
     suspend fun createCredential(verificationId: String, code: String): PhoneAuthCredential
-    suspend fun getCurrentUser(): FirebaseUser?
+    fun getCurrentUser(): FirebaseUser?
     suspend fun signOut()
     suspend fun signInWithCredential(credential: AuthCredential): Task<AuthResult>
     suspend fun getSignInMethods(email: String): Task<SignInMethodQueryResult>

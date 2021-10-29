@@ -5,8 +5,8 @@ import com.google.android.gms.tasks.Tasks
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
-import com.harera.model.modelset.Chat
-import com.harera.model.modelset.Message
+import com.harera.model.model.Chat
+import com.harera.model.model.Message
 import com.harera.repository.common.Constansts.CHATS
 import com.harera.repository.common.Constansts.MESSAGES
 import com.harera.repository.common.Constansts.USERS
@@ -86,4 +86,10 @@ class FirebaseChatRepository  constructor(
                         .get()
                 )
             )
+
+    override suspend fun getMessagesBetween(
+        uid1: String,
+        uid2: String
+    ): List<Message> =
+        emptyList()
 }
