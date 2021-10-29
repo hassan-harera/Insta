@@ -1,4 +1,4 @@
-package com.harera.feed.post
+package com.harera.post
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -32,11 +32,11 @@ import androidx.compose.ui.unit.sp
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.harera.base.theme.*
-import com.harera.base.utils.TimeUtils
-import com.harera.model.modelget.Post
-import com.harera.post.PostState
-import com.harera.post.R
+import com.harera.base.utils.time.TimeUtils
+import com.harera.components.post.R
+import com.harera.model.model.Post
 import com.harera.repository.data.DummyDate
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 
 @ExperimentalCoilApi
@@ -54,16 +54,14 @@ fun PostCardPreview() {
 @Composable
 fun PostCard(
     post: Post,
-    postCardViewModel: PostCardViewModel = getViewModel(),
+    postViewModel: PostViewModel = getViewModel(),
     onProfileClicked: (String) -> Unit,
     onPostClicked: (String) -> Unit,
 ) {
-    var commentFieldState by remember { mutableStateOf(false) }
-    var comment by remember { mutableStateOf("") }
-    var expand by remember { mutableStateOf(false) }
+    val state = postViewModel.state
+    val scope = rememberCoroutineScope()
 
-    val postState = remember { postCardViewModel.postState.value }
-    when (postState) {
+    when (state) {
         is PostState.Idle -> {
 
         }
@@ -72,10 +70,53 @@ fun PostCard(
 
         }
 
-        is PostState.Changed -> {
+        is PostState.CommentAdded -> {
+
+        }
+
+        is PostState.PostFetched -> {
 
         }
     }
+
+    PostCardContent(
+        onProfileClicked = onProfileClicked,
+        onPostClicked = onPostClicked,
+        post = post,
+        whenCommentSubmitted = { comment, postId ->
+            scope.launch {
+                postViewModel.sendIntent(
+                    PostIntent.CommentToPost(
+                        postId = postId,
+                        comment = comment,
+                    )
+                )
+            }
+        },
+        whenLikeClicked = { postId ->
+            scope.launch {
+                postViewModel.sendIntent(
+                    PostIntent.LikePost(
+                        postId = postId,
+                    )
+                )
+            }
+        }
+    )
+}
+
+@ExperimentalCoilApi
+@Composable
+fun PostCardContent(
+    post: Post,
+    onProfileClicked: (String) -> Unit,
+    onPostClicked: (String) -> Unit,
+    whenCommentSubmitted: (comment: String, postId: String) -> Unit,
+    whenLikeClicked: (String) -> Unit,
+) {
+    var comment by remember { mutableStateOf("") }
+    var commentFieldState by remember { mutableStateOf(false) }
+    var dropDownState by remember { mutableStateOf(false) }
 
     Card(
         modifier = Modifier
@@ -98,7 +139,7 @@ fun PostCard(
             ) {
                 IconButton(
                     onClick = {
-                        expand = true
+                        dropDownState = true
                     },
                 ) {
                     Icon(
@@ -114,9 +155,9 @@ fun PostCard(
 
 
                 DropdownMenu(
-                    expanded = expand,
+                    expanded = dropDownState,
                     onDismissRequest = {
-                        expand = false
+                        dropDownState = false
                     },
                     modifier = Modifier.fillMaxWidth(0.3f)
                 ) {
@@ -178,7 +219,6 @@ fun PostCard(
                 Spacer(modifier = Modifier.height(15.dp))
 
                 Text(
-                    //TODO change text value
                     text = post.caption,
                     style = TextStyle(
                         fontFamily = FontFamily.SansSerif,
@@ -192,7 +232,6 @@ fun PostCard(
                 Spacer(modifier = Modifier.height(5.dp))
 
                 Image(
-                    //TODO change text value
                     painter = rememberImagePainter(post.postImageUrl),
                     contentDescription = null,
                     modifier = Modifier
@@ -240,7 +279,7 @@ fun PostCard(
                         Text(
                             modifier = Modifier.fillMaxHeight(),
                             textAlign = TextAlign.Center,
-                            text ="${post.likesNumber}",
+                            text = "${post.likesNumber}",
                         )
                     }
 
@@ -286,7 +325,7 @@ fun PostCard(
                     Row(
                         modifier = Modifier
                             .clickable {
-                                postCardViewModel.likeClicked(post, postId = post.postId)
+                                whenLikeClicked(post.postId)
                             },
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically
@@ -372,10 +411,9 @@ fun PostCard(
                         keyboardActions = KeyboardActions(
                             onDone = {
                                 commentFieldState = false
-                                postCardViewModel.addComment(
-                                    post = post,
-                                    comment = comment,
-                                    postId = post.postId
+                                whenCommentSubmitted(
+                                    comment,
+                                    post.postId
                                 )
                             }
                         )
@@ -384,4 +422,5 @@ fun PostCard(
             }
         }
     }
+
 }
