@@ -1,46 +1,30 @@
-package com.harera.insta.ui.viewpost
+package com.harera.psot
 
 import android.util.Log
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.ThumbUp
-import androidx.compose.material.icons.outlined.Share
-import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.annotation.ExperimentalCoilApi
-import coil.compose.rememberImagePainter
-import com.harera.base.navigation.HomeNavigation
-import com.harera.base.theme.*
-import com.harera.base.utils.TimeUtils
+import com.harera.base.navigation.home.HomeNavigation
+import com.harera.base.theme.Grey660
 import com.harera.compose.CommentView
-import com.harera.model.modelget.Comment
-import com.harera.model.modelget.Post
-import com.harera.psot.PostViewModel
-import com.harera.psot.R
+import com.harera.model.model.Comment
+import com.harera.model.model.Post
+import com.harera.post.PostCard
 import com.harera.repository.data.DummyDate
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 
 
@@ -51,37 +35,64 @@ fun PostScreen(
     postId: String,
     navController: NavHostController
 ) {
-    postViewModel.getPost(postId)
-    postViewModel.getComments(postId)
+    var post = remember<Post?> { null }
+    var comments = remember<List<Comment>> { emptyList() }
 
-    val post by postViewModel.post
-    val comments by postViewModel.postComments
+    val scope = rememberCoroutineScope()
 
-    post?.let { _post ->
-        Log.d("PostScreen", _post.postId)
+    val state = postViewModel.state
+
+    LaunchedEffect(true) {
+        postViewModel.apply {
+            sendIntent(PostIntent.FetchPost(postId = postId))
+            sendIntent(PostIntent.FetchPostLikes(postId = postId))
+            sendIntent(PostIntent.FetchPostComments(postId = postId))
+        }
+    }
+
+    when (state) {
+        is PostState.Error -> {
+
+        }
+
+        is PostState.Loading -> {
+
+        }
+
+        is PostState.PostFetched -> {
+            post = state.post
+        }
+
+        is PostState.CommentsFetched -> {
+            comments = state.comments
+        }
+    }
+
+    post?.let {
+        Log.d("PostScreen", post.postId)
         PostView(
-            post = _post,
+            post = post,
             comments = comments,
-            onPostClicked = {
-                navController.navigate("${HomeNavigation.PostScreen}/${_post.postId}") {
-                    launchSingleTop = true
-                    restoreState = true
-                }
-            },
             onProfileClicked = {
-                navController.navigate("${HomeNavigation.VisitProfile}/${_post.uid}") {
+                navController.navigate("${HomeNavigation.VisitProfile}/${post.uid}") {
                     launchSingleTop = true
                     restoreState = true
                 }
             },
             onLikeClicked = {
-                postViewModel.likeClicked(_post.postId)
+                scope.launch {
+                    postViewModel.sendIntent(PostIntent.LikePost(postId))
+                }
             },
             onCommentSubmitted = { comment ->
-                postViewModel.addComment(
-                    comment = comment,
-                    postId = _post.postId
-                )
+                scope.launch {
+                    postViewModel.sendIntent(
+                        PostIntent.CommentToPost(
+                            comment = comment,
+                            postId = postId
+                        )
+                    )
+                }
             }
         )
     }
@@ -93,8 +104,7 @@ fun PostView(
     post: Post,
     comments: List<Comment>,
     onProfileClicked: (String) -> Unit,
-    onPostClicked: (String) -> Unit,
-    onLikeClicked: (String) -> Unit,
+    onLikeClicked: () -> Unit,
     onCommentSubmitted: (String) -> Unit,
 ) {
     var commentFieldState by remember { mutableStateOf(false) }
@@ -102,305 +112,17 @@ fun PostView(
     var comment by remember { mutableStateOf("") }
     val scrollState = rememberScrollState()
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(top = 10.dp, start = 10.dp, end = 10.dp)
-            .background(Color.White),
+    Column(
+        modifier = Modifier.verticalScroll(state = scrollState)
     ) {
-        Column(
-            modifier = Modifier
-                .align(alignment = Alignment.TopEnd)
-                .background(Color.White),
-        ) {
-            IconButton(
-                onClick = {
-                    expand = true
-                },
-            ) {
-                Icon(
-                    painterResource(id = R.drawable.menu),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .clickable {
-                        }
-                        .padding(6.dp),
-                    tint = Color.Black,
-                )
-            }
+        PostCard(
+            post = post,
+            onProfileClicked = onProfileClicked,
+            onPostClicked = {}
+        )
 
-
-            DropdownMenu(
-                expanded = expand,
-                onDismissRequest = {
-                    expand = false
-                },
-                modifier = Modifier.fillMaxWidth(0.3f)
-            ) {
-                Text(
-                    text = "Delete",
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        }
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.White)
-                .padding(bottom = 50.dp)
-                .verticalScroll(scrollState),
-        ) {
-            Row {
-                Image(
-                    painter = rememberImagePainter(post.profileImageUrl),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(50.dp)
-                        .clip(CircleShape)
-                        .clickable {
-                            onProfileClicked(post.uid)
-                        }
-                )
-
-                Spacer(modifier = Modifier.size(15.dp))
-
-                Column {
-                    Text(
-                        //TODO change text value
-                        text = post.profileName,
-                        style = TextStyle(
-                            fontFamily = FontFamily.Default,
-                            fontSize = 16.sp,
-                            color = Color.Black,
-                            fontStyle = FontStyle.Normal,
-                        ),
-                        fontWeight = FontWeight.Bold,
-                        maxLines = 4
-                    )
-
-//                Spacer(modifier = Modifier.size(4.dp))
-
-                    Text(
-                        //TODO change text value
-                        text = TimeUtils.timeFromNow(post.time),
-                        style = TextStyle(
-                            fontFamily = FontFamily.Serif,
-                            fontSize = timeSize,
-                            color = Grey660,
-                            fontStyle = FontStyle.Normal,
-                        ),
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(15.dp))
-
-            Text(
-                //TODO change text value
-                text = post.caption,
-                style = TextStyle(
-                    fontFamily = FontFamily.SansSerif,
-                    fontSize = captionSize,
-                    color = Color.Black,
-                    fontStyle = FontStyle.Normal,
-                ),
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(5.dp))
-
-            Image(
-                //TODO change text value
-                painter = rememberImagePainter(post.postImageUrl),
-                contentDescription = null,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(250.dp),
-                alpha = 1.0f,
-                alignment = Alignment.Center
-            )
-
-            Spacer(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(8.dp)
-            )
-
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .height(15.dp)
-                    .padding(
-                        start = 5.dp,
-                        end = 5.dp
-                    ),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-
-                Row(
-                    modifier = Modifier
-                        .weight(0.5f, true)
-                        .fillMaxHeight()
-                        .clickable {
-                            onPostClicked(post.postId)
-                        },
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Start,
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.ThumbUp,
-                        contentDescription = null,
-                    )
-
-                    Spacer(modifier = Modifier.size(5.dp))
-
-                    Text(
-                        modifier = Modifier.fillMaxHeight(),
-                        textAlign = TextAlign.Center,
-                        text = "${post.likesNumber}",
-                    )
-                }
-
-                Row(
-                    modifier = Modifier
-                        .weight(0.5f, true)
-                        .fillMaxHeight()
-                        .clickable { },
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    Text(
-                        text = "${post.commentsNumber} Comment"
-                    )
-                }
-            }
-
-            Spacer(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(10.dp)
-            )
-
-            Spacer(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(2.dp)
-                    .border(width = 1.dp, color = Grey660)
-            )
-
-            Spacer(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(10.dp)
-            )
-
-            Row(
-                Modifier
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceAround
-            ) {
-                Row(
-                    modifier = Modifier
-                        .clickable {
-                            onLikeClicked(post.postId)
-                        },
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.ThumbUp,
-                        contentDescription = null,
-                        modifier = Modifier.size(25.dp)
-                    )
-
-                    Spacer(modifier = Modifier.size(5.dp))
-
-                    Text(
-                        textAlign = TextAlign.Center,
-                        text = like
-                    )
-                }
-
-                Row(
-                    modifier = Modifier
-                        .clickable {
-                            commentFieldState = true
-                        },
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        painterResource(id = R.drawable.comment),
-                        contentDescription = null,
-                        modifier = Modifier.size(25.dp),
-                    )
-                    Spacer(modifier = Modifier.size(5.dp))
-                    Text(
-                        text = commment,
-                        textAlign = TextAlign.Center,
-                    )
-                }
-
-                Row(
-                    modifier = Modifier
-                        .clickable {
-
-                        },
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Share,
-                        contentDescription = null,
-                        modifier = Modifier.size(25.dp)
-                    )
-                    Spacer(modifier = Modifier.size(5.dp))
-
-                    Text(
-                        text = share,
-                        textAlign = TextAlign.Center,
-                    )
-                }
-            }
-
-            if (commentFieldState)
-                OutlinedTextField(
-                    value = comment,
-                    onValueChange = {
-                        comment = it
-                    },
-                    placeholder = {
-                        Text(text = "Comment")
-                    },
-                    modifier = Modifier
-                        .background(Color.White)
-                        .padding(8.dp)
-                        .fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions(
-                        autoCorrect = true,
-                        imeAction = ImeAction.Done,
-                        keyboardType = KeyboardType.Text
-                    ),
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = Color.Black,
-                        unfocusedBorderColor = Color.Black,
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onDone = {
-                            commentFieldState = false
-                            onCommentSubmitted(comment)
-                        },
-                    )
-                )
-
-            Spacer(modifier = Modifier.height(30.dp))
-
-            comments.forEach {
-                CommentView(comment = it)
-            }
+        comments.forEach {
+            CommentView(comment = it)
         }
     }
 }
@@ -413,7 +135,6 @@ fun PostViewPreview() {
         DummyDate.POST,
         emptyList(),
         onProfileClicked = {},
-        onPostClicked = {},
         onLikeClicked = {},
         onCommentSubmitted = {}
     )
@@ -421,7 +142,7 @@ fun PostViewPreview() {
 
 @Composable
 private fun PostTopBar(postViewModel: PostViewModel) {
-    var searchWord by remember { postViewModel.searchWord }
+    var searchWord by remember { mutableStateOf("") }
 
     TopAppBar(
         backgroundColor = Grey660,
@@ -459,7 +180,8 @@ private fun PostTopBar(postViewModel: PostViewModel) {
                 ),
                 keyboardActions = KeyboardActions(
                     onDone = {
-                        postViewModel.search()
+//                        TODO Adding search feature
+//                        postViewModel.search()
                     }
                 ),
                 keyboardOptions = KeyboardOptions(

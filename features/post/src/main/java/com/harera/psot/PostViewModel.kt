@@ -1,181 +1,170 @@
 package com.harera.psot
 
-import android.graphics.Bitmap
+import android.util.Log
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.MutableLiveData
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.android.gms.tasks.Tasks
-import com.google.firebase.Timestamp
-import com.harera.model.modelget.Comment
-import com.harera.model.modelget.Post
-import com.harera.model.modelget.Profile
-import com.harera.model.modelset.Like
+import com.harera.model.model.Comment
+import com.harera.model.model.Like
+import com.harera.model.model.Post
 import com.harera.repository.db.network.abstract_.AuthManager
 import com.harera.repository.db.network.abstract_.PostRepository
 import com.harera.repository.db.network.abstract_.ProfileRepository
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import com.harera.model.modelset.Comment as CommentSet
-import com.harera.model.modelset.Post as PostSet
+import java.sql.Timestamp
+import java.time.Instant
+import java.util.*
 
 class PostViewModel constructor(
     private val postRepository: PostRepository,
     private val profileRepository: ProfileRepository,
     private val authManager: AuthManager,
 ) : ViewModel() {
-    val searchWord = mutableStateOf("")
-    val profile = mutableStateOf<Profile?>(null)
-    val post = mutableStateOf<Post?>(null)
-    val commentsCount = MutableStateFlow<Int>(0)
-    val likesNumber = MutableStateFlow<Int>(0)
-    val postComments = mutableStateOf<List<Comment>>(emptyList())
 
-    val loading = mutableStateOf(true)
-    val postLiked = MutableLiveData(false)
+    private val intent = Channel<PostIntent>()
+    var state by mutableStateOf<PostState>(PostState.Idle)
+        private set
 
-    fun getPost(postId: String) {
+    init {
         viewModelScope.launch(Dispatchers.IO) {
-            Tasks.await(postRepository.getPost(postId))
-                .toObject(Post::class.java)!!.let { _post ->
-                    val profile = Tasks.await(getPostProfileDetails(post = _post))
-                    val likes = Tasks.await(getPostLikes(post = _post))
-                    val comments = Tasks.await(getPostCommentsTask(postId = _post.postId))
-
-                    _post.likesNumber = likes.documents.size
-                    _post.commentsNumber = comments.documents.size
-                    _post.profileImageUrl = profile
-                        .getString(Profile::profileImageUrl.name)!!
-                    _post.profileName = profile.getString(Profile::name.name)!!
-
-                    withContext(Dispatchers.Main) {
-                        post.value = _post
-                    }
-                }
+            triggerIntent()
         }
     }
 
-    fun getComments(postId: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            Tasks.await(postRepository.getPostComments(postId))
-                .documents.map {
-                    it.toObject(Comment::class.java)!!.let { comment ->
-                        Tasks.await(profileRepository.getProfile(comment.uid)).let {
-                            comment.profileName = it.getString(Profile::name.name)!!
-                        }
-                        return@map comment
-                    }
-                }.let {
-                    withContext(Dispatchers.Main) {
-                        postComments.value = it
-                    }
+    private suspend fun triggerIntent() {
+        intent.consumeAsFlow().collect {
+            when (it) {
+                is PostIntent.FetchPost -> {
+                    getPost(it.postId)
                 }
+
+                is PostIntent.CommentToPost -> {
+                    addComment(it.comment, it.postId)
+                }
+
+                is PostIntent.LikePost -> {
+                    checkLike(it.postId)
+                }
+            }
         }
     }
 
-    private fun getPostProfileDetails(post: Post) =
-        profileRepository
-            .getProfile(post.uid)
 
-    private fun getPostLikes(post: Post) =
-        postRepository
-            .getPostLikes(post.postId)
+    suspend fun sendIntent(intent: PostIntent) {
+        this.intent.send(intent)
+        Log.d("sendIntent", intent::class.java.name)
+    }
 
-    private fun getPostCommentsTask(postId: String) =
-        postRepository
-            .getPostComments(postId)
-
-    fun checkPostLiked(postId: String) {
-        postRepository
-            .getPostLike(postId = postId, uid = authManager.getCurrentUser()!!.uid)
-            .addOnSuccessListener {
-                postLiked.value = !it.documents.isNullOrEmpty()
+    private suspend fun getPost(postId: String) {
+        postRepository.getPost(postId)
+            .onSuccess { post ->
+                getPostDetails(post!!)
+            }
+            .onFailure {
+                state = PostState.Error(it.message)
             }
     }
 
-    fun likeClicked(postId: String) {
+    private suspend fun getPostDetails(post: Post) {
+        val profile = getPostProfileDetails(post = post)
+        val likes = getPostLikes(postId = post.postId)
+        val comments = getPostCommentsTask(postId = post.postId)
+
+        post.likesNumber = likes.size
+        post.commentsNumber = comments.size
+        post.profileImageUrl = profile.profileImageUrl
+        post.profileName = profile.name
+
+        state = PostState.PostFetched(post)
+    }
+
+    private suspend fun getComments(postId: String) {
+        postRepository.getPostComments(postId)
+            .map { comment ->
+                profileRepository.getProfile(comment.uid).let {
+                    comment.profileName = it.name
+                }
+                comment
+            }
+            .let {
+                state = PostState.CommentsFetched(it)
+            }
+    }
+
+    private suspend fun getPostProfileDetails(post: Post) =
+        profileRepository.getProfile(post.uid)
+
+    private suspend fun getPostLikes(postId: String) =
+        postRepository
+            .getPostLikes(postId)
+
+    private suspend fun getPostCommentsTask(postId: String) =
+        postRepository
+            .getPostComments(postId)
+
+    private suspend fun addComment(comment: String, postId: String) {
+        val commentSet = Comment().apply {
+            this.uid = authManager.getCurrentUser()!!.uid
+            this.postId = postId
+            this.comment = comment
+            this.time = Date()
+        }
+
+        postRepository
+            .addComment(comment = commentSet)
+            .onSuccess {
+                getComments(postId)
+            }.onFailure {
+                state = PostState.Error(it.message)
+            }
+    }
+
+    private suspend fun checkLike(postId: String) {
         postRepository
             .getPostLike(
                 postId = postId,
                 uid = authManager.getCurrentUser()!!.uid
             )
-            .addOnSuccessListener {
-                if (it.documents.isNullOrEmpty())
+            .onSuccess {
+                if (it == null)
                     addLike(postId = postId)
                 else
-                    removeLike(likeId = it.first().id)
+                    removeLike(postId, uid = authManager.getCurrentUser()!!.uid)
+            }.onFailure {
+                state = PostState.Error(it.message)
             }
     }
 
-    private fun addLike(postId: String) {
-        postRepository
-            .addLike(
-                Like(
-                    uid = authManager.getCurrentUser()!!.uid,
-                    postId = postId,
-                    time = Timestamp.now(),
+    private suspend fun addLike(postId: String) {
+        runCatching {
+            postRepository
+                .addLike(
+                    Like().apply {
+                        this.uid = authManager.getCurrentUser()!!.uid
+                        this.postId = postId
+                        this.time = Date()
+                    }
                 )
-            )
-    }
-
-    private fun removeLike(likeId: String) {
-        postRepository
-            .removeLike(likeId = likeId)
-    }
-
-    fun addComment(comment: String, postId: String) {
-        postRepository
-            .addComment(
-                CommentSet(
-                    uid = authManager.getCurrentUser()!!.uid,
-                    postId = postId,
-                    comment = comment,
-                    time = Timestamp.now()
-                )
-            )
-        post.value = post.value!!.apply {
-            this.commentsNumber++
+        }.getOrElse {
+            getPostLikes(postId)
         }
     }
 
-    fun search() {
-    }
-
-    fun addPost(caption: String, imageBitmap: Bitmap) {
-        val postId = postRepository
-            .getNewPostId(authManager.getCurrentUser()!!.uid)
-
-        viewModelScope.launch(Dispatchers.IO) {
-            val reference =
-                postRepository.uploadPostImage(
-                    postId = postId,
-                    imageBitmap = imageBitmap,
-                    uid = authManager.getCurrentUser()!!.uid
-                ).let {
-                    Tasks.await(it)
-                }
-
-            val uri = reference.storage.downloadUrl.let {
-                Tasks.await(it)
+    private suspend fun removeLike(postUid: String, uid: String) = kotlin.runCatching {
+        postRepository
+            .removeLike(postUid = postUid, uid = uid)
+            .onSuccess {
+                state = PostState.Error("couldn't remove like")
             }
-
-            uri.toString().let { postImageUrl ->
-                postRepository.addPost(
-                    PostSet(
-                        postId = postId,
-                        time = Timestamp.now(),
-                        uid = authManager.getCurrentUser()!!.uid,
-                        caption = caption,
-                        postImageUrl = postImageUrl,
-                    )
-                )
+            .onFailure {
+                state = PostState.Error("couldn't remove like")
             }
-        }
     }
 
-    fun setPost(post: Post) {
-
-    }
 }
