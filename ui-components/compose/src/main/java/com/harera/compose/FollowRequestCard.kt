@@ -29,9 +29,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.harera.base.theme.Blue255
 import com.harera.base.theme.Grey660
-import com.harera.model.modelget.FollowRequest
-import com.harera.model.modelget.Post
-import com.harera.model.modelget.Profile
+import com.harera.model.model.FollowRequest
+import com.harera.model.model.Post
+import com.harera.model.model.Profile
 
 @Composable
 @Preview

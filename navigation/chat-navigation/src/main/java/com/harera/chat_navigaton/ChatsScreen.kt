@@ -7,7 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import coil.annotation.ExperimentalCoilApi
 import com.harera.add_chat.NewChat
-import com.harera.base.navigation.ChatsNavigation
+import com.harera.base.navigation.chat.ChatsNavigation
 import com.harera.base.utils.Arguments
 import com.harera.chat.ChatScreen
 import com.harera.mychats.MyChats

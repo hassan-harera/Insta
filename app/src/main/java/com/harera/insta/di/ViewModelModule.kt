@@ -1,9 +1,11 @@
-package com.harera.repository.di
+package com.harera.insta.di
 
+import com.harera.add_chat.NewChatViewModel
 import com.harera.chat.ChatViewModel
 import com.harera.feed.FeedViewModel
 import com.harera.insta.MainViewModel
 import com.harera.login.LoginViewModel
+import com.harera.mychats.MyChatsViewModel
 import com.harera.notifications.NotificationsViewModel
 import com.harera.posting.PostingViewModel
 import com.harera.profile.HomeProfileViewModel
@@ -27,6 +29,9 @@ val ViewModel = module {
         VisitProfileViewModel(get(), get(), get())
     }
 
+    viewModel<com.harera.post.PostViewModel> {
+        com.harera.post.PostViewModel(get(), get(), get())
+    }
 
     viewModel<PostingViewModel> {
         PostingViewModel(get(), get(), get())
@@ -34,6 +39,14 @@ val ViewModel = module {
 
     viewModel<PostViewModel> {
         PostViewModel(get(), get(), get())
+    }
+
+    viewModel<FeedViewModel> {
+        FeedViewModel(get(), get(), get())
+    }
+
+    viewModel<LoginViewModel> {
+        LoginViewModel(get())
     }
 
     viewModel<NotificationsViewModel> {
@@ -44,11 +57,11 @@ val ViewModel = module {
         ChatViewModel(get(), get(), get())
     }
 
-    viewModel<FeedViewModel> {
-        FeedViewModel(get(), get(), get())
+    viewModel<MyChatsViewModel> {
+        MyChatsViewModel(get(), get(), get())
     }
 
-    viewModel<LoginViewModel> {
-        LoginViewModel(get())
+    viewModel<NewChatViewModel> {
+        NewChatViewModel(get(), get())
     }
 }

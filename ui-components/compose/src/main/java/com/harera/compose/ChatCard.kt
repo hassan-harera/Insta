@@ -2,9 +2,8 @@ package com.harera.compose
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Card
 import androidx.compose.material.Text
@@ -21,47 +20,33 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.harera.base.theme.Grey660
 import com.harera.base.theme.timeSize
-import com.harera.model.model.Profile
+import com.harera.base.utils.time.TimeUtils
+import com.harera.model.model.OpenChat
 import com.harera.repository.data.DummyDate
 
+@ExperimentalCoilApi
 @Composable
 @Preview
-fun ProfileCardPreview() {
-
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Top
-    ) {
-        item {
-            ProfileCard(DummyDate.PROFILE) {}
-        }
-        item {
-            ProfileCard(DummyDate.PROFILE, {})
-        }
-        item {
-            ProfileCard(DummyDate.PROFILE, {})
-        }
-        item {
-            ProfileCard(DummyDate.PROFILE, {})
-        }
-    }
+fun ChatCardPreview() {
+    ChatCard(
+        DummyDate.OPEN_CHAT
+    ) {}
 }
 
+@ExperimentalCoilApi
 @Composable
-fun ProfileCard(
-    profile: Profile,
-    onClick: (String) -> Unit
+fun ChatCard(
+    openChat: OpenChat,
+    onChatClicked: (String) -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight(0.15f)
-            .clickable {
-                onClick(profile.uid)
-            },
+            .fillMaxHeight(0.15f),
         elevation = 5.dp,
     ) {
 
@@ -72,37 +57,53 @@ fun ProfileCard(
             verticalAlignment = (Alignment.CenterVertically)
         ) {
             Image(
-                //TODO replace image painter with link
-                painter = rememberImagePainter(profile.profileImageUrl),
+                painter = rememberImagePainter(openChat.profileImageUrl),
                 contentDescription = null,
                 modifier = Modifier
-                    .padding(5.dp)
                     .size(50.dp)
                     .clip(CircleShape)
-//                    .border(3.dp, color = Grey660)
-                ,
+                    .padding(5.dp)
+                    .border(3.dp, color = Grey660),
                 alignment = Alignment.CenterStart
             )
 
             Spacer(modifier = Modifier.size(15.dp))
 
             Column {
-                Text(
-                    //TODO change text value
-                    text = profile.name,
-                    style = TextStyle(
-                        fontFamily = FontFamily.Default,
-                        fontSize = 18.sp,
-                        color = Color.Black,
-                        fontStyle = FontStyle.Normal,
-                    ),
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Start,
-                    maxLines = 1
-                )
+                Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        //TODO change text value
+                        text = openChat.profileName,
+                        style = TextStyle(
+                            fontFamily = FontFamily.Default,
+                            fontSize = 18.sp,
+                            color = Color.Black,
+                            fontStyle = FontStyle.Normal,
+                        ),
+                        textAlign = TextAlign.Center,
+                        maxLines = 1
+                    )
+
+                    Text(
+                        text = TimeUtils.timeFromNow(openChat.time),
+                        style = TextStyle(
+                            fontFamily = FontFamily.Default,
+                            fontSize = 12.sp,
+                            color = Grey660,
+                            fontStyle = FontStyle.Normal,
+                        ),
+                        modifier = Modifier.fillMaxHeight(),
+                        fontWeight = FontWeight.Normal,
+                        textAlign = TextAlign.Center,
+                    )
+                }
 
                 Text(
-                    text = profile.bio,
+                    text = openChat.lastMessage,
                     style = TextStyle(
                         fontFamily = FontFamily.Serif,
                         fontSize = timeSize,
@@ -115,4 +116,3 @@ fun ProfileCard(
         }
     }
 }
-

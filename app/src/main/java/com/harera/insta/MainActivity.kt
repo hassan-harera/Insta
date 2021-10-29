@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -16,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
+import coil.annotation.ExperimentalCoilApi
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
@@ -25,6 +27,7 @@ import com.harera.repository.db.network.abstract_.AuthManager
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 
+@ExperimentalCoilApi
 @ExperimentalComposeUiApi
 class MainActivity : AppCompatActivity() {
 
@@ -45,8 +48,10 @@ class MainActivity : AppCompatActivity() {
         val user by mainViewModel.user
         val context = LocalContext.current
 
-        if (user == null) {
-            mainViewModel.signIn()
+        LaunchedEffect(user) {
+            if (user == null)
+                //TODO replace with login
+                mainViewModel.signIn()
         }
 
         Box {
@@ -71,23 +76,28 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+}
 
-    class MainViewModel constructor(
-        private val authManager: AuthManager,
-    ) : ViewModel() {
-        var user = mutableStateOf<FirebaseUser?>(null)
 
-        fun getCurrentUser() {
-            user.value = authManager.getCurrentUser()
-        }
+class MainViewModel constructor(
+    private val authManager: AuthManager,
+) : ViewModel() {
+    var user = mutableStateOf<FirebaseUser?>(null)
 
-        fun signIn() {
-            authManager.signInWithEmailAndRandomPassword(
-                "hassan.shaban.harera@gmail.com"
-            )
-                .addOnSuccessListener {
-                    user.value = it.user
-                }
-        }
+    init {
+        getCurrentUser()
+    }
+
+    private fun getCurrentUser() {
+        user.value = authManager.getCurrentUser()
+    }
+
+    suspend fun signIn() {
+        authManager.signInWithEmailAndRandomPassword(
+            "hassan.shaban.harera@gmail.com"
+        )
+            .addOnSuccessListener {
+                user.value = it.user
+            }
     }
 }

@@ -1,4 +1,4 @@
-package com.harera.insta.di
+package com.harera.repository.di
 
 import com.harera.repository.db.network.abstract_.*
 import com.harera.repository.db.network.firebase.*
@@ -7,11 +7,11 @@ import org.koin.dsl.module
 val RepoModule = module {
 
     single<PostRepository> {
-        FakePostRepository(get(), get())
+        FirebasePostRepository(get(), get())
     }
 
     single<ProfileRepository> {
-        FakeProfileRepository(get(), get())
+        FirebaseProfileRepository(get(), get())
     }
 
     single<NotificationsRepository> {

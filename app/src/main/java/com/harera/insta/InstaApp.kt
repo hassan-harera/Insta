@@ -19,7 +19,8 @@ class InstaApp : Application() {
                 FirebaseModule,
                 ViewModel,
                 AppModule,
-                UtilsModule
+                UtilsModule,
+                dbModule,
             )
         }
     }

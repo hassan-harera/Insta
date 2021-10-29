@@ -23,26 +23,28 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import coil.annotation.ExperimentalCoilApi
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.harera.base.navigation.HomeBottomNavigation
-import com.harera.base.navigation.HomeNavigation
-import com.harera.base.navigation.HomeNavigation.AddPost
-import com.harera.base.navigation.HomeNavigation.PostScreen
-import com.harera.base.navigation.HomeNavigation.VisitProfile
+import com.harera.base.navigation.home.HomeBottomNavigation
+import com.harera.base.navigation.home.HomeNavigation
+import com.harera.base.navigation.home.HomeNavigation.AddPost
+import com.harera.base.navigation.home.HomeNavigation.HomeChats
+import com.harera.base.navigation.home.HomeNavigation.HomeNotifications
+import com.harera.base.navigation.home.HomeNavigation.PostScreen
+import com.harera.base.navigation.home.HomeNavigation.VisitProfile
 import com.harera.base.theme.Grey660
-import com.harera.chat.HomeChats
+import com.harera.chat_navigaton.HomeChats
 import com.harera.compose.HomeTopBar
 import com.harera.feed.HomeFeed
-import com.harera.insta.ui.viewpost.PostScreen
-import com.harera.posting.PostForm
+import com.harera.psot.PostScreen
+import com.harera.notifications.HomeNotifications
+import com.harera.posting.PostingNavigation
 import com.harera.profile.HomeProfile
 import com.harera.repository.common.Constansts.POST_ID
 import com.harera.repository.common.Constansts.UID
 import com.harera.visit_profile.VisitProfile
 
 
+@ExperimentalCoilApi
 @ExperimentalComposeUiApi
-@OptIn(ExperimentalPagerApi::class, ExperimentalMaterialApi::class, ExperimentalCoilApi::class)
 class HomeActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,12 +70,12 @@ class HomeActivity : AppCompatActivity() {
 
         Scaffold(
             topBar = {
-                if (currentRoute?.destination?.route != HomeNavigation.HomeChats) {
+                if (currentRoute?.destination?.route != HomeChats) {
                     HomeTopBar()
                 }
             },
             bottomBar = {
-                if (currentRoute?.destination?.route != HomeNavigation.HomeChats) {
+                if (currentRoute?.destination?.route != HomeChats) {
                     HomeBottomNavigation(
                         tabs = bottomNavIcons,
                         navController = navController
@@ -104,16 +106,16 @@ class HomeActivity : AppCompatActivity() {
                     navController = navController
                 )
             }
-            composable(HomeNavigation.HomeNotifications) {
-                com.harera.notifications.HomeNotifications()
+            composable(HomeNotifications) {
+                HomeNotifications()
             }
-            composable(HomeNavigation.HomeChats) {
+            composable(HomeChats) {
                 HomeChats()
             }
             composable("$VisitProfile/{$UID}") { stack ->
                 VisitProfile(
+                    uid = stack.arguments!!.getString(UID)!!,
                     navController = navController,
-                    uid = stack.arguments!!.getString(UID)!!
                 )
             }
             composable("$PostScreen/{$POST_ID}") { stack ->
@@ -123,7 +125,7 @@ class HomeActivity : AppCompatActivity() {
                 )
             }
             composable(AddPost) { stack ->
-                PostForm(
+                PostingNavigation(
                     navController,
                 )
             }

@@ -20,6 +20,8 @@ object Libs {
     const val adMob = "com.google.android.gms:play-services-ads-lite:${Versions.Ad_MOB_VERSION}"
 
 
+    const val serializer = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0"
+
 
     //UI
     const val activity = "androidx.activity:activity-ktx:${Versions.ACTIVITY_VERSION}"

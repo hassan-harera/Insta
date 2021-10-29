@@ -1,10 +1,12 @@
 apply from:"$rootDir/android-library-build.gradle"
 
 dependencies {
+    implementation(Libs.serializer)
     implementation(Libs.firebaseFirestore)
     implementation(Libs.playServicesAuth)
     implementation(Libs.appcompat)
     implementation(Libs.materialDesign)
-    implementation(project(Core.repository))
-    implementation(project(Core.repository))
+    implementation(project(Core.functionalProgramming))
+
+    implementation(Room.roomRuntime)
 }

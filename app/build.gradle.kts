@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     kotlin("android")
     id("com.google.gms.google-services")
+    id("kotlin-kapt")
 }
 android {
     compileSdk = DefaultConfig.compileSdk
@@ -46,8 +47,10 @@ dependencies {
     implementation(project(Core.repository))
     implementation(project(Core.base))
     implementation(project(Core.components))
+    implementation(project(Core.local))
 
-    implementation(project(Features.chat))
+    implementation(project(Navigation.chatNav))
+
     implementation(project(Features.login))
     implementation(project(Features.notifications))
     implementation(project(Features.editProfile))
@@ -58,6 +61,9 @@ dependencies {
     implementation(project(Features.feed))
 
     implementation(project(UiComponents.post))
+
+    implementation(Room.roomRuntime)
+    kapt(Room.roomCompiler)
 
     implementation(Libs.appcompat)
     implementation(Libs.playServicesTasks)
@@ -70,6 +76,7 @@ dependencies {
 
 
     /* Testing */
+    implementation(Libs.truth)
     implementation(Libs.playServicesAuth)
 
     //Koin
@@ -82,6 +89,8 @@ dependencies {
 
     androidTestImplementation(DI.koinTest)
     androidTestImplementation(DI.koinJUnit4)
+    androidTestImplementation(Libs.coroutinesAndroid)
+    androidTestImplementation(Libs.coroutinesTest)
 
     implementation(Libs.testRunner)
 }

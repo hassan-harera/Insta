@@ -21,8 +21,8 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import com.harera.base.theme.Grey660
 import com.harera.base.theme.timeSize
-import com.harera.base.utils.TimeUtils
-import com.harera.model.modelget.Comment
+import com.harera.base.utils.time.TimeUtils
+import com.harera.model.model.Comment
 import com.harera.repository.data.DummyDate.COMMENT
 import com.harera.repository.data.DummyDate.POST
 

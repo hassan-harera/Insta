@@ -1,4 +1,4 @@
-package com.harera.insta.di
+package com.harera.repository.di
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase

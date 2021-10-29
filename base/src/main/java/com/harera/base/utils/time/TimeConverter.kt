@@ -1,13 +1,14 @@
 package com.harera.base.utils.time
 
 import androidx.room.TypeConverter
-import com.google.firebase.Timestamp
 import java.util.*
 
-object TimeConverter {
-    fun toDate(timestamp: Timestamp): Date =
-        Date(timestamp.seconds)
+object TimeConverter  {
+    @TypeConverter
+    fun toDate(time: Long): Date =
+        Date(time)
 
-    fun toTimestamp(date: Date): Timestamp =
-        Timestamp(date)
+    @TypeConverter
+    fun toTimestamp(date: Date): Long =
+        date.time
 }

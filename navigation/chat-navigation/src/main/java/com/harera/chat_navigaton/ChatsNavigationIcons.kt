@@ -1,6 +1,6 @@
 package com.harera.chat_navigaton
 
-import com.harera.base.navigation.ChatsNavigation
+import com.harera.base.navigation.chat.ChatsNavigation
 
 sealed class ChatsNavigationIcons(var icon: Int, var label: String, var route: String) {
     object MyChats : ChatsNavigationIcons(

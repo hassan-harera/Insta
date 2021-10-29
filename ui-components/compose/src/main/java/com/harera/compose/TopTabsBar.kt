@@ -16,7 +16,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
 import com.harera.base.theme.Grey660
-import com.harera.base.navigation.HomeBottomNavigation
+import com.harera.base.navigation.home.HomeBottomNavigation
 import kotlinx.coroutines.launch
 
 

@@ -24,8 +24,8 @@ import androidx.compose.ui.unit.sp
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.harera.base.theme.Grey660
-import com.harera.base.utils.TimeUtils
-import com.harera.model.modelget.Like
+import com.harera.base.utils.time.TimeUtils
+import com.harera.model.model.Like
 
 @Composable
 @Preview
@@ -35,10 +35,10 @@ fun LikeList() {
     ) {
         LazyColumn {
             item {
-                LikeCard(Like(), {})
+                LikeCard(Like()) {}
             }
             item {
-                LikeCard(Like(), {})
+                LikeCard(Like()) {}
             }
         }
     }
