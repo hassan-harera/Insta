@@ -1,19 +1,26 @@
 package com.harera.model.model;
 
 
-import com.google.firebase.Timestamp;
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
 
+import java.sql.Date;
+@Entity
 public final class FollowRelation {
     public String followerUid;
     public String followingUid;
-    public Timestamp timestamp;
+    public Date date;
     public String followId;
+    @PrimaryKey(autoGenerate = true)
+    public int id;
 
-
-    public FollowRelation(String followerUid, String followingUid, Timestamp timestamp, String followId) {
+    @Ignore
+    public FollowRelation(String followerUid, String followingUid, Date date, String followId) {
         this.followerUid = followerUid;
         this.followingUid = followingUid;
-        this.timestamp = timestamp;
+        this.date = date;
         this.followId = followId;
     }
 

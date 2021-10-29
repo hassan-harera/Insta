@@ -1,17 +1,26 @@
 package com.harera.model.model;
 
-import com.google.firebase.Timestamp;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+
 import com.google.firebase.firestore.IgnoreExtraProperties;
+import com.harera.base.utils.time.InstaDateSerializer;
+
+import java.util.Date;
+
+import kotlinx.serialization.Serializable;
 
 @IgnoreExtraProperties
+@Entity
+@Serializable(with = InstaDateSerializer.class)
 public final class Share {
     public String uid;
     public String postId;
     public String shareCaption;
-    public Timestamp time;
+    public Date time;
 
-
-    public Share(String uid, String postId, String shareCaption, Timestamp time) {
+    @Ignore
+    public Share(String uid, String postId, String shareCaption, Date time) {
         this.uid = uid;
         this.postId = postId;
         this.shareCaption = shareCaption;

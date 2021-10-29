@@ -1,6 +1,8 @@
 package com.harera.model.model;
 
 
+import androidx.room.Entity;
+
 public class Notification {
     public int type;
 
