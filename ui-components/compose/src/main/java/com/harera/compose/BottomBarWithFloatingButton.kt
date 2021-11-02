@@ -35,19 +35,19 @@ fun BottomBar() {
                     )
 
                     Image(
-                        painter = painterResource(id = R.drawable.home),
+                        painter = painterResource(id = R.drawable.add_image),
                         contentDescription = null,
                     )
 
                     Spacer(modifier = Modifier.fillMaxWidth(0.2f))
 
                     Image(
-                        painter = painterResource(id = R.drawable.home),
+                        painter = painterResource(id = R.drawable.chat),
                         contentDescription = null,
                     )
 
                     Image(
-                        painter = painterResource(id = R.drawable.home),
+                        painter = painterResource(id = R.drawable.profile),
                         contentDescription = null,
                     )
                 }

@@ -23,6 +23,7 @@ import com.harera.compose.CommentView
 import com.harera.model.model.Comment
 import com.harera.model.model.Post
 import com.harera.post.PostCard
+import com.harera.post.PostDetails
 import com.harera.repository.data.DummyDate
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
@@ -35,7 +36,7 @@ fun PostScreen(
     postId: String,
     navController: NavHostController
 ) {
-    var post = remember<Post?> { null }
+    var post = remember<PostDetails?> { null }
     var comments = remember<List<Comment>> { emptyList() }
 
     val scope = rememberCoroutineScope()
@@ -101,7 +102,7 @@ fun PostScreen(
 @ExperimentalCoilApi
 @Composable
 fun PostView(
-    post: Post,
+    post: PostDetails,
     comments: List<Comment>,
     onProfileClicked: (String) -> Unit,
     onLikeClicked: () -> Unit,

@@ -34,7 +34,7 @@ import com.harera.model.model.Post
 import com.harera.model.model.Profile
 
 @Composable
-@Preview
+@Preview(showBackground = true)
 fun FollowRequestList() {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -76,13 +76,12 @@ fun FollowRequestCard() {
         ) {
 
             Image(
-                //TODO replace image painter with link
                 painter = painterResource(id = R.drawable.profile),
                 contentDescription = null,
                 modifier = Modifier
                     .size(50.dp)
                     .clip(CircleShape)
-                    .border(3.dp, color = Grey660),
+                    .border(1.dp, color = Grey660),
                 alignment = Alignment.TopCenter
             )
 

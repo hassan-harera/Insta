@@ -1,11 +1,11 @@
 package com.harera.repository.data
 
-import com.google.firebase.Timestamp
 import com.harera.model.model.*
+import com.harera.post.PostDetails
 import java.util.*
 
 object DummyDate {
-    val POST : Post =  Post().apply {
+    val POST : Post =  PostDetails().apply {
         time = Date()
         this.caption = "Caption"
         this.uid = "uid"

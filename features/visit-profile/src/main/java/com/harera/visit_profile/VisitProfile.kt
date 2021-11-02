@@ -21,6 +21,7 @@ import com.harera.compose.Toast
 import com.harera.compose.VisitProfileHeader
 import com.harera.model.model.Post
 import com.harera.model.model.Profile
+import com.harera.post.PostDetails
 import com.harera.post.PostListView
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
@@ -78,7 +79,7 @@ fun VisitProfile(
 @Composable
 fun VisitProfileContent(
     profile: Profile?,
-    posts: List<Post>,
+    posts: List<PostDetails>,
     navController: NavHostController,
     onFollowClicked: (String) -> Unit,
 ) {

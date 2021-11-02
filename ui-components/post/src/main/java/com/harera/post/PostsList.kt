@@ -11,7 +11,7 @@ import com.harera.base.navigation.home.HomeNavigation
 @ExperimentalCoilApi
 @Composable
 fun PostListView(
-    posts: List<Post>,
+    posts: List<PostDetails>,
     navController: NavHostController,
 ) {
     Column {

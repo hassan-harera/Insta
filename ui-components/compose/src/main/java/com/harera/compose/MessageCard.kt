@@ -66,7 +66,7 @@ fun MessageCard(message: Message, chatOwnerId: String) {
 
 @ExperimentalCoilApi
 @Composable
-@Preview
+@Preview(showBackground = true)
 fun MessageListPreview() {
     MessageList(
         chatOwnerId = "uid",

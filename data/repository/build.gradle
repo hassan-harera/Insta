@@ -17,5 +17,6 @@ dependencies {
     implementation(Libs.playServicesAuthPhone)
     implementation(Libs.playServicesMaps)
     implementation(Libs.playServicesTasks)
+    implementation project(path: ':ui-components:post')
 
 }

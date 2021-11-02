@@ -34,7 +34,6 @@ import coil.compose.rememberImagePainter
 import com.harera.base.theme.*
 import com.harera.base.utils.time.TimeUtils
 import com.harera.components.post.R
-import com.harera.model.model.Post
 import com.harera.repository.data.DummyDate
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
@@ -53,7 +52,7 @@ fun PostCardPreview() {
 @ExperimentalCoilApi
 @Composable
 fun PostCard(
-    post: Post,
+    post: PostDetails,
     postViewModel: PostViewModel = getViewModel(),
     onProfileClicked: (String) -> Unit,
     onPostClicked: (String) -> Unit,
@@ -108,7 +107,7 @@ fun PostCard(
 @ExperimentalCoilApi
 @Composable
 fun PostCardContent(
-    post: Post,
+    post: PostDetails,
     onProfileClicked: (String) -> Unit,
     onPostClicked: (String) -> Unit,
     whenCommentSubmitted: (comment: String, postId: String) -> Unit,

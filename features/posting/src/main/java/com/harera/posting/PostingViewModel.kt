@@ -6,7 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.Timestamp
 import com.harera.model.model.Post
 import com.harera.repository.db.network.abstract_.AuthManager
 import com.harera.repository.db.network.abstract_.PostRepository
@@ -87,6 +86,7 @@ class PostingViewModel constructor(
             state = PostingState.PostingCompleted(postId = postId)
         }.onFailure {
             state = PostingState.Error(it.message)
+            throw it
         }
     }
 }
