@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.harera.base.theme.*
 import com.harera.model.model.Post
-import com.harera.model.model.Profile
+import com.harera.model.model.User
 
 @Composable
 @Preview
@@ -52,9 +52,9 @@ private fun PostScreen() {
 @Preview
 @Composable
 private fun Body() {
-    val post by remember { mutableStateOf<Post?>(Post()) }
+    val post by remember { mutableStateOf<Post?>(null) }
     val profile by remember {
-        mutableStateOf<Profile?>(Profile())
+        mutableStateOf<User?>(null)
     }
 
     Column(

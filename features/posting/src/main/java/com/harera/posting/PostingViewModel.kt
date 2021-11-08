@@ -6,25 +6,23 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.harera.model.model.Post
-import com.harera.repository.db.network.abstract_.AuthManager
-import com.harera.repository.db.network.abstract_.PostRepository
-import com.harera.repository.db.network.abstract_.ProfileRepository
+import com.harera.base.base.BaseViewModel
+import com.harera.base.datastore.UserSharedPreferences
+import com.harera.repository.PostRepository
+import com.harera.repository.ProfileRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.launch
-import java.util.*
+import java.io.File
+import java.net.URI
 
 class PostingViewModel constructor(
     private val postRepository: PostRepository,
     private val profileRepository: ProfileRepository,
-    private val authManager: AuthManager,
-) : ViewModel() {
-    var uid = authManager.getCurrentUser()!!.uid
-
-    var state by mutableStateOf<PostingState>(PostingState.Idle)
+    userSharedPreferences: UserSharedPreferences,
+) : BaseViewModel<PostingState>(userSharedPreferences) {
 
     private val intent = Channel<PostingIntent>()
     suspend fun sendIntent(intent: PostingIntent) {
@@ -47,46 +45,15 @@ class PostingViewModel constructor(
         }
     }
 
-    private suspend fun uploadPostImage(postId: String, imageUri: Uri, caption: String) {
-        postRepository.uploadPostImage(
-            postId = postId,
-            imageUri = imageUri,
-            uid = uid
-        ).onSuccess {
-            uploadPost(postId = postId, caption = caption, postImageUrl = it)
-        }.onFailure {
-            state = PostingState.Error(it.message)
-        }
-    }
-
     private suspend fun addPost(caption: String, imageUri: Uri) {
-        getPostId(caption, imageUri)
-    }
-
-    private suspend fun getPostId(caption: String, imageUri: Uri) {
-        postRepository
-            .getNewPostId(uid)
-            .onSuccess {
-                uploadPostImage(postId = it, imageUri = imageUri, caption = caption)
-            }.onFailure {
-                state = PostingState.Error(it.message)
-            }
-    }
-
-    private suspend fun uploadPost(postId: String, caption: String, postImageUrl: String) {
-        postRepository.addPost(
-            Post().apply {
-                this.postId = postId
-                this.time = Date()
-                this.uid = this@PostingViewModel.uid
-                this.caption = caption
-                this.postImageUrl = postImageUrl
-            }
+        postRepository.insertPost(
+            token = token!!,
+            caption = caption,
+            image = File(imageUri.path!!)
         ).onSuccess {
-            state = PostingState.PostingCompleted(postId = postId)
+//            state = PostingState.PostingCompleted(postId = postId.toInt())
         }.onFailure {
             state = PostingState.Error(it.message)
-            throw it
         }
     }
 }

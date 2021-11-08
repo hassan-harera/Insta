@@ -17,38 +17,33 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import coil.annotation.ExperimentalCoilApi
-import com.harera.base.navigation.home.HomeNavigation
+import com.harera.base.navigation.home.HomeNavigationRouting
+import com.harera.base.state.PostState
 import com.harera.base.theme.Grey660
 import com.harera.compose.CommentView
 import com.harera.model.model.Comment
-import com.harera.model.model.Post
+import com.harera.model.response.PostResponse
 import com.harera.post.PostCard
-import com.harera.post.PostDetails
-import com.harera.repository.data.DummyDate
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 
+private const val TAG = "PostScreen"
 
 @ExperimentalCoilApi
 @Composable
 fun PostScreen(
     postViewModel: PostViewModel = getViewModel(),
-    postId: String,
-    navController: NavHostController
+    postId: Int,
+    navController: NavHostController,
 ) {
-    var post = remember<PostDetails?> { null }
-    var comments = remember<List<Comment>> { emptyList() }
-
+    var post = remember<PostResponse?> { null }
     val scope = rememberCoroutineScope()
-
     val state = postViewModel.state
 
+    Log.d(TAG, "PostScreen: $postId")
+
     LaunchedEffect(true) {
-        postViewModel.apply {
-            sendIntent(PostIntent.FetchPost(postId = postId))
-            sendIntent(PostIntent.FetchPostLikes(postId = postId))
-            sendIntent(PostIntent.FetchPostComments(postId = postId))
-        }
+        postViewModel.sendIntent(PostIntent.FetchPost(postId = postId))
     }
 
     when (state) {
@@ -63,19 +58,14 @@ fun PostScreen(
         is PostState.PostFetched -> {
             post = state.post
         }
-
-        is PostState.CommentsFetched -> {
-            comments = state.comments
-        }
     }
 
     post?.let {
-        Log.d("PostScreen", post.postId)
         PostView(
             post = post,
-            comments = comments,
+            comments = post.comments,
             onProfileClicked = {
-                navController.navigate("${HomeNavigation.VisitProfile}/${post.uid}") {
+                navController.navigate("${HomeNavigationRouting.VisitProfile}/${post.user.username}") {
                     launchSingleTop = true
                     restoreState = true
                 }
@@ -102,7 +92,7 @@ fun PostScreen(
 @ExperimentalCoilApi
 @Composable
 fun PostView(
-    post: PostDetails,
+    post: PostResponse,
     comments: List<Comment>,
     onProfileClicked: (String) -> Unit,
     onLikeClicked: () -> Unit,
@@ -117,7 +107,7 @@ fun PostView(
         modifier = Modifier.verticalScroll(state = scrollState)
     ) {
         PostCard(
-            post = post,
+            postDetails = post,
             onProfileClicked = onProfileClicked,
             onPostClicked = {}
         )
@@ -132,13 +122,13 @@ fun PostView(
 @Preview(showBackground = true)
 @Composable
 fun PostViewPreview() {
-    PostView(
-        DummyDate.POST,
-        emptyList(),
-        onProfileClicked = {},
-        onLikeClicked = {},
-        onCommentSubmitted = {}
-    )
+//    PostView(
+//        DummyDate.POST,
+//        emptyList(),
+//        onProfileClicked = {},
+//        onLikeClicked = {},
+//        onCommentSubmitted = {}
+//    )
 }
 
 @Composable
