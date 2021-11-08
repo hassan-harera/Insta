@@ -1,63 +1,99 @@
 package com.harera.login
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import com.harera.base.base.BaseViewModel
+import com.harera.base.datastore.UserSharedPreferences
+import com.harera.base.state.LoginState
+import com.harera.base.state.State
 import com.harera.base.utils.Validity
-import com.harera.repository.db.network.abstract_.AuthManager
+import com.harera.base.validity.LoginFormValidity
+import com.harera.model.request.signup.SignupByEmailRequest
+import com.harera.model.request.login.LoginByEmailRequest
+import com.harera.repository.AuthManager
 
 class LoginViewModel constructor(
     private val authManager: AuthManager,
-) : ViewModel() {
-    private var _email = MutableLiveData<String>()
-    val email: LiveData<String> = _email
+    userSharedPreferences: UserSharedPreferences,
+) : BaseViewModel<LoginState>(userSharedPreferences) {
 
-    private var _password = MutableLiveData<String>()
-    val password: LiveData<String> = _password
+    private val TAG = "LoginViewModel"
 
-    private var _formValidity = MutableLiveData<LoginState>()
-    val formValidity: LiveData<LoginState> = _formValidity
-
-    private val _loading = MutableLiveData<Boolean>()
-    val loading: LiveData<Boolean> = _loading
-
-    private val _loginSuccess = MutableLiveData<Boolean>(false)
-    val loginSuccess: LiveData<Boolean> = _loginSuccess
-
-    private val _exception = MutableLiveData<Exception?>()
-    val exception: LiveData<Exception?> = _exception
+    var emailState by mutableStateOf("")
+        private set
+    var passwordState by mutableStateOf("")
+        private set
+    var nameState by mutableStateOf("")
+        private set
 
     private fun checkFormValidity() {
-        if (_email.value == null || !Validity.checkEmail(_email.value!!)) {
-            _formValidity.value = LoginState(emailError = R.string.email_error)
-        } else if (password.value == null || !Validity.checkPassword(password.value!!)) {
-            _formValidity.value = LoginState(passwordError = R.string.password_error)
+        if (emailState.isBlank()) {
+            state = LoginState.FormValidity(LoginFormValidity(emailError = true))
+        } else if (!Validity.checkEmail(emailState)) {
+            state = LoginState.FormValidity(LoginFormValidity(emailError = true))
+        } else if (passwordState.isBlank()) {
+            state = LoginState.FormValidity(LoginFormValidity(passwordError = true))
+        } else if (!Validity.checkPassword(passwordState)) {
+            state = LoginState.FormValidity(LoginFormValidity(passwordError = true))
+        } else if (nameState.isBlank()) {
+            state = LoginState.FormValidity(LoginFormValidity(nameError = true))
+        } else if (!Validity.checkName(nameState)) {
+            state = LoginState.FormValidity(LoginFormValidity(nameError = true))
         } else {
-            _formValidity.value = LoginState(isValid = true)
+            state = LoginState.FormValidity(LoginFormValidity(isValid = true))
         }
     }
 
     fun setEmail(it: String) {
-        _email.value = it
+        emailState = it
         checkFormValidity()
     }
 
     fun setPassword(it: String) {
-        _password.value = it
+        passwordState = it
         checkFormValidity()
     }
 
-    suspend fun login() {
-        _loading.value = true
+    fun setName(it: String) {
+        nameState = it
+        checkFormValidity()
+    }
+
+    suspend fun signup() {
+        state = State.Loading()
         authManager
-            .signInWithEmailAndPassword(email = email.value!!, password = password.value!!)
-            .addOnSuccessListener {
-                _loading.value = false
-                _loginSuccess.value = true
+            .signupWithEmail(
+                SignupByEmailRequest(
+                    email = emailState,
+                    password = passwordState,
+                    name = nameState
+                )
+            )
+            .onSuccess {
+//                state = LoginState.LoginSuccess
+                login()
             }
-            .addOnFailureListener {
-                _loading.value = false
-                _exception.value = it
+            .onFailure {
+                handleFailure(it)
+            }
+    }
+
+    suspend fun login() {
+        state = State.Loading()
+        authManager
+            .loginWithEmail(
+                LoginByEmailRequest(
+                    email = emailState,
+                    password = passwordState,
+                )
+            )
+            .onSuccess { token ->
+                updateToken(token.token)
+                state = LoginState.LoginSuccess
+            }
+            .onFailure {
+                handleFailure(it)
             }
     }
 }
