@@ -1,4 +1,4 @@
-package com.harera.repository.db.network.abstract_
+package com.harera.repository
 
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.QuerySnapshot

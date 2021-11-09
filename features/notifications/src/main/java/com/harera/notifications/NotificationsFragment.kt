@@ -25,7 +25,7 @@ import org.koin.androidx.compose.getViewModel
 
 @Composable
 fun HomeNotifications(
-    notificationsViewModel: NotificationsViewModel = getViewModel()
+    notificationsViewModel: NotificationsViewModel = getViewModel(),
 ) {
     val notifications by notificationsViewModel.likeNotifications.observeAsState()
     val scrollState = rememberScrollState()
@@ -45,7 +45,6 @@ fun HomeNotifications(
 @Composable
 fun LikeNotifications(
     likeNotifications: List<Like>,
-
 ) {
     val expanded by remember { mutableStateOf<Boolean>(false) }
 

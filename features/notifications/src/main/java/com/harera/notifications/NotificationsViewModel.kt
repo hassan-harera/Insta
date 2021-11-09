@@ -2,22 +2,25 @@ package com.harera.notifications
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.tasks.Tasks
+import com.harera.base.base.BaseViewModel
+import com.harera.base.datastore.LocalStore
+import com.harera.base.state.State
 import com.harera.model.model.Comment
 import com.harera.model.model.FollowRequest
 import com.harera.model.model.Like
-import com.harera.repository.db.network.abstract_.AuthManager
-import com.harera.repository.db.network.abstract_.NotificationsRepository
+import com.harera.repository.NotificationsRepository
+import com.harera.repository.ProfileRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class NotificationsViewModel(
     private val notificationsRepository: NotificationsRepository,
-    private val authManager: AuthManager,
-) : ViewModel() {
+    private val profileRepository: ProfileRepository,
+    userSharedPreferences: LocalStore,
+) : BaseViewModel<State>(userSharedPreferences) {
 
     private val _likeNotifications = MutableLiveData<List<Like>>()
     val likeNotifications: LiveData<List<Like>> = _likeNotifications
@@ -36,7 +39,9 @@ class NotificationsViewModel(
 
     fun getLikeNotifications() {
         viewModelScope.async(Dispatchers.IO) {
-            val task = notificationsRepository.getLikes(authManager.getCurrentUser()!!.uid)
+            val task =
+                notificationsRepository
+                    .getLikes(token!!)
             val result = Tasks.await(task)
             result.toObjects(Like::class.java)
         }
@@ -44,17 +49,19 @@ class NotificationsViewModel(
 
     fun getCommentNotifications() {
         viewModelScope.launch(Dispatchers.IO) {
-            val task = notificationsRepository.getFollowRequests(authManager.getCurrentUser()!!.uid)
+            val task = notificationsRepository
+                .getFollowRequests(token!!)
             val result = Tasks.await(task)
             result.toObjects(Comment::class.java)
         }
     }
 
-    fun getFollowRequestNotifications() {
+    private fun getFollowRequestNotifications() {
         viewModelScope.launch(Dispatchers.IO) {
             val followRequestNotifications = async(Dispatchers.IO) {
                 val task =
-                    notificationsRepository.getFollowRequests(authManager.getCurrentUser()!!.uid)
+                    notificationsRepository
+                        .getFollowRequests(token!!)
                 val result = Tasks.await(task)
                 result.toObjects(FollowRequest::class.java)
             }
