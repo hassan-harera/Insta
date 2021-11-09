@@ -19,11 +19,11 @@ import androidx.compose.ui.unit.sp
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.harera.base.theme.Grey200
-import com.harera.model.model.Profile
+import com.harera.model.model.User
 
 @ExperimentalCoilApi
 @Composable
-fun HomeProfileHeader(profile: Profile) {
+fun HomeProfileHeader(user: User) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -32,7 +32,7 @@ fun HomeProfileHeader(profile: Profile) {
             .padding(top = 10.dp, start = 10.dp),
     ) {
         Image(
-            painter = rememberImagePainter(data = profile.profileImageUrl),
+            painter = rememberImagePainter(data = user.userImageUrl),
             contentDescription = null,
             Modifier
                 .clip(CircleShape)
@@ -47,7 +47,7 @@ fun HomeProfileHeader(profile: Profile) {
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = profile.name,
+                text = user.name,
                 style = TextStyle(
                     fontFamily = FontFamily.Default,
                     fontSize = 22.sp,
@@ -62,7 +62,7 @@ fun HomeProfileHeader(profile: Profile) {
             Spacer(modifier = Modifier.size(5.dp))
 
             Text(
-                text = profile.bio,
+                text = user.bio ?: "",
                 style = TextStyle(
                     fontFamily = FontFamily.Serif,
                     fontSize = 16.sp,

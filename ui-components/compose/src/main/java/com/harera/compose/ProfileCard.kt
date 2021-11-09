@@ -22,10 +22,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
+import com.harera.base.DummyDate
 import com.harera.base.theme.Grey660
 import com.harera.base.theme.timeSize
-import com.harera.model.model.Profile
-import com.harera.repository.data.DummyDate
+import com.harera.model.model.User
 
 @Composable
 @Preview
@@ -36,31 +36,31 @@ fun ProfileCardPreview() {
         verticalArrangement = Arrangement.Top
     ) {
         item {
-            ProfileCard(DummyDate.PROFILE) {}
+            ProfileCard(DummyDate.USER) {}
         }
         item {
-            ProfileCard(DummyDate.PROFILE, {})
+            ProfileCard(DummyDate.USER, {})
         }
         item {
-            ProfileCard(DummyDate.PROFILE, {})
+            ProfileCard(DummyDate.USER, {})
         }
         item {
-            ProfileCard(DummyDate.PROFILE, {})
+            ProfileCard(DummyDate.USER, {})
         }
     }
 }
 
 @Composable
 fun ProfileCard(
-    profile: Profile,
-    onClick: (String) -> Unit
+    user: User,
+    onClick: (String) -> Unit,
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight(0.15f)
             .clickable {
-                onClick(profile.uid)
+                onClick(user.username)
             },
         elevation = 5.dp,
     ) {
@@ -73,7 +73,7 @@ fun ProfileCard(
         ) {
             Image(
                 //TODO replace image painter with link
-                painter = rememberImagePainter(profile.profileImageUrl),
+                painter = rememberImagePainter(user.userImageUrl),
                 contentDescription = null,
                 modifier = Modifier
                     .padding(5.dp)
@@ -89,7 +89,7 @@ fun ProfileCard(
             Column {
                 Text(
                     //TODO change text value
-                    text = profile.name,
+                    text = user.name,
                     style = TextStyle(
                         fontFamily = FontFamily.Default,
                         fontSize = 18.sp,
@@ -102,7 +102,7 @@ fun ProfileCard(
                 )
 
                 Text(
-                    text = profile.bio,
+                    text = user.bio ?: "",
                     style = TextStyle(
                         fontFamily = FontFamily.Serif,
                         fontSize = timeSize,
