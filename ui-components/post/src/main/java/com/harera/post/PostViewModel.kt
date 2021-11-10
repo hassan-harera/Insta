@@ -3,9 +3,9 @@ package com.harera.post
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.harera.base.base.BaseViewModel
-import com.harera.base.datastore.UserSharedPreferences
+import com.harera.base.datastore.LocalStore
 import com.harera.base.state.PostState
-import com.harera.model.request.CommentRequest
+import com.harera.base.state.State
 import com.harera.model.request.LikeRequest
 import com.harera.repository.PostRepository
 import com.harera.repository.ProfileRepository
@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 class PostViewModel constructor(
     private val postRepository: PostRepository,
     private val profileRepository: ProfileRepository,
-    userSharedPreferences: UserSharedPreferences,
+    userSharedPreferences: LocalStore,
 ) : BaseViewModel<PostState>(userSharedPreferences) {
 
     private val intent = Channel<PostIntent>()
@@ -41,7 +41,7 @@ class PostViewModel constructor(
                 }
 
                 is PostIntent.LikePost -> {
-                    checkLike(it.postId)
+                    addLike(it.postId)
                 }
             }
         }
@@ -59,21 +59,20 @@ class PostViewModel constructor(
                 state = PostState.PostFetched(post = post)
             }
             .onFailure {
+                handleFailure(it)
                 state = PostState.Error(it.message)
             }
     }
 
     private suspend fun getComments(postId: Int) {
-        postRepository.getPostComments(postId)
-            .map { comment ->
-                profileRepository.getProfile(comment.username).let {
-//                    TODO
-//                    comment.profileName = it.name
-                }
-                comment
-            }
-            .let {
+        postRepository
+            .getPostComments(token!!, postId)
+            .onSuccess {
                 state = PostState.CommentsFetched(it)
+            }
+            .onFailure {
+                handleFailure(it)
+                state = State.Error(it.message)
             }
     }
 
@@ -81,21 +80,17 @@ class PostViewModel constructor(
         postRepository
             .getPostLikes(postId)
 
-    private suspend fun getPostCommentsTask(postId: Int) =
-        postRepository
-            .getPostComments(postId)
-
     private suspend fun addComment(comment: String, postId: Int) {
-        val commentRequest = CommentRequest(
-            postId = 123,
-            comment = comment
-        )
-
         postRepository
-            .commentPost(comment = commentRequest)
+            .insertPost(
+                postId = postId,
+                comment = comment,
+                token = token!!
+            )
             .onSuccess {
                 getComments(postId)
             }.onFailure {
+                handleFailure(it)
                 state = PostState.Error(it.message)
             }
     }
@@ -112,21 +107,21 @@ class PostViewModel constructor(
                 else
                     removeLike(postId)
             }.onFailure {
+                handleFailure(it)
                 state = PostState.Error(it.message)
             }
     }
 
     private suspend fun addLike(postId: Int) {
-        runCatching {
-            postRepository
-                .likePost(
-                    LikeRequest(
-                        postId = postId,
-                    )
-                )
-        }.getOrElse {
-            getPostLikes(postId)
-        }
+        postRepository
+            .insertLike(LikeRequest(postId = postId,),token = token!!)
+            .onFailure {
+                handleFailure(it)
+                state = PostState.Error(it.message)
+            }
+            .onSuccess {
+//                TODO get the comment
+            }
     }
 
     private suspend fun removeLike(postUid: Int) = kotlin.runCatching {
@@ -136,6 +131,7 @@ class PostViewModel constructor(
                 state = PostState.Error("couldn't remove like")
             }
             .onFailure {
+                handleFailure(it)
                 state = PostState.Error("couldn't remove like")
             }
     }

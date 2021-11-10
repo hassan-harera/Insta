@@ -19,7 +19,7 @@ fun PostListView(
         val postsCopies = posts.toList()
         postsCopies.forEach { post ->
             PostCard(
-                postDetails = post,
+                postResponse = post,
                 onPostClicked = { postId ->
                     viewPost(navController, postId)
                 },

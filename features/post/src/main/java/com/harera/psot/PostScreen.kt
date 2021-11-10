@@ -107,7 +107,7 @@ fun PostView(
         modifier = Modifier.verticalScroll(state = scrollState)
     ) {
         PostCard(
-            postDetails = post,
+            postResponse = post,
             onProfileClicked = onProfileClicked,
             onPostClicked = {}
         )

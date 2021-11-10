@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -31,10 +32,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
+import coil.request.ImageRequest
+import com.harera.base.DummyDate
+import com.harera.base.base.LocalStoreViewModel
+import com.harera.base.state.PostState
 import com.harera.base.theme.*
-import com.harera.base.utils.time.TimeUtils
 import com.harera.components.post.R
-import com.harera.repository.data.DummyDate
+import com.harera.model.response.PostResponse
+import com.harera.time.TimeUtils.Companion.timeFromNow
+import io.ktor.http.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 
@@ -43,7 +50,7 @@ import org.koin.androidx.compose.getViewModel
 @Composable
 fun PostCardPreview() {
     PostCard(
-        DummyDate.POST,
+        DummyDate.POST_DETAILS,
         onProfileClicked = {},
         onPostClicked = {},
     )
@@ -52,10 +59,10 @@ fun PostCardPreview() {
 @ExperimentalCoilApi
 @Composable
 fun PostCard(
-    post: PostDetails,
+    postResponse: PostResponse,
     postViewModel: PostViewModel = getViewModel(),
     onProfileClicked: (String) -> Unit,
-    onPostClicked: (String) -> Unit,
+    onPostClicked: (Int) -> Unit,
 ) {
     val state = postViewModel.state
     val scope = rememberCoroutineScope()
@@ -73,6 +80,10 @@ fun PostCard(
 
         }
 
+        is PostState.CommentsFetched -> {
+            postResponse.comments = state.comments
+        }
+
         is PostState.PostFetched -> {
 
         }
@@ -81,7 +92,7 @@ fun PostCard(
     PostCardContent(
         onProfileClicked = onProfileClicked,
         onPostClicked = onPostClicked,
-        post = post,
+        postDetails = postResponse,
         whenCommentSubmitted = { comment, postId ->
             scope.launch {
                 postViewModel.sendIntent(
@@ -107,12 +118,14 @@ fun PostCard(
 @ExperimentalCoilApi
 @Composable
 fun PostCardContent(
-    post: PostDetails,
+    postDetails: PostResponse,
     onProfileClicked: (String) -> Unit,
-    onPostClicked: (String) -> Unit,
-    whenCommentSubmitted: (comment: String, postId: String) -> Unit,
-    whenLikeClicked: (String) -> Unit,
+    onPostClicked: (Int) -> Unit,
+    whenCommentSubmitted: (comment: String, postId: Int) -> Unit,
+    whenLikeClicked: (Int) -> Unit,
+    localStoreViewModel: LocalStoreViewModel = getViewModel(),
 ) {
+    val context = LocalContext.current
     var comment by remember { mutableStateOf("") }
     var commentFieldState by remember { mutableStateOf(false) }
     var dropDownState by remember { mutableStateOf(false) }
@@ -122,7 +135,7 @@ fun PostCardContent(
             .fillMaxWidth()
             .padding(vertical = 3.dp)
             .clickable {
-                onPostClicked(post.postId)
+                onPostClicked(postDetails.post.postId)
             },
         elevation = 5.dp
     ) {
@@ -174,13 +187,21 @@ fun PostCardContent(
             ) {
                 Row {
                     Image(
-                        painter = rememberImagePainter(post.profileImageUrl),
+                        painter = rememberImagePainter(
+                            request = ImageRequest.Builder(context)
+                                .data(postDetails.user.userImageUrl)
+                                .crossfade(true)
+                                .dispatcher(Dispatchers.IO)
+                                .addHeader(HttpHeaders.Authorization,
+                                    "Bearer ${localStoreViewModel.token}")
+                                .build()
+                        ),
                         contentDescription = null,
                         modifier = Modifier
                             .size(40.dp)
                             .clip(CircleShape)
                             .clickable {
-                                onProfileClicked(post.uid)
+                                onProfileClicked(postDetails.user.username)
                             }
                     )
 
@@ -189,7 +210,7 @@ fun PostCardContent(
                     Column {
                         Text(
                             //TODO change text value
-                            text = post.profileName,
+                            text = postDetails.user.name,
                             style = TextStyle(
                                 fontFamily = FontFamily.Default,
                                 fontSize = 16.sp,
@@ -204,7 +225,7 @@ fun PostCardContent(
 
                         Text(
                             //TODO change text value
-                            text = TimeUtils.timeFromNow(post.time),
+                            text = timeFromNow(postDetails.post.time),
                             style = TextStyle(
                                 fontFamily = FontFamily.Serif,
                                 fontSize = timeSize,
@@ -218,7 +239,7 @@ fun PostCardContent(
                 Spacer(modifier = Modifier.height(15.dp))
 
                 Text(
-                    text = post.caption,
+                    text = postDetails.post.caption,
                     style = TextStyle(
                         fontFamily = FontFamily.SansSerif,
                         fontSize = captionSize,
@@ -231,7 +252,15 @@ fun PostCardContent(
                 Spacer(modifier = Modifier.height(5.dp))
 
                 Image(
-                    painter = rememberImagePainter(post.postImageUrl),
+                    painter = rememberImagePainter(
+                        request = ImageRequest.Builder(context)
+                            .data(postDetails.post.postImageUrl)
+                            .crossfade(true)
+                            .dispatcher(Dispatchers.IO)
+                            .addHeader(HttpHeaders.Authorization,
+                                "Bearer ${localStoreViewModel.token}")
+                            .build()
+                    ),
                     contentDescription = null,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -263,7 +292,7 @@ fun PostCardContent(
                             .weight(0.5f, true)
                             .fillMaxHeight()
                             .clickable {
-                                onPostClicked(post.postId)
+                                onPostClicked(postDetails.post.postId)
                             },
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Start,
@@ -278,7 +307,7 @@ fun PostCardContent(
                         Text(
                             modifier = Modifier.fillMaxHeight(),
                             textAlign = TextAlign.Center,
-                            text = "${post.likesNumber}",
+                            text = "${postDetails.likes.size}",
                         )
                     }
 
@@ -291,7 +320,7 @@ fun PostCardContent(
                         horizontalArrangement = Arrangement.End
                     ) {
                         Text(
-                            text = "${post.commentsNumber} Comment"
+                            text = "${postDetails.comments.size} Comment"
                         )
                     }
                 }
@@ -324,7 +353,7 @@ fun PostCardContent(
                     Row(
                         modifier = Modifier
                             .clickable {
-                                whenLikeClicked(post.postId)
+                                whenLikeClicked(postDetails.post.postId)
                             },
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically
@@ -412,7 +441,7 @@ fun PostCardContent(
                                 commentFieldState = false
                                 whenCommentSubmitted(
                                     comment,
-                                    post.postId
+                                    postDetails.post.postId
                                 )
                             }
                         )

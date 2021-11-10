@@ -15,12 +15,12 @@ import com.codingwithmitch.food2forkkmm.android.presentation.recipe_list.compone
 @Composable
 fun LoadingRecipeListShimmer(
     imageHeight: Dp,
-    padding: Dp = 16.dp
-){
+    padding: Dp = 16.dp,
+) {
     BoxWithConstraints(
         modifier = Modifier.fillMaxSize()
     ) {
-        val cardWidthPx = with(LocalDensity.current) { (maxWidth - (padding*2)).toPx() }
+        val cardWidthPx = with(LocalDensity.current) { (maxWidth - (padding * 2)).toPx() }
         val cardHeightPx = with(LocalDensity.current) { (imageHeight - padding).toPx() }
         val gradientWidth: Float = (0.2f * cardHeightPx)
 
@@ -57,7 +57,7 @@ fun LoadingRecipeListShimmer(
         )
 
         LazyColumn {
-            items(5){
+            items(5) {
                 ShimmerPostCardItem(
                     colors = colors,
                     xShimmer = xCardShimmer.value,

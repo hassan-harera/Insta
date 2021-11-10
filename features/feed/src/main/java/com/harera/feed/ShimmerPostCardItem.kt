@@ -19,7 +19,7 @@ fun ShimmerPostCardItem(
     yShimmer: Float,
     cardHeight: Dp,
     gradientWidth: Float,
-    padding: Dp
+    padding: Dp,
 ) {
     val brush = linearGradient(
         colors,

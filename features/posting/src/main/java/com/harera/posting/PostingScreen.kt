@@ -23,7 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.harera.base.navigation.home.HomeNavigation
+import com.harera.base.navigation.home.HomeNavigationRouting
 import com.harera.base.theme.Grey660
 import com.harera.base.utils.image.ImageUtils
 import com.harera.compose.Toast
@@ -34,7 +34,7 @@ import org.koin.androidx.compose.getViewModel
 @Composable
 fun PostingNavigation(
     navController: NavHostController,
-    postingViewModel: PostingViewModel = getViewModel()
+    postingViewModel: PostingViewModel = getViewModel(),
 ) {
     val scope = rememberCoroutineScope()
     val state = postingViewModel.state
@@ -51,7 +51,7 @@ fun PostingNavigation(
 
         is PostingState.PostingCompleted -> {
             navController.navigate(
-                "${HomeNavigation.PostScreen}/${state.postId}"
+                "${HomeNavigationRouting.PostScreen}/${state.postId}"
             ) {
                 launchSingleTop = true
                 restoreState = false
@@ -90,7 +90,7 @@ fun PostFormPreview() {
 
 @Composable
 fun PostForm(
-    onPostingClicked: (uri: Uri, caption: String) -> Unit
+    onPostingClicked: (uri: Uri, caption: String) -> Unit,
 ) {
     val scrollState = rememberScrollState()
     var caption by remember { mutableStateOf("") }
@@ -182,7 +182,7 @@ fun PostForm(
 @Composable
 fun PostImage(
     uri: Uri?,
-    onImageClicked: () -> Unit
+    onImageClicked: () -> Unit,
 ) {
     val context = LocalContext.current
     val bitmap = ImageUtils.getImageFromUri(uri, context = context)
