@@ -1,40 +1,29 @@
 package com.harera.chat
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.Timestamp
-import com.harera.model.model.Profile
+import com.harera.base.base.BaseViewModel
+import com.harera.base.datastore.LocalStore
+import com.harera.base.state.ChatState
+import com.harera.base.state.PostState
+import com.harera.base.state.State
+import com.harera.base.utils.message.MessageUtils.handleMessage
 import com.harera.model.model.Message
-import com.harera.repository.db.network.abstract_.AuthManager
-import com.harera.repository.db.network.abstract_.ChatRepository
-import com.harera.repository.db.network.abstract_.ProfileRepository
+import com.harera.repository.ChatRepository
+import com.harera.repository.ProfileRepository
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow
+import org.joda.time.DateTime
 import java.util.*
-import com.harera.model.model.Message as MessageGet
 
 class ChatViewModel constructor(
     private val chatRepository: ChatRepository,
     private val profileRepository: ProfileRepository,
-    private val authManager: AuthManager,
-) : ViewModel() {
-
-    val uid = authManager.getCurrentUser()!!.uid
+    userSharedPreferences: LocalStore,
+) : BaseViewModel<ChatState>(userSharedPreferences) {
 
     val intent = Channel<ChatIntent>(Channel.UNLIMITED)
-
-    private val _chatState = MutableStateFlow<ChatState>(ChatState.Idle)
-    val chatState: StateFlow<ChatState> = _chatState
-
-    private val _profile = MutableStateFlow<Profile?>(null)
-    val profile: StateFlow<Profile?> = _profile
-
-    private val _messageList = MutableStateFlow<List<MessageGet>>(emptyList())
-    val messageList: StateFlow<List<MessageGet>> = _messageList
 
     init {
         triggerIntent()
@@ -45,21 +34,31 @@ class ChatViewModel constructor(
             intent.consumeAsFlow().collect {
                 when (it) {
                     is ChatIntent.GetMessages -> {
-                        getMessages(it.messenger)
+                        while (true) {
+                            delay(1000)
+                            getMessages(it.messenger)
+                        }
                     }
 
                     is ChatIntent.GetProfile -> {
-                        getProfile(it.uid)
+                        getUser(it.uid)
                     }
                 }
             }
+
+
         }
     }
 
-    private suspend fun getProfile(profileUid: String) {
-        profileRepository.getProfile(uid = profileUid).let {
-            _chatState.value = ChatState.ProfileState(profile = it)
-        }
+    private suspend fun getUser(username: String) {
+        profileRepository
+            .getUser(token = token!!, username)
+            .onSuccess {
+
+            }.onFailure {
+                this.state = PostState.Error(it.message)
+                handleFailure(it)
+            }
     }
 
     private fun sendMessage(message: String, senderUID: String, receiverUID: String) {
@@ -70,44 +69,29 @@ class ChatViewModel constructor(
 
             chatRepository
                 .saveMessage(
-                    Message().apply {
-                        time = Date()
-                        from = senderUID
-                        to = receiverUID
-                        this.message = handledMessage
-                    }
+                    Message(
+                        time = DateTime.now(),
+                        sender = senderUID,
+                        receiver = receiverUID,
+                        message = handledMessage,
+                    )
                 )
         }
     }
 
-    private fun handleMessage(message: String): String = message.replace(
-        regex = "^[ \\t]+".toRegex(),
-        ""
-    ).replace(
-        regex = "[ \\t]+\$".toRegex(),
-        ""
-    ).replace(
-        regex = "[ \\t]+".toRegex(),
-        " "
-    ).replace(
-        regex = "[ \\n]+\$".toRegex(),
-        ""
-    ).replace(
-        regex = "^[ \\n]+".toRegex(),
-        ""
-    )
 
-
-    private suspend fun getMessages(messenger: String) {
+    private suspend fun getMessages(connection: String) {
         chatRepository
-            .getMessagesBetween(
-                uid1 = uid,
-                uid2 = messenger
+            .getMessages(
+                token = token!!,
+                connection = connection
             )
-            .let {
-                _chatState.value = ChatState.Messages(
-                    it.sortedBy { it.time }
-                )
+            .onSuccess {
+                state = ChatState.Messages(it.sortedBy { it.time })
+            }
+            .onFailure {
+                handleFailure(it)
+                state = State.Error(it.message)
             }
     }
 }

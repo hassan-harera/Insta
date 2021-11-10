@@ -28,13 +28,14 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
+import com.harera.base.DummyDate
 import com.harera.base.navigation.chat.NavigationIcon
+import com.harera.base.state.ChatState
 import com.harera.base.theme.Grey300
 import com.harera.base.theme.Grey60
 import com.harera.base.theme.Grey700
 import com.harera.model.model.Message
-import com.harera.model.model.Profile
-import com.harera.repository.data.DummyDate
+import com.harera.model.model.User
 import org.koin.androidx.compose.getViewModel
 
 private const val TAG = "ChatScreen"
@@ -45,11 +46,11 @@ private const val TAG = "ChatScreen"
 fun ChatScreen(
     uid: String,
     chatViewModel: ChatViewModel = getViewModel(),
-    navController: NavHostController
+    navController: NavHostController,
 ) {
-    val state = chatViewModel.chatState.collectAsState().value
+    val state = chatViewModel.state
     var intent = remember<ChatIntent> { ChatIntent.Free }
-    var profile = remember<Profile?> { null }
+    var profile = remember<User?> { null }
     var messages = remember<List<Message>> { emptyList() }
 
     LaunchedEffect(intent) {
@@ -61,24 +62,19 @@ fun ChatScreen(
 
     when (state) {
         is ChatState.ProfileState -> {
-            profile = state.profile
+            profile = state.user
         }
 
         is ChatState.Messages -> {
             messages = state.messages
         }
-
-        is ChatState.Idle -> {
-//            TODO add loading
-        }
     }
 
     ChatScreenContent(
-        profile = profile,
+        user = profile,
         messages = messages,
         navController = navController,
         receiverUID = uid,
-        senderUID = chatViewModel.uid
     ) {
         intent = ChatIntent.SendMessage(message = it)
     }
@@ -88,21 +84,20 @@ fun ChatScreen(
 @ExperimentalCoilApi
 @Composable
 fun ChatScreenContent(
-    profile: Profile?,
+    user: User?,
     navController: NavHostController,
     messages: List<Message> = emptyList(),
     receiverUID: String,
-    senderUID: String,
-    sendMessage : (message : String) -> Unit,
+    sendMessage: (message: String) -> Unit,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     var message by remember { mutableStateOf("") }
 
     Scaffold(
         topBar = {
-            profile?.let {
+            user?.let {
                 ChatTopBar(
-                    profile = profile,
+                    user = user,
                     onBackClicked = {
                         navController.popBackStack()
                     }
@@ -147,7 +142,7 @@ fun ChatScreenContent(
             .background(Color.White)
     ) {
         messages.let {
-            MessageList(messages = it, senderUID)
+            MessageList(messages = it)
         }
     }
 }
@@ -200,8 +195,8 @@ fun ChatBottomBar(
 @ExperimentalCoilApi
 @Composable
 fun ChatTopBar(
-    profile: Profile,
-    onBackClicked: () -> Unit
+    user: User,
+    onBackClicked: () -> Unit,
 ) {
     TopAppBar(
         modifier = Modifier.background(Grey60),
@@ -217,7 +212,7 @@ fun ChatTopBar(
         )
 
         Image(
-            painter = rememberImagePainter(profile.profileImageUrl),
+            painter = rememberImagePainter(user.userImageUrl),
             contentDescription = null,
             modifier = Modifier
                 .padding(5.dp)
@@ -230,7 +225,7 @@ fun ChatTopBar(
 
         Text(
             //TODO change text value
-            text = profile.name,
+            text = user.name,
             style = TextStyle(
                 fontFamily = FontFamily.Default,
                 fontSize = 18.sp,
@@ -249,7 +244,7 @@ fun ChatTopBar(
 @Composable
 @Preview
 fun ChatTopBarPreview() {
-    ChatTopBar(profile = DummyDate.PROFILE, {})
+    ChatTopBar(user = DummyDate.USER, {})
 }
 
 @ExperimentalComposeUiApi

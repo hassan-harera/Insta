@@ -20,19 +20,21 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import coil.annotation.ExperimentalCoilApi
+import com.harera.base.DummyDate
 import com.harera.base.navigation.chat.ChatsNavigation.ALL_CHATS
 import com.harera.compose.ChatCard
 import com.harera.model.model.OpenChat
-import com.harera.repository.data.DummyDate
 import org.koin.androidx.compose.getViewModel
 
 @ExperimentalCoilApi
 @Composable
 fun MyChats(
     chatViewModel: MyChatsViewModel = getViewModel(),
-    navController: NavHostController
+    navController: NavHostController,
 ) {
-    val openChats by chatViewModel.openChats
+    val connections by chatViewModel.openChats
+    val state = chatViewModel.state
+
 
     Scaffold(
         floatingActionButton = {
@@ -62,7 +64,7 @@ fun MyChats(
     ) {
 
         MyChatsContent(
-            openChats = openChats
+            openChats = connections
         )
     }
 }

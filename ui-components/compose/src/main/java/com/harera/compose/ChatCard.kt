@@ -22,11 +22,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
+import com.harera.base.DummyDate
 import com.harera.base.theme.Grey660
 import com.harera.base.theme.timeSize
-import com.harera.base.utils.time.TimeUtils
 import com.harera.model.model.OpenChat
-import com.harera.repository.data.DummyDate
+import com.harera.time.TimeUtils
 
 @ExperimentalCoilApi
 @Composable
@@ -41,7 +41,7 @@ fun ChatCardPreview() {
 @Composable
 fun ChatCard(
     openChat: OpenChat,
-    onChatClicked: (String) -> Unit
+    onChatClicked: (String) -> Unit,
 ) {
     Card(
         modifier = Modifier
