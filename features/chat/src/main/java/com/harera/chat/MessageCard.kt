@@ -16,20 +16,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
+import com.harera.base.DummyDate
+import com.harera.base.base.LocalStoreViewModel
 import com.harera.base.theme.Grey200
 import com.harera.model.model.Message
-import com.harera.repository.data.DummyDate
+import org.koin.androidx.compose.getViewModel
 
 @ExperimentalCoilApi
 @Composable
-fun MessageList(messages: List<Message>, chatOwnerId: String) {
+fun MessageList(messages: List<Message>) {
 
     LazyColumn(Modifier.fillMaxSize()) {
         messages.forEachIndexed { id, message ->
             item {
                 MessageCard(
                     message = message,
-                    chatOwnerId = chatOwnerId
                 )
             }
         }
@@ -38,13 +39,20 @@ fun MessageList(messages: List<Message>, chatOwnerId: String) {
 
 @ExperimentalCoilApi
 @Composable
-fun MessageCard(message: Message, chatOwnerId: String) {
+fun MessageCard(
+    message: Message,
+    localStoreViewModel: LocalStoreViewModel = getViewModel(),
+) {
+    val token = localStoreViewModel.token
+    val username = localStoreViewModel.username
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
         contentAlignment =
-        if (message.from == chatOwnerId)
+        //TODO get Username
+        //TODO set Username  in local store
+        if (message.receiver == username)
             Alignment.TopEnd
         else
             Alignment.TopStart
@@ -54,7 +62,7 @@ fun MessageCard(message: Message, chatOwnerId: String) {
             Modifier
                 .background(
                     color =
-                    if (message.from == chatOwnerId)
+                    if (message.sender == username)
                         Color(0xE0579CE2)
                     else Grey200,
                     shape = RoundedCornerShape(CornerSize(8.dp)),
@@ -69,7 +77,6 @@ fun MessageCard(message: Message, chatOwnerId: String) {
 @Preview
 fun MessageListPreview() {
     MessageList(
-        chatOwnerId = "uid",
         messages = arrayListOf(
             DummyDate.MESSAGE,
             DummyDate.MESSAGE,

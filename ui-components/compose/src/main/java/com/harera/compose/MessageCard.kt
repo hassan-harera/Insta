@@ -16,9 +16,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
+import com.harera.base.DummyDate
 import com.harera.base.theme.Grey200
 import com.harera.model.model.Message
-import com.harera.repository.data.DummyDate
 
 @ExperimentalCoilApi
 @Composable
@@ -44,7 +44,7 @@ fun MessageCard(message: Message, chatOwnerId: String) {
             .fillMaxWidth()
             .padding(8.dp),
         contentAlignment =
-        if (message.from == chatOwnerId)
+        if (message.sender == chatOwnerId)
             Alignment.TopEnd
         else
             Alignment.TopStart
@@ -54,7 +54,7 @@ fun MessageCard(message: Message, chatOwnerId: String) {
             Modifier
                 .background(
                     color =
-                    if (message.from == chatOwnerId)
+                    if (message.sender == chatOwnerId)
                         Color(0xE0579CE2)
                     else Grey200,
                     shape = RoundedCornerShape(CornerSize(8.dp)),
