@@ -16,12 +16,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.annotation.ExperimentalCoilApi
+import com.harera.base.state.ProfileState
 import com.harera.base.theme.Grey660
 import com.harera.compose.Toast
 import com.harera.compose.VisitProfileHeader
-import com.harera.model.model.Post
-import com.harera.model.model.Profile
-import com.harera.post.PostDetails
+import com.harera.model.model.User
+import com.harera.model.response.PostResponse
 import com.harera.post.PostListView
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
@@ -33,8 +33,8 @@ fun VisitProfile(
     uid: String,
     navController: NavHostController,
 ) {
-    var profile by remember { mutableStateOf<Profile?>(null) }
-    var posts by remember { mutableStateOf<List<Post>>(emptyList()) }
+    var profile by remember { mutableStateOf<User?>(null) }
+    var posts by remember { mutableStateOf<List<PostResponse>>(emptyList()) }
 
     LaunchedEffect(true) {
         visitProfileViewModel.setUid(uid = uid)
@@ -63,7 +63,7 @@ fun VisitProfile(
         }
 
         is ProfileState.ProfilePrepared -> {
-            profile = state.profile
+            profile = state.user
             VisitProfileContent(
                 profile,
                 posts,
@@ -78,14 +78,14 @@ fun VisitProfile(
 @ExperimentalCoilApi
 @Composable
 fun VisitProfileContent(
-    profile: Profile?,
-    posts: List<PostDetails>,
+    user: User?,
+    posts: List<PostResponse>,
     navController: NavHostController,
     onFollowClicked: (String) -> Unit,
 ) {
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
-    Log.d("HomeProfileContent: ", profile.toString())
+    Log.d("HomeProfileContent: ", user.toString())
     Log.d("HomeProfileContent: ", posts.size.toString())
 
     Column(
@@ -94,9 +94,9 @@ fun VisitProfileContent(
             .background(Color.White)
             .verticalScroll(scrollState),
     ) {
-        profile?.let {
+        user?.let {
             VisitProfileHeader(
-                profile = profile,
+                user = user,
                 onFollowClicked = onFollowClicked
             )
         }

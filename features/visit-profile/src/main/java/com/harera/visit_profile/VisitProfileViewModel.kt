@@ -1,15 +1,12 @@
 package com.harera.visit_profile
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.harera.model.model.Post
-import com.harera.model.model.Profile
-import com.harera.repository.db.network.abstract_.AuthManager
-import com.harera.repository.db.network.abstract_.PostRepository
-import com.harera.repository.db.network.abstract_.ProfileRepository
+import com.harera.base.base.BaseViewModel
+import com.harera.base.datastore.LocalStore
+import com.harera.base.state.ProfileState
+import com.harera.base.state.State
+import com.harera.repository.PostRepository
+import com.harera.repository.ProfileRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
@@ -18,18 +15,16 @@ import kotlinx.coroutines.launch
 
 class VisitProfileViewModel constructor(
     private val profileRepository: ProfileRepository,
-    private val authManager: AuthManager,
     private val postRepository: PostRepository,
-) : ViewModel() {
+    userSharedPreferences: LocalStore,
+) : BaseViewModel<ProfileState>(userSharedPreferences) {
+
     private lateinit var uid: String
     fun setUid(uid: String) {
         this.uid = uid
     }
 
     var intent = Channel<ProfileIntent>()
-
-    var state by mutableStateOf<ProfileState>(ProfileState.Idle)
-        private set
 
     init {
         processIntent()
@@ -51,59 +46,30 @@ class VisitProfileViewModel constructor(
         }
     }
 
+    private suspend fun getPosts() {
+        postRepository
+            .getUserPosts(username = uid, token!!)
+            .onSuccess {
+                state = ProfileState.PostsFetched(it)
+            }
+            .onFailure {
+                state = State.Error(it.message)
+                handleFailure(it)
+            }
+    }
+
     private suspend fun getProfile() {
         state = ProfileState.Loading()
 
         profileRepository
             .getProfile(uid)
-            .let { profile ->
-                state = ProfileState.ProfilePrepared(profile)
-            }
-    }
-
-    private suspend fun getPosts() {
-        val posts = ArrayList<Post>()
-
-        postRepository
-            .getUserPosts(uid)
             .onSuccess {
-                it.forEach { post ->
-                    getPostDetails(post).getOrNull()
-                    posts.add(post)
-
-                    state = ProfileState.PostsFetched(posts)
-                }
+                state = ProfileState.ProfilePrepared(it)
             }
             .onFailure {
-                state = ProfileState.Loading(it.message)
+                handleFailure(it)
             }
     }
-
-    private suspend fun getPostDetails(post: Post) = viewModelScope.runCatching {
-        getPostProfile(post.uid).let { profile ->
-            post.profileImageUrl = profile.profileImageUrl
-            post.profileName = profile.name
-        }
-
-        getPostNumbers(post.postId).let { likes ->
-            post.likesNumber = likes
-        }
-
-        getPostCommentNumbers(post.postId).let { size ->
-            post.commentsNumber = size
-        }
-    }
-
-    private suspend fun getPostProfile(uid: String): Profile =
-        profileRepository.getProfile(uid)
-
-    private suspend fun getPostNumbers(postId: String): Int =
-        postRepository.getPostLikes(postId).size
-
-
-    private suspend fun getPostCommentNumbers(postId: String): Int =
-        postRepository.getPostComments(postId).size
-
 }
 
 

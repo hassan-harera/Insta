@@ -25,14 +25,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.annotation.ExperimentalCoilApi
 import com.harera.base.theme.Grey660
-import com.harera.model.model.Profile
+import com.harera.model.model.User
 
 
 @ExperimentalCoilApi
 @Composable
 fun VisitProfileHeader(
-    profile: Profile,
-    onFollowClicked: (String) -> Unit
+    user: User,
+    onFollowClicked: (String) -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -56,7 +56,7 @@ fun VisitProfileHeader(
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = profile.name,
+                text = user.name,
                 style = TextStyle(
                     fontFamily = FontFamily.Default,
                     fontSize = 22.sp,
@@ -71,7 +71,7 @@ fun VisitProfileHeader(
             Spacer(modifier = Modifier.size(5.dp))
 
             Text(
-                text = profile.bio,
+                text = user.bio ?: "",
                 style = TextStyle(
                     fontFamily = FontFamily.Serif,
                     fontSize = 16.sp,
@@ -90,7 +90,7 @@ fun VisitProfileHeader(
             if (followButtonState) {
                 TextButton(
                     onClick = {
-                        onFollowClicked(profile.uid)
+                        onFollowClicked(user.username)
                     },
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = Grey660,

@@ -1,15 +1,12 @@
 package com.harera.profile
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.harera.model.model.Post
-import com.harera.model.model.Profile
-import com.harera.repository.db.network.abstract_.AuthManager
-import com.harera.repository.db.network.abstract_.PostRepository
-import com.harera.repository.db.network.abstract_.ProfileRepository
+import com.harera.base.base.BaseViewModel
+import com.harera.base.datastore.LocalStore
+import com.harera.base.state.ProfileState
+import com.harera.base.state.State
+import com.harera.repository.PostRepository
+import com.harera.repository.ProfileRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
@@ -18,89 +15,59 @@ import kotlinx.coroutines.launch
 
 class HomeProfileViewModel constructor(
     private val profileRepository: ProfileRepository,
-    private val authManager: AuthManager,
     private val postRepository: PostRepository,
-) : ViewModel() {
-    private var uid = authManager.getCurrentUser()!!.uid
+    userDatastore: LocalStore,
+) : BaseViewModel<ProfileState>(userDatastore) {
 
-    var intent = Channel<ProfileIntent>()
-
-    var state by mutableStateOf<ProfileState>(ProfileState.Idle)
-        private set
+    var intent = Channel<ProfileIntent>(Channel.UNLIMITED)
 
     init {
-        processIntent()
-    }
-
-    private fun processIntent() {
         viewModelScope.launch(Dispatchers.IO) {
-            intent.consumeAsFlow().collect { intent ->
-                when (intent) {
-                    is ProfileIntent.GetProfile -> {
-                        getProfile()
-                    }
-
-                    is ProfileIntent.GetPosts -> {
-                        getPosts()
-                    }
-                }
-            }
+            processIntent()
         }
     }
 
-    private suspend fun getProfile() {
-//        state = ProfileState.Loading()
+    private suspend fun processIntent() {
+        intent.consumeAsFlow().collect { intent ->
+            when (intent) {
+                is ProfileIntent.GetProfile -> {
+                    getProfile()
+                }
 
-        profileRepository
-            .getProfile(uid)
-            .let { profile ->
-                state = ProfileState.ProfilePrepared(profile)
+                is ProfileIntent.GetPosts -> {
+                    getPosts()
+                }
             }
+        }
     }
 
     private suspend fun getPosts() {
-        val posts = ArrayList<Post>()
+        state = ProfileState.Loading()
 
         postRepository
-            .getUserPosts(uid)
+            .getProfilePosts(token!!)
             .onSuccess {
-                it.forEach { post ->
-                    getPostDetails(post).getOrNull()
-                    posts.add(post)
-
-                    state = ProfileState.PostsFetched(posts)
-                }
+                state = ProfileState.PostsFetched(it)
             }
             .onFailure {
-                state = ProfileState.Loading(it.message)
+                state = State.Error(it.message)
+                handleFailure(it)
             }
     }
 
-    private suspend fun getPostDetails(post: Post) = viewModelScope.runCatching {
-        getPostProfile(post.uid).let { profile ->
-            post.profileImageUrl = profile.profileImageUrl
-            post.profileName = profile.name
-        }
+    private suspend fun getProfile() {
+        state = ProfileState.Loading()
 
-        getPostNumbers(post.postId).let { likes ->
-            post.likesNumber = likes
-        }
-
-        getPostCommentNumbers(post.postId).let { size ->
-            post.commentsNumber = size
-        }
+        profileRepository
+            .getProfile(token!!)
+            .onSuccess {
+                state = ProfileState.ProfilePrepared(it)
+            }
+            .onFailure {
+                state = State.Error(it.message)
+                handleFailure(it)
+            }
     }
-
-    private suspend fun getPostProfile(uid: String): Profile =
-        profileRepository.getProfile(uid)
-
-    private suspend fun getPostNumbers(postId: String): Int =
-        postRepository.getPostLikes(postId).size
-
-
-    private suspend fun getPostCommentNumbers(postId: String): Int =
-        postRepository.getPostComments(postId).size
-
 }
 
 

@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
@@ -21,11 +22,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
-import com.harera.base.DummyDate
 import com.harera.base.theme.Grey660
 import com.harera.base.theme.timeSize
-import com.harera.model.model.User
+import com.harera.model.response.Connection
 
 @Composable
 @Preview
@@ -36,23 +37,24 @@ fun ProfileCardPreview() {
         verticalArrangement = Arrangement.Top
     ) {
         item {
-            ProfileCard(DummyDate.USER) {}
+//            ProfileCard(DummyDate.USER) {}
         }
         item {
-            ProfileCard(DummyDate.USER, {})
+//            ProfileCard(DummyDate.USER) {}
         }
         item {
-            ProfileCard(DummyDate.USER, {})
+//            ProfileCard(DummyDate.USER) {}
         }
         item {
-            ProfileCard(DummyDate.USER, {})
+//            ProfileCard(DummyDate.USER) {}
         }
     }
 }
 
+@OptIn(ExperimentalCoilApi::class)
 @Composable
 fun ProfileCard(
-    user: User,
+    user: Connection,
     onClick: (String) -> Unit,
 ) {
     Card(
@@ -72,16 +74,17 @@ fun ProfileCard(
             verticalAlignment = (Alignment.CenterVertically)
         ) {
             Image(
-                //TODO replace image painter with link
-                painter = rememberImagePainter(user.userImageUrl),
+                painter = if (user.userImageUrl != null)
+                    rememberImagePainter(user.userImageUrl)
+                else
+                    painterResource(id = R.drawable.profile),
                 contentDescription = null,
                 modifier = Modifier
                     .padding(5.dp)
                     .size(50.dp)
-                    .clip(CircleShape)
-//                    .border(3.dp, color = Grey660)
-                ,
-                alignment = Alignment.CenterStart
+                    .clip(CircleShape),
+                alignment = Alignment.CenterStart,
+
             )
 
             Spacer(modifier = Modifier.size(15.dp))
@@ -89,7 +92,7 @@ fun ProfileCard(
             Column {
                 Text(
                     //TODO change text value
-                    text = user.name,
+                    text = user.profileName,
                     style = TextStyle(
                         fontFamily = FontFamily.Default,
                         fontSize = 18.sp,
@@ -102,7 +105,7 @@ fun ProfileCard(
                 )
 
                 Text(
-                    text = user.bio ?: "",
+                    text = "username " + user.username,
                     style = TextStyle(
                         fontFamily = FontFamily.Serif,
                         fontSize = timeSize,

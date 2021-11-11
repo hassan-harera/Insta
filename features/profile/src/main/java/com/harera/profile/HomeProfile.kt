@@ -1,5 +1,6 @@
 package com.harera.profile
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -19,6 +20,7 @@ import androidx.compose.ui.Alignment.Companion.BottomEnd
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
@@ -30,13 +32,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.annotation.ExperimentalCoilApi
+import coil.compose.rememberImagePainter
+import coil.request.ImageRequest
+import com.harera.base.DummyDate
+import com.harera.base.base.BaseViewModel
+import com.harera.base.base.LocalStoreViewModel
+import com.harera.base.state.ProfileState
 import com.harera.base.theme.Grey200
 import com.harera.base.theme.Grey660
 import com.harera.compose.Toast
-import com.harera.model.model.Post
-import com.harera.model.model.Profile
+import com.harera.model.model.User
+import com.harera.model.response.PostResponse
 import com.harera.post.PostListView
-import com.harera.repository.data.DummyDate
+import io.ktor.client.request.*
+import io.ktor.http.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 
@@ -48,12 +58,12 @@ fun HomeProfile(
     homeProfileViewModel: HomeProfileViewModel = getViewModel(),
     navController: NavHostController,
 ) {
-    var profile by remember { mutableStateOf<Profile?>(null) }
-    var posts by remember { mutableStateOf<List<Post>>(emptyList()) }
+    var profile by remember { mutableStateOf<User?>(null) }
+    var posts by remember { mutableStateOf<List<PostResponse>>(emptyList()) }
 
     LaunchedEffect(true) {
-        homeProfileViewModel.intent.send(ProfileIntent.GetPosts)
         homeProfileViewModel.intent.send(ProfileIntent.GetProfile)
+        homeProfileViewModel.intent.send(ProfileIntent.GetPosts)
     }
 
     val state = homeProfileViewModel.state
@@ -76,7 +86,7 @@ fun HomeProfile(
         }
 
         is ProfileState.ProfilePrepared -> {
-            profile = state.profile
+            profile = state.user
             HomeProfileContent(
                 profile,
                 posts,
@@ -98,13 +108,13 @@ fun Shimmer() {
 @ExperimentalCoilApi
 @Composable
 fun HomeProfileContent(
-    profile: Profile?,
-    posts: List<Post>,
+    user: User?,
+    posts: List<PostResponse>,
     navController: NavHostController,
 ) {
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
-    Log.d("HomeProfileContent: ", profile.toString())
+    Log.d("HomeProfileContent: ", user.toString())
     Log.d("HomeProfileContent: ", posts.size.toString())
 
     Column(
@@ -113,8 +123,8 @@ fun HomeProfileContent(
             .background(Color.White)
             .verticalScroll(scrollState),
     ) {
-        profile?.let {
-            ProfileHeader(profile = it)
+        user?.let {
+            ProfileHeader(user = it)
         }
 
         Box {
@@ -154,12 +164,17 @@ fun HomeProfileContent(
 @Preview(showBackground = true)
 @Composable
 fun ProfileHeaderPreview() {
-    ProfileHeader(profile = DummyDate.PROFILE)
+    ProfileHeader(user = DummyDate.USER)
 }
 
 @ExperimentalCoilApi
 @Composable
-fun ProfileHeader(profile: Profile) {
+fun ProfileHeader(
+    user: User,
+    localStoreViewModel: LocalStoreViewModel = getViewModel(),
+) {
+    val context = LocalContext.current
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -168,7 +183,14 @@ fun ProfileHeader(profile: Profile) {
             .padding(top = 10.dp, start = 10.dp),
     ) {
         Image(
-            imageVector = Icons.Default.Search,
+            painter = rememberImagePainter(
+                request = ImageRequest.Builder(context)
+                    .data(user.userImageUrl)
+                    .crossfade(true)
+                    .dispatcher(Dispatchers.IO)
+                    .addHeader(HttpHeaders.Authorization, "Bearer ${localStoreViewModel.token}")
+                    .build()
+            ),
             contentDescription = null,
             Modifier
                 .clip(CircleShape)
@@ -183,7 +205,7 @@ fun ProfileHeader(profile: Profile) {
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = profile.name,
+                text = user.name,
                 style = TextStyle(
                     fontFamily = FontFamily.Default,
                     fontSize = 22.sp,
@@ -198,7 +220,7 @@ fun ProfileHeader(profile: Profile) {
             Spacer(modifier = Modifier.size(5.dp))
 
             Text(
-                text = profile.bio,
+                text = user.bio ?: "",
                 style = TextStyle(
                     fontFamily = FontFamily.Serif,
                     fontSize = 16.sp,
