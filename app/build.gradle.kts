@@ -3,7 +3,9 @@ plugins {
     kotlin("android")
     id("com.google.gms.google-services")
     id("kotlin-kapt")
+    id("kotlinx-serialization")
 }
+
 android {
     compileSdk = DefaultConfig.compileSdk
     buildToolsVersion = DefaultConfig.buildToolsVersion
@@ -15,7 +17,7 @@ android {
         versionCode = Releases.versionCode
         versionName = Releases.versionName
 
-        testInstrumentationRunner = "com.harera.repository.KoinTestRunner"
+        testInstrumentationRunner = "com.harera.insta.KoinTestRunner"
     }
 
     buildTypes {
@@ -44,12 +46,14 @@ android {
 }
 
 dependencies {
+    implementation(project(Core.common))
     implementation(project(Core.repository))
-    implementation(project(Core.base))
-    implementation(project(Core.components))
     implementation(project(Core.local))
+    implementation(project(Core.remote))
+    implementation(project(Core.components))
 
     implementation(project(Navigation.chatNav))
+    implementation(project(Navigation.homeNav))
 
     implementation(project(Features.login))
     implementation(project(Features.notifications))
@@ -69,15 +73,25 @@ dependencies {
     implementation(Libs.playServicesTasks)
 
     implementation(Compose.composeMaterial)
-    implementation(Libs.coilCompose)
-    implementation(Libs.accompanistPager)
     implementation(Compose.composUiTooling)
     implementation(Compose.composeDialog)
-
 
     /* Testing */
     implementation(Libs.truth)
     implementation(Libs.playServicesAuth)
+
+    implementation(Libs.accompanistPager)
+    implementation(Libs.coilCompose)
+    implementation(Libs.serializer)
+    implementation(Libs.testRunner)
+
+    //ktor
+    implementation(Ktor.ktorClient)
+    implementation(Ktor.ktorClientAndroid)
+    implementation(Ktor.ktorClientSerialization)
+    implementation(Ktor.ktorClientGson)
+    implementation(Ktor.ktorAuthClientGson)
+    implementation(Ktor.ktorCio)
 
     //Koin
     implementation(DI.koinAndroid)
@@ -89,10 +103,9 @@ dependencies {
 
     androidTestImplementation(DI.koinTest)
     androidTestImplementation(DI.koinJUnit4)
+
     androidTestImplementation(Libs.coroutinesAndroid)
     androidTestImplementation(Libs.coroutinesTest)
-
-    implementation(Libs.testRunner)
 }
 
 

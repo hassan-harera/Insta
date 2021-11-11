@@ -1,0 +1,8 @@
+apply from: "$rootDir/android-library-build.gradle"
+
+
+dependencies {
+    implementation(Libs.serializer)
+    implementation(Libs.firebaseFirestore)
+    implementation(Room.roomRuntime)
+}

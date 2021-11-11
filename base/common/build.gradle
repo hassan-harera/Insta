@@ -1,12 +1,20 @@
-apply from:"$rootDir/android-library-build.gradle"
+apply from: "$rootDir/android-library-build.gradle"
 
 dependencies {
     implementation(Libs.serializer)
     implementation(Libs.firebaseFirestore)
     implementation(Libs.playServicesAuth)
     implementation(Libs.appcompat)
+    implementation(Libs.truth)
     implementation(Libs.materialDesign)
     implementation(project(Core.functionalProgramming))
+    implementation(project(Core.repository))
 
     implementation(Room.roomRuntime)
+    implementation project(path: ':data:remote')
+
+    //Koin
+    implementation(DI.koinCore)
+    implementation(DI.koinCompose)
+    implementation(DI.koinAndroid)
 }

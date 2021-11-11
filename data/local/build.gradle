@@ -3,7 +3,7 @@ apply plugin: 'kotlin-kapt'
 
 dependencies {
     api(project(Core.model))
-    api(project(Core.base))
+    api(project(Core.common))
     implementation(Room.roomRuntime)
     kapt(Room.roomCompiler)
 }

@@ -1,7 +1,15 @@
-apply from:"$rootDir/compose-navigation-build.gradle"
+apply from: "$rootDir/compose-navigation-build.gradle"
 
 dependencies {
     api(project(Features.chat))
     api(project(Features.addChat))
     api(project(Features.myChats))
+
+    implementation(Ktor.ktorCio)
+    implementation(Ktor.ktorClient)
+    implementation(Ktor.ktorClientWebsockets)
+    implementation(Ktor.ktorClientAndroid)
+
+    implementation(Libs.coroutinesCore)
+    implementation(Libs.coroutinesAndroid)
 }

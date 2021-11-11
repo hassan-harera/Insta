@@ -1,0 +1,16 @@
+apply from: "$rootDir/feature-library-build.gradle"
+
+dependencies {
+    implementation(Libs.appcompat)
+
+    implementation(project(Navigation.chatNav))
+    implementation(project(Core.common))
+
+    implementation(project(Features.notifications))
+    implementation(project(Features.editProfile))
+    implementation(project(Features.profile))
+    implementation(project(Features.visitProfile))
+    implementation(project(Features.post))
+    implementation(project(Features.posting))
+    implementation(project(Features.feed))
+}
