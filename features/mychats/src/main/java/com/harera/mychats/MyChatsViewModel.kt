@@ -15,10 +15,7 @@ class MyChatsViewModel constructor(
     private val chatRepository: ChatRepository,
     private val profileRepository: ProfileRepository,
     userSharedPreferences: LocalStore,
-) : BaseViewModel<MyChatsStata>(userSharedPreferences) {
-
-//    val profile = mutableStateOf<User?>(null)
-//    val openChats = mutableStateOf<List<OpenChat>>(emptyList())
+) : BaseViewModel<MyChatsState>(userSharedPreferences) {
 
     val intent = Channel<ChatIntent>()
 
@@ -42,7 +39,7 @@ class MyChatsViewModel constructor(
         chatRepository
             .getChats(token!!)
             .onSuccess {
-                state = MyChatsStata.Connections(it)
+                state = MyChatsState.Chats(it)
             }
             .onFailure {
                 state = PostState.Error(it.message)

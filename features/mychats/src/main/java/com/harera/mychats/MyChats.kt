@@ -11,8 +11,7 @@ import androidx.compose.material.FabPosition
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -20,10 +19,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import coil.annotation.ExperimentalCoilApi
-import com.harera.base.DummyDate
+import com.harera.model.response.ChatResponse
 import com.harera.base.navigation.chat.ChatsNavigation.ALL_CHATS
 import com.harera.compose.ChatCard
-import com.harera.model.model.OpenChat
 import org.koin.androidx.compose.getViewModel
 
 @ExperimentalCoilApi
@@ -32,9 +30,22 @@ fun MyChats(
     chatViewModel: MyChatsViewModel = getViewModel(),
     navController: NavHostController,
 ) {
-    val connections by chatViewModel.openChats
+    var chats by remember { mutableStateOf(emptyList<ChatResponse>()) }
     val state = chatViewModel.state
 
+    LaunchedEffect(key1 = true) {
+        chatViewModel.intent.send(ChatIntent.GetChats)
+    }
+
+    when (state) {
+        is MyChatsState.Chats -> {
+            chats = state.connections
+        }
+
+        else -> {
+
+        }
+    }
 
     Scaffold(
         floatingActionButton = {
@@ -64,14 +75,14 @@ fun MyChats(
     ) {
 
         MyChatsContent(
-            openChats = connections
+            chats = chats
         )
     }
 }
 
 @ExperimentalCoilApi
 @Composable
-fun MyChatsContent(openChats: List<OpenChat>) {
+fun MyChatsContent(chats: List<ChatResponse>) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -80,13 +91,13 @@ fun MyChatsContent(openChats: List<OpenChat>) {
         LazyColumn(
             verticalArrangement = Arrangement.Top
         ) {
-            openChats.forEach { openChat ->
+            chats.forEach { chat ->
                 item {
                     ChatCard(
+                        chat = chat,
                         onChatClicked = {
 
-                        },
-                        openChat = openChat
+                        }
                     )
                 }
             }
@@ -98,13 +109,5 @@ fun MyChatsContent(openChats: List<OpenChat>) {
 @Composable
 @Preview
 fun MyChatsPreview() {
-    MyChatsContent(
-        openChats = arrayListOf(
-            DummyDate.OPEN_CHAT,
-            DummyDate.OPEN_CHAT,
-            DummyDate.OPEN_CHAT,
-            DummyDate.OPEN_CHAT,
-        )
-    )
 }
 

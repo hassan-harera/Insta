@@ -37,7 +37,7 @@ fun HomeChats() {
         composable("${ChatsNavigation.CHAT}/{${Arguments.UID}}") {
             ChatScreen(
                 navController = navController,
-                uid = it.arguments!!.getString(Arguments.UID)!!,
+                username = it.arguments!!.getString(Arguments.UID)!!,
             )
         }
     }

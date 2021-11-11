@@ -34,8 +34,9 @@ import com.harera.base.state.ChatState
 import com.harera.base.theme.Grey300
 import com.harera.base.theme.Grey60
 import com.harera.base.theme.Grey700
-import com.harera.model.model.Message
 import com.harera.model.model.User
+import com.harera.model.response.MessageResponse
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 
 private const val TAG = "ChatScreen"
@@ -44,21 +45,19 @@ private const val TAG = "ChatScreen"
 @ExperimentalCoilApi
 @Composable
 fun ChatScreen(
-    uid: String,
+    username: String,
     chatViewModel: ChatViewModel = getViewModel(),
     navController: NavHostController,
 ) {
+    val scope = rememberCoroutineScope()
     val state = chatViewModel.state
-    var intent = remember<ChatIntent> { ChatIntent.Free }
     var profile = remember<User?> { null }
-    var messages = remember<List<Message>> { emptyList() }
+    var messages = remember<List<MessageResponse>> { emptyList() }
 
-    LaunchedEffect(intent) {
-        chatViewModel.intent.send(intent)
+    LaunchedEffect(true) {
+        chatViewModel.intent.send(ChatIntent.GetProfile(username))
+        chatViewModel.intent.send(ChatIntent.StartListen(username))
     }
-
-    intent = ChatIntent.GetProfile(uid)
-    intent = ChatIntent.GetMessages(uid)
 
     when (state) {
         is ChatState.ProfileState -> {
@@ -74,9 +73,10 @@ fun ChatScreen(
         user = profile,
         messages = messages,
         navController = navController,
-        receiverUID = uid,
     ) {
-        intent = ChatIntent.SendMessage(message = it)
+        scope.launch {
+            chatViewModel.intent.send(ChatIntent.SendMessage(message = it, connection = username))
+        }
     }
 }
 
@@ -86,8 +86,7 @@ fun ChatScreen(
 fun ChatScreenContent(
     user: User?,
     navController: NavHostController,
-    messages: List<Message> = emptyList(),
-    receiverUID: String,
+    messages: List<MessageResponse> = emptyList(),
     sendMessage: (message: String) -> Unit,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current

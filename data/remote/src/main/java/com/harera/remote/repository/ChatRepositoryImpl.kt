@@ -1,34 +1,46 @@
 package com.harera.remote.repository
 
-import com.google.android.gms.tasks.Task
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.firestore.DocumentSnapshot
-import com.harera.model.model.Chat
 import com.harera.model.model.Message
+import com.harera.model.response.ChatResponse
+import com.harera.model.response.MessageResponse
+import com.harera.remote.request.MessageInsertRequest
+import com.harera.remote.service.MessageService
 import com.harera.repository.ChatRepository
 
-class ChatRepositoryImpl : ChatRepository {
-    override suspend fun getMessage(messageId: String): Task<Void> {
+class ChatRepositoryImpl(
+    private val messageService: MessageService,
+) : ChatRepository {
+
+
+    override suspend fun getMessages(
+        token: String,
+        connection: String,
+    ): Result<List<MessageResponse>> = kotlin.runCatching {
+        messageService
+            .getMessages(token = token, connection)
+    }
+
+    override suspend fun getMessage(messageId: String): Result<Message> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun saveMessage(message: Message): Task<Void> {
-        TODO("Not yet implemented")
+    override suspend fun sendMessage(
+        token: String,
+        message: String,
+        connection: String,
+    ): Result<String> = kotlin.runCatching {
+        messageService
+            .insertMessage(
+                token = token,
+                request = MessageInsertRequest(
+                    message = message,
+                    receiver = connection
+                )
+            )
     }
 
-    override suspend fun getChats(token: String): Result<Chat> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun addOpenChat(chat: Chat): Task<Void> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun getLastMessage(uid2: String, uid1: String): List<DocumentSnapshot> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun getMessages(token: String, connection: String): Result<List<Message>> {
-        TODO("Not yet implemented")
+    override suspend fun getChats(token: String): Result<List<ChatResponse>> = kotlin.runCatching {
+        messageService
+            .getChats(token = token)
     }
 }
