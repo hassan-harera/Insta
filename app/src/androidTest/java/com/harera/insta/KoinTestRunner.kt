@@ -1,4 +1,4 @@
-package com.harera.repository
+package com.harera.insta
 
 import android.app.Application
 import android.content.Context
@@ -9,7 +9,7 @@ class KoinTestRunner : AndroidJUnitRunner() {
     override fun newApplication(
         classLoader: ClassLoader?,
         className: String?,
-        context: Context?
+        context: Context?,
     ): Application {
         return super.newApplication(classLoader, InstaApp::class.java.name, context)
     }

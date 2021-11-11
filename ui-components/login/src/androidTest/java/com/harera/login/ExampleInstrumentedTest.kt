@@ -1,4 +1,4 @@
-package com.harera.remote
+package com.harera.login
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.harera.remote.test", appContext.packageName)
+        assertEquals("com.harera.login.test", appContext.packageName)
     }
 }
