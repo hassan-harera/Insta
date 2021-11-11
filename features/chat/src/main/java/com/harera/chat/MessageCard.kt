@@ -16,15 +16,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
-import com.harera.base.DummyDate
 import com.harera.base.base.LocalStoreViewModel
 import com.harera.base.theme.Grey200
-import com.harera.model.model.Message
+import com.harera.model.response.MessageResponse
 import org.koin.androidx.compose.getViewModel
 
 @ExperimentalCoilApi
 @Composable
-fun MessageList(messages: List<Message>) {
+fun MessageList(messages: List<MessageResponse>) {
 
     LazyColumn(Modifier.fillMaxSize()) {
         messages.forEachIndexed { id, message ->
@@ -40,19 +39,15 @@ fun MessageList(messages: List<Message>) {
 @ExperimentalCoilApi
 @Composable
 fun MessageCard(
-    message: Message,
+    message: MessageResponse,
     localStoreViewModel: LocalStoreViewModel = getViewModel(),
 ) {
-    val token = localStoreViewModel.token
     val username = localStoreViewModel.username
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
-        contentAlignment =
-        //TODO get Username
-        //TODO set Username  in local store
-        if (message.receiver == username)
+        if (message.receiver != username)
             Alignment.TopEnd
         else
             Alignment.TopStart
@@ -76,13 +71,13 @@ fun MessageCard(
 @Composable
 @Preview
 fun MessageListPreview() {
-    MessageList(
-        messages = arrayListOf(
-            DummyDate.MESSAGE,
-            DummyDate.MESSAGE,
-            DummyDate.MESSAGE,
-            DummyDate.MESSAGE,
-            DummyDate.MESSAGE,
-        )
-    )
+//    MessageList(
+//        messages = arrayListOf(
+//            DummyDate.MESSAGE,
+//            DummyDate.MESSAGE,
+//            DummyDate.MESSAGE,
+//            DummyDate.MESSAGE,
+//            DummyDate.MESSAGE,
+//        )
+//    )
 }

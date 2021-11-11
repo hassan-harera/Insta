@@ -81,4 +81,15 @@ class MessageServiceImplTest : KoinTest {
             Truth.assertThat(it.size).isEqualTo(15)
         }
     }
+
+    @Test
+    fun getChats()  = runBlockingTest {
+        runBlocking {
+            messageService.getChats(
+                "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJodHRwOi8vMC4wLjAuMDo4MDgwL2hlbGxvIiwiaXNzIjoiaHR0cDovLzAuMC4wLjA6ODA4MC8iLCJleHAiOjE2Mzg2MDA1NjQsInVzZXJuYW1lIjoiMSJ9.PV1isIjteTstHmkectYQSikXVeYF4UNny9TZuO2Z4gM",
+            )
+        }.let {
+            Truth.assertThat(it.size).isEqualTo(3)
+        }
+    }
 }
