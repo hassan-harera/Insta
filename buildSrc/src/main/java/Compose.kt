@@ -4,7 +4,8 @@ object Compose {
     const val composJUnitTest = "androidx.compose.ui:ui-test-junit4:${compose_version}"
     const val composUiTooling = "androidx.compose.ui:ui-tooling:$compose_version"
     const val composeAndroidX = "androidx.compose.ui:ui:$compose_version"
-    const val composeDialog = "io.github.vanpra.compose-material-dialogs:datetime:${Versions.material_compose}"
+    const val composeDialog =
+        "io.github.vanpra.compose-material-dialogs:datetime:${Versions.material_compose}"
     const val composeMaterial = "androidx.compose.material:material:$compose_version"
     const val composePreview = "androidx.compose.ui:ui-tooling-preview:${compose_version}"
     const val composeData = "androidx.compose.ui:ui-tooling-data:${compose_version}"

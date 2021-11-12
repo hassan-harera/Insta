@@ -1,16 +1,13 @@
 package com.harera.feed
 
-import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.harera.model.model.Post
-import com.harera.model.model.Profile
-import com.harera.repository.db.network.abstract_.AuthManager
-import com.harera.repository.db.network.abstract_.PostRepository
-import com.harera.repository.db.network.abstract_.ProfileRepository
+import com.harera.base.base.BaseViewModel
+import com.harera.base.datastore.LocalStore
+import com.harera.base.state.FeedState
+import com.harera.base.state.PostState
+import com.harera.base.state.State
+import com.harera.repository.PostRepository
+import com.harera.repository.ProfileRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
@@ -20,11 +17,10 @@ import kotlinx.coroutines.launch
 class FeedViewModel constructor(
     private val postRepository: PostRepository,
     private val profileRepository: ProfileRepository,
-    private val authManager: AuthManager,
-) : ViewModel() {
+    userSharedPreferences: LocalStore,
+) : BaseViewModel<FeedState>(userSharedPreferences) {
+
     var intent = Channel<FeedIntent>()
-    var state by mutableStateOf<FeedState>(FeedState.Idle)
-        private set
 
     init {
         processIntent()
@@ -35,62 +31,21 @@ class FeedViewModel constructor(
             intent.consumeAsFlow().collect { intent ->
                 when (intent) {
                     is FeedIntent.FetchPosts -> {
-                        getPosts()
+                        getFeedPosts()
                     }
                 }
             }
         }
     }
 
-    private suspend fun getFollowings() =
-        profileRepository.getFollowings(authManager.getCurrentUser()!!.uid).map { it.followingUid }
-
-    private suspend fun getPosts() {
-        this.state = FeedState.Loading()
-
-        val posts = ArrayList<Post>()
-
-        val followings = getFollowings()
-        followings.forEach { uid ->
-
-            getUserPosts(uid).onFailure {
-
-            }.onSuccess {
-                it.forEach { post ->
-                    getPostDetails(post)
-                    posts.add(post)
-
-                    this.state = (FeedState.Posts(posts))
-                }
+    private suspend fun getFeedPosts() {
+        state = State.Loading()
+        postRepository.getFeedPosts(token!!)
+            .onFailure {
+                state = PostState.Error(it.message)
+                handleFailure(it)
+            }.onSuccess { posts ->
+                state = FeedState.Posts(posts)
             }
-        }
     }
-
-    private suspend fun getPostDetails(post: Post) {
-        getPostProfile(post.uid).let { profile ->
-            Log.d("getPostDetails", profile.profileImageUrl)
-            post.profileImageUrl = profile.profileImageUrl
-            post.profileName = profile.name
-        }
-
-        getPostNumbers(post.postId).let { likes ->
-            post.likesNumber = likes
-        }
-
-        getPostCommentNumbers(post.postId).let { size ->
-            post.commentsNumber = size
-        }
-    }
-
-    private suspend fun getUserPosts(uid: String) =
-        postRepository.getUserPosts(uid)
-
-    private suspend fun getPostProfile(uid: String): Profile =
-        profileRepository.getProfile(uid)
-
-    private suspend fun getPostNumbers(postId: String): Int =
-        postRepository.getPostLikes(postId).size
-
-    private suspend fun getPostCommentNumbers(postId: String): Int =
-        postRepository.getPostComments(postId).size
 }

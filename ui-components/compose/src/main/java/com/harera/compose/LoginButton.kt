@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.harera.base.theme.Grey660
+import com.harera.base.theme.Orange158
 
 
 @Composable
@@ -30,7 +30,7 @@ fun ButtonToLogin(
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .background(Grey660),
+            .background(Orange158),
         contentPadding = PaddingValues(vertical = 16.dp, horizontal = 16.dp)
     ) {
         Text(text = "Login")

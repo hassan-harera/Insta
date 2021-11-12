@@ -229,7 +229,7 @@ fun PostCardContent(
                             style = TextStyle(
                                 fontFamily = FontFamily.Serif,
                                 fontSize = timeSize,
-                                color = Grey660,
+                                color = Orange158,
                                 fontStyle = FontStyle.Normal,
                             ),
                         )
@@ -335,7 +335,7 @@ fun PostCardContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(2.dp)
-                        .border(width = 1.dp, color = Grey660)
+                        .border(width = 1.dp, color = Orange158)
                 )
 
                 Spacer(

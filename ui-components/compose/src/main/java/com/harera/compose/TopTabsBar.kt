@@ -15,8 +15,8 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
-import com.harera.base.theme.Grey660
 import com.harera.base.navigation.home.HomeBottomNavigation
+import com.harera.base.theme.Orange158
 import kotlinx.coroutines.launch
 
 
@@ -27,7 +27,7 @@ fun Tabs(tabs: List<HomeBottomNavigation>, pagerState: PagerState) {
     TabRow(
         modifier = Modifier.fillMaxWidth(),
         selectedTabIndex = pagerState.currentPage,
-        backgroundColor = Grey660,
+        backgroundColor = Orange158,
         contentColor = Color.Unspecified,
     ) {
         tabs.forEachIndexed { index, tab ->

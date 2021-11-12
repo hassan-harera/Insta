@@ -10,7 +10,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.harera.base.theme.Grey200
+import com.harera.base.theme.Orange166
 
 @Preview
 @Composable
@@ -20,7 +20,7 @@ fun BottomBar() {
         bottomBar = {
             BottomAppBar(
                 modifier = Modifier.fillMaxWidth(),
-                backgroundColor = Grey200,
+                backgroundColor = Orange166,
                 contentColor = Color.Unspecified,
                 elevation = 0.dp,
                 cutoutShape = CircleShape

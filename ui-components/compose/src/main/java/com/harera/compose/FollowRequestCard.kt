@@ -28,10 +28,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.harera.base.theme.Blue255
-import com.harera.base.theme.Grey660
-import com.harera.model.model.FollowRequest
+import com.harera.base.theme.Orange158
 import com.harera.model.model.Post
-import com.harera.model.model.Profile
+import com.harera.model.model.User
 
 @Composable
 @Preview(showBackground = true)
@@ -41,10 +40,8 @@ fun FollowRequestList() {
     ) {
         LazyColumn {
             item {
-                FollowRequest()
             }
             item {
-                FollowRequest()
             }
         }
     }
@@ -53,9 +50,9 @@ fun FollowRequestList() {
 @Composable
 @Preview
 fun FollowRequestCard() {
-    val post by remember { mutableStateOf<Post?>(Post()) }
+    val post by remember { mutableStateOf<Post?>(null) }
     val profile by remember {
-        mutableStateOf<Profile?>(Profile())
+        mutableStateOf<User?>(null)
     }
 
     Card(
@@ -81,7 +78,7 @@ fun FollowRequestCard() {
                 modifier = Modifier
                     .size(50.dp)
                     .clip(CircleShape)
-                    .border(1.dp, color = Grey660),
+                    .border(1.dp, color = Orange158),
                 alignment = Alignment.TopCenter
             )
 
@@ -106,7 +103,7 @@ fun FollowRequestCard() {
                     style = TextStyle(
                         fontFamily = FontFamily.Serif,
                         fontSize = 12.sp,
-                        color = Grey660,
+                        color = Orange158,
                         fontStyle = FontStyle.Italic,
                     ),
                 )
@@ -148,8 +145,8 @@ fun FollowRequestCard() {
 
                         },
                         colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Grey660,
-                            contentColor = Grey660,
+                            backgroundColor = Orange158,
+                            contentColor = Orange158,
                         ),
 
                         ) {

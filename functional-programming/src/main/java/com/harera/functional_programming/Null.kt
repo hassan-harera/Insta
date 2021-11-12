@@ -1,6 +1,6 @@
 package com.harera.functional_programming
 
-fun <T:Any?> T?.isNotNull(block: (T) -> Unit): T? {
+fun <T : Any?> T?.isNotNull(block: (T) -> Unit): T? {
     if (this != null) {
         block(this)
         return this
@@ -8,7 +8,7 @@ fun <T:Any?> T?.isNotNull(block: (T) -> Unit): T? {
     return null
 }
 
-fun <T:Any?> T?.isNull(block: () -> Unit): T? {
+fun <T : Any?> T?.isNull(block: () -> Unit): T? {
     if (this == null) {
         block()
         return null

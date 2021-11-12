@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 
 @Preview
 @Composable
-fun LoadingProfileListShimmerPreview(){
+fun LoadingProfileListShimmerPreview() {
     LoadingProfileListShimmer(
         imageHeight = 300.dp,
         padding = 5.dp,
@@ -24,12 +24,12 @@ fun LoadingProfileListShimmerPreview(){
 @Composable
 fun LoadingProfileListShimmer(
     imageHeight: Dp = 300.dp,
-    padding: Dp = 16.dp
-){
+    padding: Dp = 16.dp,
+) {
     BoxWithConstraints(
         modifier = Modifier.fillMaxSize()
     ) {
-        val cardWidthPx = with(LocalDensity.current) { (maxWidth - (padding*2)).toPx() }
+        val cardWidthPx = with(LocalDensity.current) { (maxWidth - (padding * 2)).toPx() }
         val cardHeightPx = with(LocalDensity.current) { (imageHeight - padding).toPx() }
         val gradientWidth: Float = (0.2f * cardHeightPx)
 
@@ -66,7 +66,7 @@ fun LoadingProfileListShimmer(
         )
 
         LazyColumn {
-            items(5){
+            items(5) {
                 ShimmerPostCardItem(
                     colors = colors,
                     xShimmer = xCardShimmer.value,

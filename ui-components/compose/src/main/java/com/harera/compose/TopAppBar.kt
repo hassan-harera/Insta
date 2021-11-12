@@ -18,7 +18,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.harera.base.theme.Grey660
+import com.harera.base.theme.Orange158
 
 @Preview
 @Composable
@@ -59,8 +59,8 @@ fun TopBar(
     TopAppBar(
         elevation = 0.dp,
         modifier = Modifier.padding(0.dp),
-        backgroundColor = Grey660,
-        contentColor = Grey660,
+        backgroundColor = Orange158,
+        contentColor = Orange158,
         title =
         if (searchField) {
             {
@@ -102,7 +102,7 @@ fun TopBar(
             title
         },
         actions = actions,
-        navigationIcon = if (setNavigationButton) navigation else null
+        navigationIcon = if (setNavigationButton) navigation else null,
     )
 }
 
@@ -110,8 +110,9 @@ fun TopBar(
 @Composable
 fun HomeTopBar() {
     TopBar(
-        searchField = false,
-        setNavigationButton = false,
+
+        searchField = true,
+        setNavigationButton = true,
         title = {
             Text(text = "Insta", color = Color.White)
         },

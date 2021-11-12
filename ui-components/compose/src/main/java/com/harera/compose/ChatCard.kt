@@ -2,7 +2,6 @@ package com.harera.compose
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -26,7 +25,7 @@ import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.harera.model.response.ChatResponse
 import com.google.gson.Gson
-import com.harera.base.theme.Grey660
+import com.harera.base.theme.Orange158
 import com.harera.base.theme.timeSize
 import com.harera.time.TimeUtils
 
@@ -113,7 +112,7 @@ fun ChatCard(
                         style = TextStyle(
                             fontFamily = FontFamily.Default,
                             fontSize = 12.sp,
-                            color = Grey660,
+                            color = Orange158,
                             fontStyle = FontStyle.Normal,
                         ),
                         modifier = Modifier.fillMaxHeight(),
@@ -127,7 +126,7 @@ fun ChatCard(
                     style = TextStyle(
                         fontFamily = FontFamily.Serif,
                         fontSize = timeSize,
-                        color = Grey660,
+                        color = Orange158,
                         fontStyle = FontStyle.Italic,
                     ),
                     maxLines = 1

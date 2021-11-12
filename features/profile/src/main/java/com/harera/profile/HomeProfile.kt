@@ -1,6 +1,5 @@
 package com.harera.profile
 
-import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -35,16 +34,14 @@ import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
 import com.harera.base.DummyDate
-import com.harera.base.base.BaseViewModel
 import com.harera.base.base.LocalStoreViewModel
 import com.harera.base.state.ProfileState
-import com.harera.base.theme.Grey200
-import com.harera.base.theme.Grey660
+import com.harera.base.theme.Orange166
+import com.harera.base.theme.Orange158
 import com.harera.compose.Toast
 import com.harera.model.model.User
 import com.harera.model.response.PostResponse
 import com.harera.post.PostListView
-import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -145,7 +142,7 @@ fun HomeProfileContent(
                                 scrollState.scrollTo(0)
                             }
                         },
-                        backgroundColor = Grey660,
+                        backgroundColor = Orange158,
                     ) {
                         Icon(
                             modifier = Modifier.size(30.dp),
@@ -179,7 +176,7 @@ fun ProfileHeader(
         modifier = Modifier
             .fillMaxWidth()
             .height(150.dp)
-            .background(Grey200)
+            .background(Orange166)
             .padding(top = 10.dp, start = 10.dp),
     ) {
         Image(
@@ -242,8 +239,8 @@ fun ProfileTopBar() {
 
     TopAppBar(
         modifier = Modifier.padding(0.dp),
-        backgroundColor = Grey660,
-        contentColor = Grey660,
+        backgroundColor = Orange158,
+        contentColor = Orange158,
         title = {
             TextField(
                 value = searchWord,

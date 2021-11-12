@@ -1,28 +1,31 @@
 package com.harera.insta.di
 
-import com.harera.repository.db.network.abstract_.*
-import com.harera.repository.db.network.firebase.*
+import com.harera.remote.repository.AuthRepositoryImpl
+import com.harera.remote.repository.ChatRepositoryImpl
+import com.harera.remote.repository.PostRepositoryImpl
+import com.harera.remote.repository.ProfileRepositoryImpl
+import com.harera.repository.AuthManager
+import com.harera.repository.ChatRepository
+import com.harera.repository.PostRepository
+import com.harera.repository.ProfileRepository
+import org.koin.core.scope.get
 import org.koin.dsl.module
 
 val RepoModule = module {
 
-    single<PostRepository> {
-        FirebasePostRepository(get(), get())
+    single<AuthManager> {
+        AuthRepositoryImpl(get())
     }
 
     single<ProfileRepository> {
-        FirebaseProfileRepository(get(), get())
+        ProfileRepositoryImpl(get())
     }
 
-    single<NotificationsRepository> {
-        FirebaseNotificationsRepository(get())
+    single<PostRepository> {
+        PostRepositoryImpl(get())
     }
 
     single<ChatRepository> {
-        FirebaseChatRepository(get(), get())
-    }
-
-    single<AuthManager> {
-        FirebaseAuthManager(get(), get())
+        ChatRepositoryImpl(get())
     }
 }

@@ -3,12 +3,15 @@ package com.harera.insta
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -21,10 +24,16 @@ import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.harera.base.base.BaseViewModel
-import com.harera.base.datastore.UserSharedPreferences
+import com.harera.base.datastore.LocalStore
 import com.harera.base.state.State
 import com.harera.home.HomeActivity
 import com.harera.login.LoginActivity
+import io.ktor.client.*
+import io.ktor.client.engine.android.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.features.websocket.*
+import io.ktor.http.*
+import io.ktor.http.cio.websocket.*
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 
@@ -39,6 +48,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        Toast.makeText(this, "service starting", Toast.LENGTH_SHORT).show()
+
         setContent {
             SplashScreen()
         }
@@ -51,9 +62,12 @@ class MainActivity : AppCompatActivity() {
         val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.splash))
         val progress by animateLottieCompositionAsState(composition)
         val token = mainViewModel.token
-        Log.d(TAG, "SplashScreen: $token")
 
-        Box {
+        Box(
+            Modifier.background(
+                MaterialTheme.colors.background
+            )
+        ) {
             LottieAnimation(composition, progress)
 
             Text(
@@ -93,5 +107,5 @@ class MainActivity : AppCompatActivity() {
 }
 
 class MainViewModel constructor(
-    userPreferences: UserSharedPreferences,
+    userPreferences: LocalStore,
 ) : BaseViewModel<State>(userSharedPreferences = userPreferences)

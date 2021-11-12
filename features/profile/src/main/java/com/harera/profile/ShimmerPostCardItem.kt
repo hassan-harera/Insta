@@ -16,7 +16,7 @@ import androidx.compose.ui.graphics.Brush.Companion.linearGradient
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.harera.base.theme.Grey660
+import com.harera.base.theme.Orange158
 
 @Composable
 fun ShimmerPostCardItem(
@@ -126,7 +126,7 @@ fun ShimmerPostCardItem(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(2.dp)
-                        .border(width = 1.dp, color = Grey660)
+                        .border(width = 1.dp, color = Orange158)
                 )
 
                 Spacer(

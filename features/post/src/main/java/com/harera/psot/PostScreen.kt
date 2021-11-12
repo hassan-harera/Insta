@@ -19,7 +19,7 @@ import androidx.navigation.NavHostController
 import coil.annotation.ExperimentalCoilApi
 import com.harera.base.navigation.home.HomeNavigationRouting
 import com.harera.base.state.PostState
-import com.harera.base.theme.Grey660
+import com.harera.base.theme.Orange158
 import com.harera.compose.CommentView
 import com.harera.model.model.Comment
 import com.harera.model.response.PostResponse
@@ -136,8 +136,8 @@ private fun PostTopBar(postViewModel: PostViewModel) {
     var searchWord by remember { mutableStateOf("") }
 
     TopAppBar(
-        backgroundColor = Grey660,
-        contentColor = Grey660,
+        backgroundColor = Orange158,
+        contentColor = Orange158,
         title = {},
         navigationIcon = {
             IconButton(onClick = { /*TODO*/ }) {
@@ -163,7 +163,7 @@ private fun PostTopBar(postViewModel: PostViewModel) {
                     )
                 },
                 colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = Grey660,
+                    backgroundColor = Orange158,
                     cursorColor = Color.Black,
                     focusedLabelColor = Color.Black,
                     textColor = Color.White,

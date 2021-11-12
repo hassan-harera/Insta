@@ -1,18 +1,20 @@
 package com.harera.feed
 
+import android.util.Log
 import android.widget.Toast
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
-import androidx.compose.material.TextFieldDefaults
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.annotation.ExperimentalCoilApi
@@ -20,10 +22,13 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.harera.base.navigation.home.HomeNavigation
-import com.harera.model.model.Post
+import com.harera.base.navigation.home.HomeNavigationRouting
+import com.harera.base.state.FeedState
+import com.harera.model.response.PostResponse
 import com.harera.post.PostListView
 import org.koin.androidx.compose.getViewModel
+
+private const val TAG = "HomeFeed"
 
 @ExperimentalCoilApi
 @Composable
@@ -32,12 +37,15 @@ fun HomeFeed(
     navController: NavHostController,
 ) {
     val state = feedViewModel.state
-    var intent = remember<FeedIntent> { FeedIntent.Free }
+    val scope = rememberCoroutineScope()
 
-    LaunchedEffect(intent) {
-        feedViewModel.intent.send(intent)
+    Log.d(TAG, "HomeFeed: ${state.javaClass}")
+
+    LaunchedEffect(key1 = true) {
+        Log.d(TAG, "HomeFeed: FetchPosts")
+        feedViewModel.intent.send(FeedIntent.FetchPosts)
     }
-    intent = FeedIntent.FetchPosts
+
 
     when (state) {
         is FeedState.Error -> {
@@ -71,12 +79,84 @@ fun HomeFeed(
     }
 }
 
+@Composable
+@Preview
+fun TopFeedBarPreview() {
+    TopFeedBar(
+        {
+
+        }, {
+
+        }
+    )
+}
+
+@Composable
+fun TopFeedBar(
+    onTextPostClicked: () -> Unit,
+    onImagePostClicked: () -> Unit,
+) {
+    val topBar = rememberScrollState()
+    Row(
+        modifier = Modifier
+            .horizontalScroll(topBar)
+            .fillMaxWidth()
+            .fillMaxHeight(0.3f),
+
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(5.dp)
+                .fillMaxHeight()
+                .clickable {
+
+                },
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                modifier = Modifier
+                    .size(32.dp),
+                painter = painterResource(id = R.drawable.add_image),
+                contentDescription = null
+            )
+
+            Spacer(modifier = Modifier.width(10.dp))
+
+            Text(text = "Image Post")
+        }
+
+        Spacer(modifier = Modifier.width(10.dp))
+
+        Row(
+            modifier = Modifier
+                .padding(5.dp)
+                .fillMaxHeight()
+                .clickable {
+
+                },
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                modifier = Modifier
+                    .size(32.dp),
+                painter = painterResource(id = R.drawable.write),
+                contentDescription = null
+            )
+
+            Spacer(modifier = Modifier.width(10.dp))
+
+            Text(text = "Text Post")
+        }
+
+    }
+}
+
 @ExperimentalCoilApi
 @Composable
 fun HomeFeedContent(
-    posts: List<Post>,
+    posts: List<PostResponse>,
     loadingMore: Boolean = true,
-    navController: NavHostController
+    navController: NavHostController,
 ) {
     val scrollState = rememberScrollState()
 
@@ -86,28 +166,40 @@ fun HomeFeedContent(
             .background(Color.White)
             .verticalScroll(scrollState)
     ) {
-        OutlinedTextField(
-            value = "",
-            onValueChange = {},
-            placeholder = {
-                Text(text = "write what you want")
+        TopFeedBar(
+            onImagePostClicked = {
+                navController.navigate(HomeNavigationRouting.AddPost) {
+                    launchSingleTop = true
+                    restoreState = true
+                }
             },
-            modifier = Modifier
-                .background(Color.White)
-                .padding(2.dp)
-                .fillMaxWidth()
-                .clickable {
-                    navController.navigate(HomeNavigation.AddPost) {
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                },
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedBorderColor = Color.Black,
-                unfocusedBorderColor = Color.Black,
-            ),
-            enabled = false,
+            onTextPostClicked = {
+
+            }
         )
+
+//        OutlinedTextField(
+//            value = "",
+//            onValueChange = {},
+//            placeholder = {
+//                Text(text = "write what you want")
+//            },
+//            modifier = Modifier
+//                .background(Color.White)
+//                .padding(2.dp)
+//                .fillMaxWidth()
+//                .clickable {
+//                    navController.navigate(HomeNavigationRouting.AddPost) {
+//                        launchSingleTop = true
+//                        restoreState = true
+//                    }
+//                },
+//            colors = TextFieldDefaults.outlinedTextFieldColors(
+//                focusedBorderColor = Color.Black,
+//                unfocusedBorderColor = Color.Black,
+//            ),
+//            enabled = false,
+//        )
 
         PostListView(
             posts = posts,

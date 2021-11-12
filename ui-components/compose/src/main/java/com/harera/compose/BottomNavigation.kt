@@ -12,19 +12,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.harera.base.theme.Grey660
 import com.harera.base.navigation.home.HomeBottomNavigation
+import com.harera.base.theme.Orange158
 
 
 @Composable
 fun HomeBottomNavigation(
     tabs: List<HomeBottomNavigation>,
-    navController: NavHostController
+    navController: NavHostController,
 ) {
     androidx.compose.material.BottomNavigation(
         modifier = Modifier
             .fillMaxWidth(),
-        backgroundColor = Grey660,
+        backgroundColor = Orange158,
         contentColor = Color.Unspecified,
         elevation = 0.dp,
 

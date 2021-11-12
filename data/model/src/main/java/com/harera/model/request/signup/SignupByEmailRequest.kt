@@ -1,8 +1,6 @@
 package com.harera.model.request.signup
 
-data class SignupByEmailRequest(
-    val token: String,
-)
+import kotlinx.serialization.Serializable
 
 
 data class SignupByFacebookRequest(
@@ -12,4 +10,11 @@ data class SignupByFacebookRequest(
 
 data class SignupByGoogleRequest(
     val token: String,
+)
+
+@Serializable
+data class SignupByEmailRequest(
+    val email: String,
+    val name: String,
+    val password: String,
 )

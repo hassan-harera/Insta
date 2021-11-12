@@ -3,8 +3,9 @@ rootProject.name = "Insta"
 include ':app'
 include ':base'
 
-include ':navigation'
 include ':navigation:chat-navigation'
+include ':navigation:home-navigation'
+include ':navigation:login-navigation'
 
 include ':data'
 include ':data:model'
@@ -27,5 +28,9 @@ include ':features:login'
 include ':functional-programming'
 include ':features:add-chat'
 include ':features:mychats'
+
 include ':data:local'
 include ':data:remote'
+include ':base:time'
+include ':base:common'
+include ':ui-components:login'

@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.harera.base.navigation.home.HomeNavigationRouting
-import com.harera.base.theme.Grey660
+import com.harera.base.theme.Orange158
 import com.harera.base.utils.image.ImageUtils
 import com.harera.compose.Toast
 import kotlinx.coroutines.launch
@@ -105,8 +105,8 @@ fun PostForm(
     Scaffold(
         bottomBar = {
             TopAppBar(
-                contentColor = Grey660,
-                backgroundColor = Grey660,
+                contentColor = Orange158,
+                backgroundColor = Orange158,
                 title = {},
                 navigationIcon = {
                     IconButton(

@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlinx-serialization'
 
 android {
     compileSdk = DefaultConfig.compileSdk
@@ -32,7 +33,7 @@ android {
     }
 }
 
-dependencies{
+dependencies {
     implementation(Libs.coilCompose)
 
     implementation(Compose.composeActivity)
@@ -45,13 +46,16 @@ dependencies{
     implementation(Compose.composJUnitTest)
     implementation(Libs.coilCompose)
 
-    implementation project(Core.base)
+    implementation project(Core.common)
     implementation project(Core.repository)
 
     implementation project(Core.functionalProgramming)
 
     //Koin
-    implementation (DI.koinCore)
+    implementation(DI.koinCore)
     implementation(DI.koinCompose)
     implementation(DI.koinAndroid)
+
+    implementation(Libs.jodaTime)
+    implementation(Libs.preferences)
 }

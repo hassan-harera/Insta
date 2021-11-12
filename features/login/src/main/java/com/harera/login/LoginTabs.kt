@@ -18,8 +18,8 @@ sealed class LoginTabs(var route: String, val title: String, val content: Compos
             { LoginScreen() }
         )
 
-    @ExperimentalCoilApi
     @OptIn(ExperimentalComposeUiApi::class)
+    @ExperimentalCoilApi
     object Signup : LoginTabs(
         HomeNavigationRouting.HomeChats,
         "Signup",

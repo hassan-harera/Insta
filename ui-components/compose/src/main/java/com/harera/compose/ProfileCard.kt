@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
-import com.harera.base.theme.Grey660
+import com.harera.base.theme.Orange158
 import com.harera.base.theme.timeSize
 import com.harera.model.response.Connection
 
@@ -109,7 +109,7 @@ fun ProfileCard(
                     style = TextStyle(
                         fontFamily = FontFamily.Serif,
                         fontSize = timeSize,
-                        color = Grey660,
+                        color = Orange158,
                         fontStyle = FontStyle.Italic,
                     ),
                     maxLines = 1

@@ -1,5 +1,7 @@
 apply plugin: 'kotlin-android'
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'kotlinx-serialization'
+
 android {
     compileSdkVersion DefaultConfig.compileSdk
 
@@ -56,4 +58,7 @@ android {
 dependencies {
     implementation Libs.kotlin
     testImplementation Libs.junit4
+
+    implementation(Libs.jodaTime)
+    implementation(Libs.preferences)
 }

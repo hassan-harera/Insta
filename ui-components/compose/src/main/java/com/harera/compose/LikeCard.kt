@@ -23,9 +23,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
-import com.harera.base.theme.Grey660
-import com.harera.base.utils.time.TimeUtils
+import com.harera.base.theme.Orange158
 import com.harera.model.model.Like
+import com.harera.time.TimeUtils
 
 @Composable
 @Preview
@@ -35,10 +35,8 @@ fun LikeList() {
     ) {
         LazyColumn {
             item {
-                LikeCard(Like()) {}
             }
             item {
-                LikeCard(Like()) {}
             }
         }
     }
@@ -49,7 +47,7 @@ fun LikeList() {
 @Composable
 fun LikeCard(
     like: Like,
-    onNotificationClicked: (postId : String) -> Unit,
+    onNotificationClicked: (postId: Int) -> Unit,
 ) {
     Card(
         modifier = Modifier
@@ -69,13 +67,13 @@ fun LikeCard(
         ) {
 
             Image(
-                //TODO replace image painter with link
-                painter = rememberImagePainter(data = like.postImageUrl),
+                //TODO replace username wpt painter with link
+                painter = rememberImagePainter(data = like.username),
                 contentDescription = null,
                 modifier = Modifier
                     .size(50.dp)
                     .clip(CircleShape)
-                    .border(3.dp, color = Grey660)
+                    .border(3.dp, color = Orange158)
             )
 
             Spacer(modifier = Modifier.size(15.dp))
@@ -85,7 +83,8 @@ fun LikeCard(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = "${like.profileName} Liked your Post",
+                    //TODO
+                    text = like.time,
                     style = TextStyle(
                         fontFamily = FontFamily.Default,
                         fontSize = 16.sp,
@@ -100,7 +99,7 @@ fun LikeCard(
                     style = TextStyle(
                         fontFamily = FontFamily.Serif,
                         fontSize = 12.sp,
-                        color = Grey660,
+                        color = Orange158,
                         fontStyle = FontStyle.Italic,
                     ),
                 )

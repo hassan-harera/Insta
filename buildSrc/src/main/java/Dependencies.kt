@@ -1,12 +1,11 @@
-import Versions.koin_version
-
-
-
-
-
 object Libs {
     //facebook login
     const val facebookLogin = "com.facebook.android:facebook-login:12.0.1"
+
+    //facebook login
+    const val preferences = "androidx.datastore:datastore-preferences:1.0.0"
+
+    const val jodaTime = "joda-time:joda-time:2.10.13"
 
     const val truth = "com.google.truth:truth:1.1.3"
 

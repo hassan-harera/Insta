@@ -1,5 +1,6 @@
 package com.harera.chat
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -31,9 +32,10 @@ import coil.compose.rememberImagePainter
 import com.harera.base.DummyDate
 import com.harera.base.navigation.chat.NavigationIcon
 import com.harera.base.state.ChatState
-import com.harera.base.theme.Grey300
-import com.harera.base.theme.Grey60
-import com.harera.base.theme.Grey700
+import com.harera.base.state.State
+import com.harera.base.theme.Orange158
+import com.harera.base.theme.Orange166
+import com.harera.compose.Toast
 import com.harera.model.model.User
 import com.harera.model.response.MessageResponse
 import kotlinx.coroutines.launch
@@ -51,14 +53,15 @@ fun ChatScreen(
 ) {
     val scope = rememberCoroutineScope()
     val state = chatViewModel.state
-    var profile = remember<User?> { null }
-    var messages = remember<List<MessageResponse>> { emptyList() }
+    var profile by remember { mutableStateOf<User?>(null) }
+    var messages by remember { mutableStateOf<List<MessageResponse>>(emptyList() ) }
 
     LaunchedEffect(true) {
         chatViewModel.intent.send(ChatIntent.GetProfile(username))
-        chatViewModel.intent.send(ChatIntent.StartListen(username))
+        chatViewModel.intent.send(ChatIntent.GetMessages(username))
     }
 
+    Log.d(TAG, "ChatScreen: $profile")
     when (state) {
         is ChatState.ProfileState -> {
             profile = state.user
@@ -66,6 +69,10 @@ fun ChatScreen(
 
         is ChatState.Messages -> {
             messages = state.messages
+        }
+
+        is State.Error -> {
+            Toast(message = state.data.toString())
         }
     }
 
@@ -138,7 +145,7 @@ fun ChatScreenContent(
         },
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(Color.White),
     ) {
         messages.let {
             MessageList(messages = it)
@@ -158,7 +165,7 @@ fun ChatBottomBar(
     BottomAppBar(
         modifier = Modifier
             .fillMaxWidth(),
-        backgroundColor = Grey300,
+        backgroundColor = Orange166,
         elevation = 1.dp,
         cutoutShape = CircleShape
     ) {
@@ -175,8 +182,8 @@ fun ChatBottomBar(
             },
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = Color.Unspecified,
-                focusedLabelColor = Grey700,
-                focusedIndicatorColor = Grey700,
+                focusedLabelColor = Orange158,
+                focusedIndicatorColor = Orange158,
             ),
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Send
@@ -198,10 +205,10 @@ fun ChatTopBar(
     onBackClicked: () -> Unit,
 ) {
     TopAppBar(
-        modifier = Modifier.background(Grey60),
+        modifier = Modifier.background(Orange166),
         contentPadding = PaddingValues(4.dp),
         backgroundColor = Color.White,
-        elevation = 0.dp
+        elevation = 4.dp
     ) {
         NavigationIcon(
             onClick = {
@@ -223,7 +230,6 @@ fun ChatTopBar(
         Spacer(modifier = Modifier.size(15.dp))
 
         Text(
-            //TODO change text value
             text = user.name,
             style = TextStyle(
                 fontFamily = FontFamily.Default,

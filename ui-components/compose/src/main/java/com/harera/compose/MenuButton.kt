@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 @Preview
-fun  MenuButton() {
+fun MenuButton() {
     Icon(
         painterResource(id = R.drawable.menu),
         contentDescription = null,

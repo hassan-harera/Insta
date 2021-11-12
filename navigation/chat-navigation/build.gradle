@@ -4,11 +4,14 @@ dependencies {
     api(project(Features.chat))
     api(project(Features.addChat))
     api(project(Features.myChats))
+    api(project(Core.common))
+    api(project(Core.model))
 
     implementation(Ktor.ktorCio)
     implementation(Ktor.ktorClient)
     implementation(Ktor.ktorClientWebsockets)
     implementation(Ktor.ktorClientAndroid)
+    implementation(Ktor.ktorClientGson)
 
     implementation(Libs.coroutinesCore)
     implementation(Libs.coroutinesAndroid)

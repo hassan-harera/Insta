@@ -19,12 +19,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
-import com.harera.base.theme.Grey660
+import com.harera.base.DummyDate.POST
+import com.harera.base.theme.Orange158
 import com.harera.base.theme.timeSize
-import com.harera.base.utils.time.TimeUtils
 import com.harera.model.model.Comment
-import com.harera.repository.data.DummyDate.COMMENT
-import com.harera.repository.data.DummyDate.POST
+import com.harera.time.TimeUtils
 
 @Composable
 fun CommentView(comment: Comment) {
@@ -50,7 +49,7 @@ fun CommentView(comment: Comment) {
         Column {
             Text(
                 //TODO change text value
-                text = comment.profileName,
+                text = comment.username,
                 style = TextStyle(
                     fontFamily = FontFamily.Default,
                     fontSize = 14.sp,
@@ -79,7 +78,7 @@ fun CommentView(comment: Comment) {
                 style = TextStyle(
                     fontFamily = FontFamily.Default,
                     fontSize = timeSize,
-                    color = Grey660,
+                    color = Orange158,
                     fontStyle = FontStyle.Normal,
                 ),
             )
@@ -90,5 +89,6 @@ fun CommentView(comment: Comment) {
 @Preview
 @Composable
 fun CommentPreview() {
-    CommentView(comment = COMMENT)
+//    TODO
+//    CommentView(comment = COMMENT_DETAILS)
 }

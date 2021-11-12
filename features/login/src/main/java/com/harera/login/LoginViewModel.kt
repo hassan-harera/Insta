@@ -4,18 +4,22 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.harera.base.base.BaseViewModel
-import com.harera.base.datastore.UserSharedPreferences
+import com.harera.base.datastore.LocalStore
 import com.harera.base.state.LoginState
+import com.harera.base.state.PostState
 import com.harera.base.state.State
 import com.harera.base.utils.Validity
 import com.harera.base.validity.LoginFormValidity
 import com.harera.model.request.signup.SignupByEmailRequest
 import com.harera.model.request.login.LoginByEmailRequest
+import com.harera.model.response.Token
 import com.harera.repository.AuthManager
+import com.harera.repository.ProfileRepository
 
 class LoginViewModel constructor(
     private val authManager: AuthManager,
-    userSharedPreferences: UserSharedPreferences,
+    private val profileRepository: ProfileRepository,
+    userSharedPreferences: LocalStore,
 ) : BaseViewModel<LoginState>(userSharedPreferences) {
 
     private val TAG = "LoginViewModel"
@@ -23,8 +27,6 @@ class LoginViewModel constructor(
     var emailState by mutableStateOf("")
         private set
     var passwordState by mutableStateOf("")
-        private set
-    var nameState by mutableStateOf("")
         private set
 
     private fun checkFormValidity() {
@@ -36,10 +38,6 @@ class LoginViewModel constructor(
             state = LoginState.FormValidity(LoginFormValidity(passwordError = true))
         } else if (!Validity.checkPassword(passwordState)) {
             state = LoginState.FormValidity(LoginFormValidity(passwordError = true))
-        } else if (nameState.isBlank()) {
-            state = LoginState.FormValidity(LoginFormValidity(nameError = true))
-        } else if (!Validity.checkName(nameState)) {
-            state = LoginState.FormValidity(LoginFormValidity(nameError = true))
         } else {
             state = LoginState.FormValidity(LoginFormValidity(isValid = true))
         }
@@ -55,30 +53,6 @@ class LoginViewModel constructor(
         checkFormValidity()
     }
 
-    fun setName(it: String) {
-        nameState = it
-        checkFormValidity()
-    }
-
-    suspend fun signup() {
-        state = State.Loading()
-        authManager
-            .signupWithEmail(
-                SignupByEmailRequest(
-                    email = emailState,
-                    password = passwordState,
-                    name = nameState
-                )
-            )
-            .onSuccess {
-//                state = LoginState.LoginSuccess
-                login()
-            }
-            .onFailure {
-                handleFailure(it)
-            }
-    }
-
     suspend fun login() {
         state = State.Loading()
         authManager
@@ -89,10 +63,25 @@ class LoginViewModel constructor(
                 )
             )
             .onSuccess { token ->
+                getUser(token)
+            }
+            .onFailure {
+                state = PostState.Error(it.message)
+                handleFailure(it)
+            }
+    }
+
+    private suspend fun getUser(token: Token) {
+        state = State.Loading()
+        profileRepository
+            .getProfile(token.token)
+            .onSuccess { user ->
                 updateToken(token.token)
+                updateUsername(user.username)
                 state = LoginState.LoginSuccess
             }
             .onFailure {
+                state = PostState.Error(it.message)
                 handleFailure(it)
             }
     }

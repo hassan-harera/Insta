@@ -1,13 +1,11 @@
 package com.harera.chat
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.harera.base.base.BaseViewModel
 import com.harera.base.datastore.LocalStore
 import com.harera.base.state.ChatState
 import com.harera.base.state.PostState
+import com.harera.base.state.ProfileState
 import com.harera.base.state.State
 import com.harera.repository.ChatRepository
 import com.harera.repository.ProfileRepository
@@ -24,7 +22,6 @@ class ChatViewModel constructor(
 ) : BaseViewModel<ChatState>(userSharedPreferences) {
 
     val intent = Channel<ChatIntent>(Channel.UNLIMITED)
-    private var messenger by mutableStateOf<String>("")
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -35,12 +32,12 @@ class ChatViewModel constructor(
     private suspend fun triggerIntent() {
         intent.consumeAsFlow().collect {
             when (it) {
-                is ChatIntent.StartListen -> {
-                    getMessages(connection = messenger)
+                is ChatIntent.GetMessages -> {
+                    getMessages(connection = it.messenger)
                 }
 
                 is ChatIntent.GetProfile -> {
-                    getUser(it.uid)
+                    getUser(it.username)
                 }
 
                 is ChatIntent.SendMessage -> {
@@ -54,10 +51,10 @@ class ChatViewModel constructor(
         profileRepository
             .getUser(token = token!!, username)
             .onSuccess {
-                state = PostState.ProfileFetched(it)
+                state = ChatState.ProfileState(it)
             }.onFailure {
-                state = PostState.Error(it.message)
                 handleFailure(it)
+                state = State.Error(it.message)
             }
     }
 

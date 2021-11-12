@@ -5,29 +5,36 @@ import android.content.Intent
 import android.os.*
 import android.os.Process.THREAD_PRIORITY_BACKGROUND
 import android.util.Log
-import android.widget.Toast
-import io.ktor.client.*
-import io.ktor.client.engine.cio.*
-import io.ktor.client.features.websocket.*
+import androidx.core.app.NotificationManagerCompat
+import com.harera.base.base.Mapper.messageFromText
+import com.harera.base.notifications.createMessageNotification
+import com.harera.model.response.MessageResponse
 import io.ktor.http.*
-import io.ktor.http.cio.websocket.*
-import io.ktor.server.cio.backend.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
+import okhttp3.*
+import okio.ByteString
+
+private const val TAG = "MessagesService"
+
 
 class MessagesService : Service() {
 
     private var serviceLooper: Looper? = null
     private var serviceHandler: ServiceHandler? = null
 
-    private val TAG = "MessagesService"
-
     private inner class ServiceHandler(looper: Looper) : Handler(looper) {
 
         override fun handleMessage(msg: Message) {
             try {
-                Thread.sleep(5000)
+
+                val request = Request
+                    .Builder()
+                    .url("ws://192.168.1.15:8080/chat")
+                    .header(HttpHeaders.Authorization,
+                        "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJodHRwOi8vMC4wLjAuMDo4MDgwL2hlbGxvIiwiaXNzIjoiaHR0cDovLzAuMC4wLjA6ODA4MC8iLCJleHAiOjE2Mzg2MDA1NjQsInVzZXJuYW1lIjoiMSJ9.PV1isIjteTstHmkectYQSikXVeYF4UNny9TZuO2Z4gM")
+                    .build()
+
+                client.newWebSocket(request, messagesWebSocketListener)
+
             } catch (e: InterruptedException) {
                 Thread.currentThread().interrupt()
             }
@@ -37,55 +44,89 @@ class MessagesService : Service() {
     }
 
     override fun onCreate() {
+        Log.d(TAG, "onCreate: ")
         HandlerThread("ServiceStartArguments", THREAD_PRIORITY_BACKGROUND).apply {
             start()
 
             serviceLooper = looper
             serviceHandler = ServiceHandler(looper)
         }
-
-        val client = HttpClient(CIO) {
-            install(WebSockets)
-        }
-
-        runBlocking(Dispatchers.IO) {
-            async {
-                kotlin.runCatching {
-                    client
-                        .webSocket(
-                            method = HttpMethod.Get,
-                            host = "192.168.1.15",
-                            port = 8080,
-                            path = "/chat",
-                        ) {
-                            val message = incoming.receive() as? Frame.Text
-                            Log.d(TAG, "onCreate: $message")
-                        }
-
-                    client.close()
-                }
-            }
-        }
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        Toast.makeText(this, "service starting", Toast.LENGTH_SHORT).show()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(intent)
+        } else {
+            startService(intent)
+        }
+
+        Log.d(TAG, "onStartCommand: ")
+        Log.d(TAG, "onStartCommand: $intent")
 
         serviceHandler?.obtainMessage()?.also { msg ->
             msg.arg1 = startId
             serviceHandler?.sendMessage(msg)
         }
-
-        // If we get killed, after returning from here, restart
         return START_STICKY
     }
 
     override fun onBind(intent: Intent): IBinder? {
-        // We don't provide binding, so return null
+        Log.d(TAG, "onBind: ")
         return null
     }
 
     override fun onDestroy() {
-        Toast.makeText(this, "service done", Toast.LENGTH_SHORT).show()
+        Log.d(TAG, "onDestroy: ")
+    }
+
+    fun sendMessage(messageResponse: MessageResponse) {
+        createMessageNotification(
+            context = baseContext,
+            message = messageResponse
+        ).let {
+            with(NotificationManagerCompat.from(this)) {
+                notify(messageResponse.messageId, it)
+            }
+        }
+    }
+
+    private companion object {
+        val client = OkHttpClient()
+    }
+
+    private val messagesWebSocketListener = object : WebSocketListener() {
+        override fun onMessage(webSocket: WebSocket, text: String) {
+            super.onMessage(webSocket, text)
+            Log.d(TAG, "onMessage: ")
+            Log.d(TAG, "onMessage: $text")
+
+            sendMessage(messageFromText(text))
+        }
+
+        override fun onMessage(webSocket: WebSocket, bytes: ByteString) {
+            super.onMessage(webSocket, bytes)
+            Log.d(TAG, "onMessage: ")
+            Log.d(TAG, "onMessage: ${bytes.size}")
+        }
+
+        override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
+            super.onClosing(webSocket, code, reason)
+            Log.d(TAG, "onClosing: ")
+        }
+
+        override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
+            super.onClosed(webSocket, code, reason)
+            Log.d(TAG, "onClosed: ")
+        }
+
+        override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
+            super.onFailure(webSocket, t, response)
+            Log.d(TAG, "onFailure: ${t.message}")
+        }
+
+        override fun onOpen(webSocket: WebSocket, response: Response) {
+            super.onOpen(webSocket, response)
+            Log.d(TAG, "onOpen: ")
+        }
     }
 }

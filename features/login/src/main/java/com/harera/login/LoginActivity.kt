@@ -1,9 +1,6 @@
 package com.harera.login
 
-import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
@@ -28,9 +25,6 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
-import com.harera.base.theme.Blue250
-import com.harera.home.HomeActivity
-import com.harera.login.databinding.ActivityLoginBinding
 import kotlinx.coroutines.launch
 
 @ExperimentalMaterialApi
@@ -39,29 +33,12 @@ import kotlinx.coroutines.launch
 @ExperimentalComposeUiApi
 class LoginActivity : AppCompatActivity() {
 
-    private lateinit var bind: ActivityLoginBinding
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
             LoginActivityContent()
         }
-    }
-
-    private fun handleFailure(exception: Exception?) {
-        exception?.printStackTrace()
-        Toast.makeText(baseContext, exception?.message, Toast.LENGTH_SHORT).show()
-        bind.loading.visibility = View.GONE
-    }
-
-    private fun handleLoading() {
-        bind.loading.visibility = View.VISIBLE
-    }
-
-    private fun goToHomeActivity() {
-        startActivity(Intent(this, HomeActivity::class.java))
-        finish()
     }
 }
 

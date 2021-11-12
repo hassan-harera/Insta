@@ -17,7 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
 import com.harera.base.base.LocalStoreViewModel
-import com.harera.base.theme.Grey200
+import com.harera.base.theme.Orange166
 import com.harera.model.response.MessageResponse
 import org.koin.androidx.compose.getViewModel
 
@@ -25,7 +25,7 @@ import org.koin.androidx.compose.getViewModel
 @Composable
 fun MessageList(messages: List<MessageResponse>) {
 
-    LazyColumn(Modifier.fillMaxSize()) {
+    LazyColumn(Modifier.fillMaxWidth()) {
         messages.forEachIndexed { id, message ->
             item {
                 MessageCard(
@@ -59,7 +59,7 @@ fun MessageCard(
                     color =
                     if (message.sender == username)
                         Color(0xE0579CE2)
-                    else Grey200,
+                    else Orange166,
                     shape = RoundedCornerShape(CornerSize(8.dp)),
                 )
                 .padding(8.dp),

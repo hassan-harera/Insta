@@ -1,5 +1,8 @@
 package com.harera.model.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class User(
     val uid: Int,
     val name: String,

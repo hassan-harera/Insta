@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.annotation.ExperimentalCoilApi
 import com.harera.base.state.ProfileState
-import com.harera.base.theme.Grey660
+import com.harera.base.theme.Orange158
 import com.harera.compose.Toast
 import com.harera.compose.VisitProfileHeader
 import com.harera.model.model.User
@@ -119,7 +119,7 @@ fun VisitProfileContent(
                                 scrollState.scrollTo(0)
                             }
                         },
-                        backgroundColor = Grey660,
+                        backgroundColor = Orange158,
                     ) {
                         Icon(
                             modifier = Modifier.size(30.dp),
