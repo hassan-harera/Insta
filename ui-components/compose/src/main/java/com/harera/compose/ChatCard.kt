@@ -23,10 +23,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
-import com.harera.model.response.ChatResponse
 import com.google.gson.Gson
 import com.harera.base.theme.Orange158
 import com.harera.base.theme.timeSize
+import com.harera.model.response.ChatResponse
 import com.harera.time.TimeUtils
 
 @ExperimentalCoilApi

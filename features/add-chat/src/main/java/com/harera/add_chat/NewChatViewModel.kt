@@ -4,9 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.harera.base.base.BaseViewModel
 import com.harera.base.datastore.LocalStore
 import com.harera.base.state.NewChatState
-import com.harera.base.state.PostState
 import com.harera.base.state.State
-import com.harera.model.model.User
 import com.harera.repository.ProfileRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel

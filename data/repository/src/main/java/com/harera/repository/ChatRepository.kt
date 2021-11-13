@@ -1,7 +1,7 @@
 package com.harera.repository
 
-import com.harera.model.response.ChatResponse
 import com.harera.model.model.Message
+import com.harera.model.response.ChatResponse
 import com.harera.model.response.MessageResponse
 
 interface ChatRepository {

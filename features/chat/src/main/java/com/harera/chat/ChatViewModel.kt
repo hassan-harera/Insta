@@ -4,8 +4,6 @@ import androidx.lifecycle.viewModelScope
 import com.harera.base.base.BaseViewModel
 import com.harera.base.datastore.LocalStore
 import com.harera.base.state.ChatState
-import com.harera.base.state.PostState
-import com.harera.base.state.ProfileState
 import com.harera.base.state.State
 import com.harera.repository.ChatRepository
 import com.harera.repository.ProfileRepository
