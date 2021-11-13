@@ -6,7 +6,6 @@ import com.harera.remote.Routing
 import com.harera.remote.URL
 import com.harera.remote.request.MessageInsertRequest
 import io.ktor.client.*
-import io.ktor.client.features.websocket.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 

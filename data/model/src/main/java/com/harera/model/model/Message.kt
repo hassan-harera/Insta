@@ -1,9 +1,9 @@
 package com.harera.model.model
 
+import androidx.room.Entity
 import org.joda.time.DateTime
 
 
-//TODO
 data class Message(
     var receiver: String,
     var time: DateTime,
