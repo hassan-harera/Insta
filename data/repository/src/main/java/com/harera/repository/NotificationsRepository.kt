@@ -1,12 +1,8 @@
 package com.harera.repository
 
-import com.google.android.gms.tasks.Task
-import com.google.firebase.firestore.QuerySnapshot
-import com.harera.model.model.FollowRequest
+import com.example.response.Notification
 
 interface NotificationsRepository {
 
-    suspend fun getFollowRequests(uid: String): Task<QuerySnapshot>
-    suspend fun getLikes(uid: String): Task<QuerySnapshot>
-    suspend fun removeFriendRequest(followRequest: FollowRequest): Task<Void>
+    suspend fun getNotifications(token: String, page : Int? = null, pageSize: Int?): Result<List<Notification>>
 }

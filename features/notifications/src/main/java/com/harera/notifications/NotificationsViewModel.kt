@@ -1,70 +1,52 @@
 package com.harera.notifications
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
-import com.google.android.gms.tasks.Tasks
 import com.harera.base.base.BaseViewModel
 import com.harera.base.datastore.LocalStore
-import com.harera.base.state.State
-import com.harera.model.model.Comment
-import com.harera.model.model.FollowRequest
-import com.harera.model.model.Like
 import com.harera.repository.NotificationsRepository
 import com.harera.repository.ProfileRepository
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.launch
 
 class NotificationsViewModel(
     private val notificationsRepository: NotificationsRepository,
-    private val profileRepository: ProfileRepository,
     userSharedPreferences: LocalStore,
-) : BaseViewModel<State>(userSharedPreferences) {
+) : BaseViewModel<NotificationState>(userSharedPreferences) {
 
-    private val _likeNotifications = MutableLiveData<List<Like>>()
-    val likeNotifications: LiveData<List<Like>> = _likeNotifications
-
-    private val _commentNotifications = MutableLiveData<List<Comment>>()
-    val commentNotifications: LiveData<List<Comment>> = _commentNotifications
-
-    private val _followRequestNotifications = MutableLiveData<List<Like>>()
-    val followRequestNotifications: LiveData<List<Like>> = _followRequestNotifications
+    val intent = Channel<NotificationIntent>(Channel.UNLIMITED)
+    private var page by mutableStateOf(0)
+    private var pageSize by mutableStateOf(25)
 
     init {
-        getLikeNotifications()
-        getCommentNotifications()
-        getFollowRequestNotifications()
-    }
-
-    fun getLikeNotifications() {
-        viewModelScope.async(Dispatchers.IO) {
-            val task =
-                notificationsRepository
-                    .getLikes(token!!)
-            val result = Tasks.await(task)
-            result.toObjects(Like::class.java)
+        viewModelScope.launch {
+            triggerIntent()
         }
     }
 
-    fun getCommentNotifications() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val task = notificationsRepository
-                .getFollowRequests(token!!)
-            val result = Tasks.await(task)
-            result.toObjects(Comment::class.java)
-        }
-    }
-
-    private fun getFollowRequestNotifications() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val followRequestNotifications = async(Dispatchers.IO) {
-                val task =
-                    notificationsRepository
-                        .getFollowRequests(token!!)
-                val result = Tasks.await(task)
-                result.toObjects(FollowRequest::class.java)
+    private suspend fun triggerIntent() {
+        intent.consumeAsFlow().collect {
+            when (it) {
+                is NotificationIntent.GetNotifications -> {
+                    getNotifications()
+                    page++
+                }
             }
         }
+    }
+
+    private suspend fun getNotifications() {
+        notificationsRepository
+            .getNotifications(token = token!!, pageSize = pageSize, page = page)
+            .onSuccess {
+                state = NotificationState.NotificationsFetched(it)
+            }
+            .onFailure {
+                handleFailure(it)
+            }
     }
 }

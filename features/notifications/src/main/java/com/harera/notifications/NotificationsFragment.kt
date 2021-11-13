@@ -10,36 +10,58 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.annotation.ExperimentalCoilApi
+import com.harera.model.response.CommentNotification
+import com.example.response.Notification
+import com.harera.compose.CommentCard
 import com.harera.compose.LikeCard
 import com.harera.model.model.Like
+import com.harera.model.response.LikeNotification
 import org.koin.androidx.compose.getViewModel
 
+@ExperimentalCoilApi
 @Composable
 fun HomeNotifications(
     notificationsViewModel: NotificationsViewModel = getViewModel(),
 ) {
-    val notifications by notificationsViewModel.likeNotifications.observeAsState()
+    var notifications by remember { mutableStateOf<List<Notification>>(emptyList()) }
     val scrollState = rememberScrollState()
+    val state = notificationsViewModel.state
+
+    LaunchedEffect(key1 = true) {
+        notificationsViewModel.intent.send(NotificationIntent.GetNotifications)
+    }
+
+    when (state) {
+        is NotificationState.NotificationsFetched -> {
+            notifications = state.notifications
+        }
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(scrollState)
     ) {
-        notifications?.let {
-            LikeNotifications(it)
+        notifications.forEach {
+            when (it.type) {
+
+                1 -> {
+                    LikeCard(likeNotification = it as LikeNotification, onNotificationClicked = {})
+                }
+
+                2 -> {
+                    CommentCard(commentNotification = it as CommentNotification, onNotificationClicked = {})
+                }
+
+            }
         }
     }
-
 }
 
 @Composable
@@ -73,12 +95,6 @@ fun LikeNotifications(
                 break
             }
 
-            LikeCard(
-                like = likeNotifications[i],
-                onNotificationClicked = {
-
-                }
-            )
         }
 
         if (likeNotifications.size > 2)
