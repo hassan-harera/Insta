@@ -1,7 +1,5 @@
 package com.harera.repository.ktor.service
 
-import android.graphics.Bitmap
-import androidx.compose.ui.graphics.ImageBitmap
 import com.harera.insta.di.ServiceModule
 import com.harera.remote.service.PostService
 import io.ktor.util.*
@@ -14,9 +12,6 @@ import org.koin.core.context.loadKoinModules
 import org.koin.core.context.startKoin
 import org.koin.test.KoinTest
 import org.koin.test.inject
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileOutputStream
 
 class PostServiceImplTest : KoinTest {
 

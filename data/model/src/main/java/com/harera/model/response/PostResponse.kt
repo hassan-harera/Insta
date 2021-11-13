@@ -1,5 +1,6 @@
 package com.harera.model.response
 
+import androidx.room.Entity
 import com.harera.model.model.Comment
 import com.harera.model.model.Like
 import com.harera.model.model.Post

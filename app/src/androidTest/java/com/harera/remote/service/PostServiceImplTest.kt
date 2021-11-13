@@ -2,8 +2,6 @@ package com.harera.remote.service
 
 import com.harera.insta.di.ServiceModule
 import io.ktor.util.*
-import org.junit.Assert.*
-
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
