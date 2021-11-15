@@ -91,7 +91,7 @@ fun LikeCard(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = likeNotification.time,
+                    text = TimeUtils.timeFromNow(notification.time),
                     style = TextStyle(
                         fontFamily = FontFamily.Default,
                         fontSize = 16.sp,

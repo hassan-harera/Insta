@@ -17,7 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
 import com.harera.model.response.CommentNotification
-import com.example.response.Notification
+import com.harera.model.response.Notification
 import com.harera.compose.CommentCard
 import com.harera.compose.LikeCard
 import com.harera.model.model.Like

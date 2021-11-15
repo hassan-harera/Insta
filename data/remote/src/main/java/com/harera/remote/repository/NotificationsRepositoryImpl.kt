@@ -1,6 +1,6 @@
 package com.harera.remote.repository
 
-import com.example.response.Notification
+import com.harera.model.response.Notification
 import com.harera.remote.service.NotificationsService
 import com.harera.repository.NotificationsRepository
 
@@ -11,7 +11,7 @@ class NotificationsRepositoryImpl(
     override suspend fun getNotifications(
         token: String, page: Int?,
         pageSize: Int?,
-    ): Result<List<Notification>> = kotlin.runCatching {
+    ): Result<List<Any>> = kotlin.runCatching {
         notificationsService.getNotifications(token = token, page = page, pageSize = pageSize)
     }
 }

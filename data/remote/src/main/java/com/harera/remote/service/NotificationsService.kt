@@ -1,6 +1,6 @@
 package com.harera.remote.service
 
-import com.example.response.Notification
+import com.harera.model.response.Notification
 import com.harera.remote.Routing
 import com.harera.remote.URL
 import io.ktor.client.*
@@ -13,7 +13,7 @@ interface NotificationsService {
         token: String,
         page: Int? = null,
         pageSize: Int? = null,
-    ): List<Notification>
+    ): List<Any>
 }
 
 class NotificationsServiceImpl(private val client: HttpClient) : NotificationsService {
@@ -22,7 +22,7 @@ class NotificationsServiceImpl(private val client: HttpClient) : NotificationsSe
         token: String,
         page: Int?,
         pageSize: Int?,
-    ): List<Notification> =
+    ): List<Any> =
         client.get(
             URL.BASE_URL.plus(Routing.NOTIFICATIONS)
         ) {

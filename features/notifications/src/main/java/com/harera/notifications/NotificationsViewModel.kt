@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.harera.base.base.BaseViewModel
 import com.harera.base.datastore.LocalStore
+import com.harera.model.response.Notification
 import com.harera.repository.NotificationsRepository
 import com.harera.repository.ProfileRepository
 import kotlinx.coroutines.channels.Channel
@@ -33,7 +34,6 @@ class NotificationsViewModel(
             when (it) {
                 is NotificationIntent.GetNotifications -> {
                     getNotifications()
-                    page++
                 }
             }
         }
@@ -43,7 +43,7 @@ class NotificationsViewModel(
         notificationsRepository
             .getNotifications(token = token!!, pageSize = pageSize, page = page)
             .onSuccess {
-                state = NotificationState.NotificationsFetched(it)
+                state = NotificationState.NotificationsFetched(it.map { (it as Notification) } )
             }
             .onFailure {
                 handleFailure(it)
