@@ -1,6 +1,7 @@
 package com.harera.remote.service
 
 import com.harera.model.model.Comment
+import com.harera.model.model.Like
 import com.harera.model.request.CommentRequest
 import com.harera.model.request.LikeRequest
 import com.harera.model.response.PostResponse
@@ -23,6 +24,7 @@ interface PostService {
     suspend fun insertComment(commentRequest: CommentRequest, token: String): String
     suspend fun insertLike(likeRequest: LikeRequest, token: String): String
     suspend fun getPostComments(postId: Int, token: String): List<Comment>
+    suspend fun getPostLikes(postId: Int, token: String): List<Like>
 }
 
 @InternalAPI
@@ -78,7 +80,7 @@ class PostServiceImpl(private val client: HttpClient) : PostService {
             body = commentRequest
         }
 
-    override suspend fun insertLike(likeRequest: LikeRequest, token: String) : String =
+    override suspend fun insertLike(likeRequest: LikeRequest, token: String): String =
         client.post<String> {
             url(URL.BASE_URL.plus("/like"))
             header(HttpHeaders.Authorization, "Bearer ".plus(token))
@@ -86,10 +88,16 @@ class PostServiceImpl(private val client: HttpClient) : PostService {
             body = likeRequest
         }
 
-    override suspend fun getPostComments(postId: Int, token: String) : List<Comment> =
+    override suspend fun getPostComments(postId: Int, token: String): List<Comment> =
         client.get<List<Comment>> {
             url(URL.BASE_URL.plus("posts/$postId/comments"))
             header(HttpHeaders.Authorization, "Bearer ".plus(token))
             contentType(Json)
+        }
+
+    override suspend fun getPostLikes(postId: Int, token: String): List<Like> =
+        client.get<List<Like>> {
+            url(URL.BASE_URL.plus("posts/$postId/likes"))
+            header(HttpHeaders.Authorization, "Bearer ".plus(token))
         }
 }

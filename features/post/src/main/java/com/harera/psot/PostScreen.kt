@@ -1,6 +1,7 @@
 package com.harera.psot
 
 import android.util.Log
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
@@ -27,8 +28,8 @@ import com.harera.post.PostCard
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 
-private const val TAG = "PostScreen"
 
+@ExperimentalAnimationApi
 @ExperimentalCoilApi
 @Composable
 fun PostScreen(
@@ -39,8 +40,6 @@ fun PostScreen(
     var post = remember<PostResponse?> { null }
     val scope = rememberCoroutineScope()
     val state = postViewModel.state
-
-    Log.d(TAG, "PostScreen: $postId")
 
     LaunchedEffect(true) {
         postViewModel.sendIntent(PostIntent.FetchPost(postId = postId))
@@ -89,6 +88,7 @@ fun PostScreen(
     }
 }
 
+@ExperimentalAnimationApi
 @ExperimentalCoilApi
 @Composable
 fun PostView(

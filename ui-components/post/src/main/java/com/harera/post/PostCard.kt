@@ -1,5 +1,9 @@
 package com.harera.post
 
+import android.transition.Fade
+import androidx.compose.animation.*
+import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -45,6 +49,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 
+@ExperimentalAnimationApi
 @ExperimentalCoilApi
 @Preview
 @Composable
@@ -56,6 +61,7 @@ fun PostCardPreview() {
     )
 }
 
+@ExperimentalAnimationApi
 @ExperimentalCoilApi
 @Composable
 fun PostCard(
@@ -76,12 +82,12 @@ fun PostCard(
 
         }
 
-        is PostState.CommentAdded -> {
-
-        }
-
         is PostState.CommentsFetched -> {
             postResponse.comments = state.comments
+        }
+
+        is PostState.LikesFetched -> {
+            postResponse.likes = state.likes
         }
 
         is PostState.PostFetched -> {
@@ -103,7 +109,7 @@ fun PostCard(
                 )
             }
         },
-        whenLikeClicked = { postId ->
+        onLikeClicked = { postId ->
             scope.launch {
                 postViewModel.sendIntent(
                     PostIntent.LikePost(
@@ -115,6 +121,7 @@ fun PostCard(
     )
 }
 
+@ExperimentalAnimationApi
 @ExperimentalCoilApi
 @Composable
 fun PostCardContent(
@@ -122,7 +129,7 @@ fun PostCardContent(
     onProfileClicked: (String) -> Unit,
     onPostClicked: (Int) -> Unit,
     whenCommentSubmitted: (comment: String, postId: Int) -> Unit,
-    whenLikeClicked: (Int) -> Unit,
+    onLikeClicked: (Int) -> Unit,
     localStoreViewModel: LocalStoreViewModel = getViewModel(),
 ) {
     val context = LocalContext.current
@@ -350,26 +357,9 @@ fun PostCardContent(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .clickable {
-                                whenLikeClicked(postDetails.post.postId)
-                            },
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.ThumbUp,
-                            contentDescription = null,
-                            modifier = Modifier.size(25.dp)
-                        )
 
-                        Spacer(modifier = Modifier.size(5.dp))
-
-                        Text(
-                            textAlign = TextAlign.Center,
-                            text = like
-                        )
+                    LikeIcon {
+                        onLikeClicked(postDetails.post.postId)
                     }
 
                     Row(
@@ -451,4 +441,43 @@ fun PostCardContent(
         }
     }
 
+}
+
+@ExperimentalAnimationApi
+@Composable
+fun LikeIcon(
+    onClicked: () -> Unit,
+) {
+    var visible by remember { mutableStateOf(false) }
+
+    Row(
+        modifier = Modifier.clickable {
+            onClicked()
+            visible = true
+        },
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+
+        AnimatedVisibility(
+            visible = visible,
+            enter = fadeIn(
+                initialAlpha = 0.3f
+            ),
+            exit = fadeOut()
+        ) {
+            Image(
+                imageVector = Icons.Outlined.ThumbUp,
+                contentDescription = null,
+                modifier = Modifier.size(25.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.size(5.dp))
+
+        Text(
+            textAlign = TextAlign.Center,
+            text = like
+        )
+    }
 }

@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.harera.base.base.BaseViewModel
 import com.harera.base.datastore.LocalStore
 import com.harera.base.state.PostState
-import com.harera.base.state.State
+import com.harera.base.state.BaseState
 import com.harera.model.request.LikeRequest
 import com.harera.repository.PostRepository
 import com.harera.repository.ProfileRepository
@@ -72,13 +72,13 @@ class PostViewModel constructor(
             }
             .onFailure {
                 handleFailure(it)
-                state = State.Error(it.message)
+                state = BaseState.Error(it.message)
             }
     }
 
     private suspend fun getPostLikes(postId: Int) =
         postRepository
-            .getPostLikes(postId)
+            .getPostLikes(token!!, postId)
 
     private suspend fun addComment(comment: String, postId: Int) {
         postRepository

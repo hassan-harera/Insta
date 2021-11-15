@@ -33,13 +33,15 @@ class PostRepositoryImpl(
         postService.getPost(token, postId)
     }
 
-    override suspend fun getPostLikes(postId: Int): List<Like> {
-        TODO("Not yet implemented")
+    override suspend fun getPostLikes(token: String, postId: Int): Result<List<Like>> = kotlin.runCatching {
+        postService.getPostLikes(postId = postId, token = token)
     }
 
-    override suspend fun getPostComments(token: String, postId: Int): Result<List<Comment>> = kotlin.runCatching {
-        postService.getPostComments(postId = postId, token = token)
-    }
+    override suspend fun getPostComments(token: String, postId: Int): Result<List<Comment>> =
+        kotlin.runCatching {
+            postService.getPostComments(postId = postId, token = token)
+        }
+
     override suspend fun updatePost(post: Post): Result<Boolean> {
         TODO("Not yet implemented")
     }

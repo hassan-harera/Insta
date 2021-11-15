@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.harera.base.base.BaseViewModel
 import com.harera.base.datastore.LocalStore
 import com.harera.base.state.PostState
-import com.harera.base.state.State
+import com.harera.base.state.BaseState
 import com.harera.model.request.LikeRequest
 import com.harera.repository.PostRepository
 import com.harera.repository.ProfileRepository
@@ -72,13 +72,22 @@ class PostViewModel constructor(
             }
             .onFailure {
                 handleFailure(it)
-                state = State.Error(it.message)
+                state = BaseState.Error(it.message)
             }
     }
 
-    private suspend fun getPostLikes(postId: Int) =
+    private suspend fun getLikes(postId: Int) {
         postRepository
-            .getPostLikes(postId)
+            .getPostLikes(token!!, postId)
+            .onSuccess {
+                state = PostState.LikesFetched(it)
+            }
+            .onFailure {
+                handleFailure(it)
+                state = BaseState.Error(it.message)
+            }
+    }
+
 
     private suspend fun addComment(comment: String, postId: Int) {
         postRepository
@@ -95,23 +104,6 @@ class PostViewModel constructor(
             }
     }
 
-    private suspend fun checkLike(postId: Int) {
-        postRepository
-            .checkPostLike(
-                postId = postId,
-                uid = token!!,
-            )
-            .onSuccess {
-                if (it == null)
-                    addLike(postId = postId)
-                else
-                    removeLike(postId)
-            }.onFailure {
-                handleFailure(it)
-                state = PostState.Error(it.message)
-            }
-    }
-
     private suspend fun addLike(postId: Int) {
         postRepository
             .insertLike(LikeRequest(postId = postId,),token = token!!)
@@ -120,20 +112,7 @@ class PostViewModel constructor(
                 state = PostState.Error(it.message)
             }
             .onSuccess {
-//                TODO get the comment
+                getLikes(postId = postId)
             }
     }
-
-    private suspend fun removeLike(postUid: Int) = kotlin.runCatching {
-        postRepository
-            .unlikePost(likeRequest = LikeRequest(postUid))
-            .onSuccess {
-                state = PostState.Error("couldn't remove like")
-            }
-            .onFailure {
-                handleFailure(it)
-                state = PostState.Error("couldn't remove like")
-            }
-    }
-
 }

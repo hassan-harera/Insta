@@ -10,7 +10,7 @@ import java.io.File
 interface PostRepository {
 
     suspend fun getFeedPosts(token: String,): Result<List<PostResponse>>
-    suspend fun getPostLikes(postId: Int): List<Like>
+    suspend fun getPostLikes(token: String, postId: Int): Result<List<Like>>
     suspend fun getPostComments(token: String, postId: Int): Result<List<Comment>>
     suspend fun updatePost(post: Post): Result<Boolean>
     suspend fun searchPosts(searchWord: String): Result<List<Post>>
