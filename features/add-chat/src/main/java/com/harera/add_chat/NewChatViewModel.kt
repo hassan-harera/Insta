@@ -4,7 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.harera.base.base.BaseViewModel
 import com.harera.base.datastore.LocalStore
 import com.harera.base.state.NewChatState
-import com.harera.base.state.State
+import com.harera.base.state.BaseState
 import com.harera.repository.ProfileRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -42,7 +42,7 @@ class NewChatViewModel constructor(
                 state = NewChatState.Connections(it)
             }
             .onFailure {
-                state = State.Error(it)
+                state = BaseState.Error(it)
                 handleFailure(it)
             }
     }

@@ -32,7 +32,7 @@ import coil.compose.rememberImagePainter
 import com.harera.base.DummyDate
 import com.harera.base.navigation.chat.NavigationIcon
 import com.harera.base.state.ChatState
-import com.harera.base.state.State
+import com.harera.base.state.BaseState
 import com.harera.base.theme.Orange158
 import com.harera.base.theme.Orange166
 import com.harera.compose.Toast
@@ -71,7 +71,7 @@ fun ChatScreen(
             messages = state.messages
         }
 
-        is State.Error -> {
+        is BaseState.Error -> {
             Toast(message = state.data.toString())
         }
     }

@@ -4,7 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.harera.base.base.BaseViewModel
 import com.harera.base.datastore.LocalStore
 import com.harera.base.state.ChatState
-import com.harera.base.state.State
+import com.harera.base.state.BaseState
 import com.harera.repository.ChatRepository
 import com.harera.repository.ProfileRepository
 import kotlinx.coroutines.Dispatchers
@@ -52,7 +52,7 @@ class ChatViewModel constructor(
                 state = ChatState.ProfileState(it)
             }.onFailure {
                 handleFailure(it)
-                state = State.Error(it.message)
+                state = BaseState.Error(it.message)
             }
     }
 
@@ -68,7 +68,7 @@ class ChatViewModel constructor(
             }
             .onFailure {
                 handleFailure(it)
-                state = State.Error(it.message)
+                state = BaseState.Error(it.message)
             }
     }
 
@@ -84,7 +84,7 @@ class ChatViewModel constructor(
             }
             .onFailure {
                 handleFailure(it)
-                state = State.Error(it.message)
+                state = BaseState.Error(it.message)
             }
     }
 }
