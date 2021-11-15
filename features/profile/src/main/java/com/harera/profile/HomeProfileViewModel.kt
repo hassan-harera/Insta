@@ -3,8 +3,7 @@ package com.harera.profile
 import androidx.lifecycle.viewModelScope
 import com.harera.base.base.BaseViewModel
 import com.harera.base.datastore.LocalStore
-import com.harera.base.state.ProfileState
-import com.harera.base.state.State
+import com.harera.base.state.BaseState
 import com.harera.repository.PostRepository
 import com.harera.repository.ProfileRepository
 import kotlinx.coroutines.Dispatchers
@@ -17,9 +16,9 @@ class HomeProfileViewModel constructor(
     private val profileRepository: ProfileRepository,
     private val postRepository: PostRepository,
     userDatastore: LocalStore,
-) : BaseViewModel<ProfileState>(userDatastore) {
+) : BaseViewModel<HomeProfileState>(userDatastore) {
 
-    var intent = Channel<ProfileIntent>(Channel.UNLIMITED)
+    var intent = Channel<HomeProfileIntent>(Channel.UNLIMITED)
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -30,11 +29,13 @@ class HomeProfileViewModel constructor(
     private suspend fun processIntent() {
         intent.consumeAsFlow().collect { intent ->
             when (intent) {
-                is ProfileIntent.GetProfile -> {
+                is HomeProfileIntent.GetProfile -> {
+                    state = BaseState.Loading()
                     getProfile()
                 }
 
-                is ProfileIntent.GetPosts -> {
+                is HomeProfileIntent.GetPosts -> {
+                    state = BaseState.Loading()
                     getPosts()
                 }
             }
@@ -42,29 +43,25 @@ class HomeProfileViewModel constructor(
     }
 
     private suspend fun getPosts() {
-        state = ProfileState.Loading()
-
         postRepository
             .getProfilePosts(token!!)
             .onSuccess {
-                state = ProfileState.PostsFetched(it)
+                state = HomeProfileState.PostsFetched(it)
             }
             .onFailure {
-                state = State.Error(it.message)
+                state = BaseState.Error(it.message)
                 handleFailure(it)
             }
     }
 
     private suspend fun getProfile() {
-        state = ProfileState.Loading()
-
         profileRepository
             .getProfile(token!!)
             .onSuccess {
-                state = ProfileState.ProfilePrepared(it)
+                state = HomeProfileState.ProfilePrepared(it)
             }
             .onFailure {
-                state = State.Error(it.message)
+                state = BaseState.Error(it.message)
                 handleFailure(it)
             }
     }

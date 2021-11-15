@@ -1,6 +1,7 @@
 package com.harera.profile
 
 import android.util.Log
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -35,9 +36,9 @@ import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
 import com.harera.base.DummyDate
 import com.harera.base.base.LocalStoreViewModel
-import com.harera.base.state.ProfileState
-import com.harera.base.theme.Orange166
+import com.harera.base.state.BaseState
 import com.harera.base.theme.Orange158
+import com.harera.base.theme.Orange166
 import com.harera.compose.Toast
 import com.harera.model.model.User
 import com.harera.model.response.PostResponse
@@ -59,40 +60,37 @@ fun HomeProfile(
     var posts by remember { mutableStateOf<List<PostResponse>>(emptyList()) }
 
     LaunchedEffect(true) {
-        homeProfileViewModel.intent.send(ProfileIntent.GetProfile)
-        homeProfileViewModel.intent.send(ProfileIntent.GetPosts)
+        homeProfileViewModel.intent.send(HomeProfileIntent.GetProfile)
+        homeProfileViewModel.intent.send(HomeProfileIntent.GetPosts)
     }
 
     val state = homeProfileViewModel.state
+
     when (state) {
-        is ProfileState.Loading -> {
+        is BaseState.Loading -> {
             Shimmer()
         }
 
-        is ProfileState.Error -> {
-            Toast(message = state.message)
+        is BaseState.Error -> {
+            Toast(message = state.data.toString())
         }
 
-        is ProfileState.PostsFetched -> {
+        is HomeProfileState.PostsFetched -> {
             posts = state.postList
-            HomeProfileContent(
-                profile,
-                posts,
-                navController,
-            )
         }
 
-        is ProfileState.ProfilePrepared -> {
+        is HomeProfileState.ProfilePrepared -> {
             profile = state.user
-            HomeProfileContent(
-                profile,
-                posts,
-                navController,
-            )
+            Log.d(TAG, "HomeProfile: ${state.user.toString()}")
         }
     }
 
-    Log.d(TAG, "Profile: ${profile.toString()}")
+    HomeProfileContent(
+        profile,
+        posts,
+        navController,
+    )
+
     Log.d(TAG, "posts: ${posts.toMutableList()}")
     Log.d(TAG, "State: ${state::class.java.name}")
 }
@@ -102,6 +100,7 @@ fun Shimmer() {
     LoadingProfileListShimmer()
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @ExperimentalCoilApi
 @Composable
 fun HomeProfileContent(

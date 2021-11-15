@@ -1,7 +1,7 @@
 package com.harera.feed
 
-import android.util.Log
 import android.widget.Toast
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
@@ -30,6 +30,7 @@ import org.koin.androidx.compose.getViewModel
 
 private const val TAG = "HomeFeed"
 
+@ExperimentalAnimationApi
 @ExperimentalCoilApi
 @Composable
 fun HomeFeed(
@@ -39,19 +40,15 @@ fun HomeFeed(
     val state = feedViewModel.state
     val scope = rememberCoroutineScope()
 
-    Log.d(TAG, "HomeFeed: ${state.javaClass}")
-
     LaunchedEffect(key1 = true) {
-        Log.d(TAG, "HomeFeed: FetchPosts")
         feedViewModel.intent.send(FeedIntent.FetchPosts)
     }
-
 
     when (state) {
         is FeedState.Error -> {
             Toast.makeText(
                 LocalContext.current,
-                state.message ?: "",
+                state.message ?: "Some thing went wrong",
                 Toast.LENGTH_SHORT
             ).show()
         }
@@ -151,6 +148,7 @@ fun TopFeedBar(
     }
 }
 
+@ExperimentalAnimationApi
 @ExperimentalCoilApi
 @Composable
 fun HomeFeedContent(
