@@ -1,4 +1,4 @@
-package com.harera.posting
+package com.harera.text_post
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult

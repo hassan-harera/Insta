@@ -19,8 +19,7 @@ fun PostListView(
     navController: NavHostController,
 ) {
     Column {
-        val postsCopies = posts.toList()
-        postsCopies.forEach { post ->
+        posts.toList().forEach { post ->
             PostCard(
                 postResponse = post,
                 onPostClicked = { postId ->

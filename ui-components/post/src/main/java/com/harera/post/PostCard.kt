@@ -1,9 +1,6 @@
 package com.harera.post
 
-import android.transition.Fade
-import androidx.compose.animation.*
-import androidx.compose.animation.core.AnimationSpec
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -47,6 +44,7 @@ import com.harera.time.TimeUtils.Companion.timeFromNow
 import io.ktor.http.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.get
 import org.koin.androidx.compose.getViewModel
 
 @ExperimentalAnimationApi
@@ -66,7 +64,7 @@ fun PostCardPreview() {
 @Composable
 fun PostCard(
     postResponse: PostResponse,
-    postViewModel: PostViewModel = getViewModel(),
+    postViewModel: PostViewModel = get(),
     onProfileClicked: (String) -> Unit,
     onPostClicked: (Int) -> Unit,
 ) {
@@ -134,6 +132,7 @@ fun PostCardContent(
 ) {
     val context = LocalContext.current
     var comment by remember { mutableStateOf("") }
+    val username = localStoreViewModel.username
     var commentFieldState by remember { mutableStateOf(false) }
     var dropDownState by remember { mutableStateOf(false) }
 
@@ -358,9 +357,10 @@ fun PostCardContent(
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
 
-                    LikeIcon {
-                        onLikeClicked(postDetails.post.postId)
-                    }
+                    LikeIcon(
+                        isLiked = postDetails.likes.any { it.username == username },
+                        onClicked = { onLikeClicked(postDetails.post.postId) }
+                    )
 
                     Row(
                         modifier = Modifier
@@ -436,42 +436,30 @@ fun PostCardContent(
                             }
                         )
                     )
-
             }
         }
     }
-
 }
 
 @ExperimentalAnimationApi
 @Composable
 fun LikeIcon(
     onClicked: () -> Unit,
+    isLiked: Boolean,
 ) {
-    var visible by remember { mutableStateOf(false) }
-
     Row(
         modifier = Modifier.clickable {
             onClicked()
-            visible = true
         },
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
-
-        AnimatedVisibility(
-            visible = visible,
-            enter = fadeIn(
-                initialAlpha = 0.3f
-            ),
-            exit = fadeOut()
-        ) {
-            Image(
-                imageVector = Icons.Outlined.ThumbUp,
-                contentDescription = null,
-                modifier = Modifier.size(25.dp)
-            )
-        }
+        Icon(
+            imageVector = if (isLiked) Icons.Filled.ThumbUp else Icons.Outlined.ThumbUp,
+            contentDescription = null,
+            modifier = Modifier.size(25.dp),
+            tint = Orange158
+        )
 
         Spacer(modifier = Modifier.size(5.dp))
 
