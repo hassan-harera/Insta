@@ -2,12 +2,12 @@ package com.harera.model.response
 
 import kotlinx.serialization.Serializable
 
-@Serializable
-data class LikeNotification(
-    override var type: Int,
-    override var time: String,
-    val likeCount: Int,
-    val postId: Int,
-    val postImageUrl: String,
-    val profileName: String,
-) : Notification()
+//@Serializable
+//data class Notification(
+//    override var type: Int,
+//    override var time: String,
+//    override var likeCount: Int,
+//    override var postId: Int,
+//    override var postImageUrl: String,
+//    override var profileName: String,
+//) : Notification()

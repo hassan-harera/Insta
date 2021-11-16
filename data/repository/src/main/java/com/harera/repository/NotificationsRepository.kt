@@ -4,5 +4,5 @@ import com.harera.model.response.Notification
 
 interface NotificationsRepository {
 
-    suspend fun getNotifications(token: String, page : Int? = null, pageSize: Int?): Result<List<Any>>
+    suspend fun getNotifications(token: String, page : Int? = null, pageSize: Int?): Result<List<Notification>>
 }

@@ -13,7 +13,7 @@ interface NotificationsService {
         token: String,
         page: Int? = null,
         pageSize: Int? = null,
-    ): List<Any>
+    ): List<Notification>
 }
 
 class NotificationsServiceImpl(private val client: HttpClient) : NotificationsService {
@@ -22,7 +22,7 @@ class NotificationsServiceImpl(private val client: HttpClient) : NotificationsSe
         token: String,
         page: Int?,
         pageSize: Int?,
-    ): List<Any> =
+    ): List<Notification> =
         client.get(
             URL.BASE_URL.plus(Routing.NOTIFICATIONS)
         ) {

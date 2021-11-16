@@ -2,7 +2,6 @@ package com.harera.compose
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -24,18 +23,19 @@ import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.google.gson.Gson
 import com.harera.base.theme.Orange158
-import com.harera.model.response.LikeNotification
+import com.harera.model.response.Notification
 import com.harera.time.TimeUtils
 
-private val notification: LikeNotification = Gson().fromJson("    {\n" +
-"        \"type\": 1,\n" +
-"        \"time\": \"2021-11-13T10:25:05\",\n" +
-"        \"likeCount\": 2,\n" +
-"        \"postId\": 23,\n" +
-"        \"postImageUrl\": \"http://192.168.1.15:8080/images/posts/17.jpg\",\n" +
-"        \"profileName\": \"hassan\"\n" +
-"    }", LikeNotification::class.java)
-
+private val notification: Notification = Gson().fromJson(
+    "    {\n" +
+            "        \"type\": 1,\n" +
+            "        \"time\": \"2021-11-13T10:25:05\",\n" +
+            "        \"likeCount\": 2,\n" +
+            "        \"postId\": 23,\n" +
+            "        \"postImageUrl\": \"http://192.168.1.15:8080/images/posts/17.jpg\",\n" +
+            "        \"profileName\": \"hassan\"\n" +
+            "    }",
+    Notification::class.java)
 
 @ExperimentalCoilApi
 @Composable
@@ -52,13 +52,25 @@ fun LikeList() {
     }
 }
 
-
 @ExperimentalCoilApi
 @Composable
 fun LikeCard(
-    likeNotification: LikeNotification,
+    likeNotification: Notification,
     onNotificationClicked: (postId: Int) -> Unit,
 ) {
+    val text = (
+            likeNotification.profileName
+                .plus(
+                    if (likeNotification.likeCount != 0)
+                        " and ${likeNotification.likeCount} others"
+                    else
+                        ""
+                )
+                .plus(
+                    " has liked your post"
+                )
+            )
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -81,7 +93,6 @@ fun LikeCard(
                 modifier = Modifier
                     .size(50.dp)
                     .clip(CircleShape)
-                    .border(3.dp, color = Orange158)
             )
 
             Spacer(modifier = Modifier.size(15.dp))
@@ -91,7 +102,7 @@ fun LikeCard(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = TimeUtils.timeFromNow(notification.time),
+                    text = text,
                     style = TextStyle(
                         fontFamily = FontFamily.Default,
                         fontSize = 16.sp,

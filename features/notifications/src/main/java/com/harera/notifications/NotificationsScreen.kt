@@ -16,12 +16,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
-import com.harera.model.response.CommentNotification
 import com.harera.model.response.Notification
 import com.harera.compose.CommentCard
 import com.harera.compose.LikeCard
 import com.harera.model.model.Like
-import com.harera.model.response.LikeNotification
 import org.koin.androidx.compose.getViewModel
 
 @ExperimentalCoilApi
@@ -52,11 +50,11 @@ fun HomeNotifications(
             when (it.type) {
 
                 1 -> {
-                    LikeCard(likeNotification = it as LikeNotification, onNotificationClicked = {})
+                    LikeCard(likeNotification = it, onNotificationClicked = {})
                 }
 
                 2 -> {
-                    CommentCard(commentNotification = it as CommentNotification, onNotificationClicked = {})
+                    CommentCard(commentNotification = it, onNotificationClicked = {})
                 }
 
             }
