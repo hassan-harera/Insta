@@ -43,6 +43,7 @@ android {
         exclude("META-INF/AL2.0")
         exclude("META-INF/LGPL2.1")
     }
+
 }
 
 dependencies {
@@ -61,7 +62,8 @@ dependencies {
     implementation(project(Features.profile))
     implementation(project(Features.visitProfile))
     implementation(project(Features.post))
-    implementation(project(Features.posting))
+    implementation(project(Features.imagePosting))
+    implementation(project(Features.textPosting))
     implementation(project(Features.feed))
 
     implementation(project(UiComponents.post))

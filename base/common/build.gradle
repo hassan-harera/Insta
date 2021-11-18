@@ -13,6 +13,8 @@ dependencies {
     implementation(Room.roomRuntime)
     implementation project(path: ':data:remote')
 
+    implementation(Compose.accompanist)
+
     //Koin
     implementation(DI.koinCore)
     implementation(DI.koinCompose)

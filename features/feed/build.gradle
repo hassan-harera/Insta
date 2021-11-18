@@ -1,9 +1,18 @@
 apply from: ("$rootDir/feature-library-build.gradle")
-
+android {
+    kotlinOptions {
+        jvmTarget = "1.8"
+        freeCompilerArgs += [
+                "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
+                "-Xuse-experimental=androidx.compose.material.ExperimentalMaterialApi",
+                "-Xuse-experimental=kotlinx.coroutines.ObsoleteCoroutinesApi"]
+    }
+}
 dependencies {
     implementation(project(Core.repository))
     implementation(project(UiComponents.post))
     implementation Libs.playServicesTasks
+    implementation Compose.toolbar
 
     testImplementation(DI.koinTest)
     testImplementation(DI.koinJUnit4)

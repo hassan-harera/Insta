@@ -31,6 +31,14 @@ android {
         exclude("META-INF/AL2.0")
         exclude("META-INF/LGPL2.1")
     }
+    kotlinOptions {
+        jvmTarget = "1.8"
+        freeCompilerArgs += [
+                "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
+                "-Xuse-experimental=androidx.compose.material.ExperimentalMaterialApi",
+                "-Xuse-experimental=androidx.compose.ui.unit.ExperimentalUnitApi",
+                "-Xuse-experimental=kotlinx.coroutines.ObsoleteCoroutinesApi"]
+    }
 }
 
 dependencies {
@@ -42,6 +50,7 @@ dependencies {
     implementation(Compose.composeMaterial)
     implementation(Compose.composeNavigation)
     implementation(Compose.composePreview)
+    implementation(Compose.accompanist)
     implementation(Compose.composJUnitTest)
 
     implementation project(Core.common)
@@ -56,6 +65,7 @@ dependencies {
     implementation(DI.koinCore)
     implementation(DI.koinCompose)
     implementation(DI.koinAndroid)
+
 
     implementation(Libs.preferences)
     implementation(Libs.coilCompose)

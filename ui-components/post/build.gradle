@@ -1,6 +1,13 @@
 apply {
     from("$rootDir/component-library-build.gradle")
 }
+
+android {
+    buildFeatures {
+        compose true
+    }
+}
+
 dependencies {
     implementation(Libs.serializer)
     implementation(Room.roomRuntime)

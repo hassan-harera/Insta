@@ -14,5 +14,6 @@ dependencies {
     implementation(Ktor.ktorClientGson)
 
     implementation(Libs.coroutinesCore)
+    implementation(WebSocket.javaWebSocket)
     implementation(Libs.coroutinesAndroid)
 }
