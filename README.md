@@ -1,6 +1,8 @@
 # Insta
-
 Insta is a social network App for provids most of the features that popular social media APPs provide like Facebook, Twitter, LinkedIn
+
+
+![GitHub Cards Preview](https://github.com/hassan0shaban/Insta/blob/master/out/screenshots_group.png?raw=true)
 
 
 
@@ -21,7 +23,7 @@ Insta is a social network App for provids most of the features that popular soci
 - Room Database
 - WebSocket connections
 - Lottei animation
-- Library integration (<a href="https://github.com/OpenSooq/Gligar">Gliger Picker</a>, <a href="https://github.com/hdodenhof/CircleImageView">Circle Image</a>,..)
+
 
 
 
