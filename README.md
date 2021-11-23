@@ -28,12 +28,15 @@ Insta is a social network App for provids most of the features that popular soci
 # Setup
 - You need the Android Studio Arctic Fox | 2020.3.1 or earlier to be able to build the app
 - You need the Intellij 2021.2.2 ultimate 
+- gradle version 7.1
+- Ktlin version 1.5.31
 
 # Features
 - Email login
 - Social login
-- Chatting
-- Connections posts feeding 
+- Text posting like WhatsApp status & Image posting like Instagram
+- Chatting like Messenger using WebSocket connection
+- Connections posts feeding
 - Like, Comment actions
 - Edit Profile
 - Search profiles & posts
@@ -51,6 +54,8 @@ Insta is a social network App for provids most of the features that popular soci
 
 # Upcoming features
 - Share feature
+- push messages in background
+- push notifiactions in background
 
 
 ## 📃 License
