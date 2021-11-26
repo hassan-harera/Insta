@@ -13,7 +13,6 @@ dependencies {
     api(Libs.firebaseStorage)
 
     //gms play
-    implementation(Libs.playServicesAuth)
     implementation(Libs.playServicesAuthPhone)
     implementation(Libs.playServicesMaps)
     implementation(Libs.playServicesTasks)

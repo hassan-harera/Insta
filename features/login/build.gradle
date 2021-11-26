@@ -15,8 +15,12 @@ dependencies {
     implementation Libs.navigationFragment
     implementation Libs.materialDesign
 
-    /* Testing */
-    implementation(Libs.playServicesAuth)
+    implementation SocialLogin.facebookLogin
+
+    implementation Ktor.ktorClientAndroid
+
+    implementation(Libs.googleAuth)
+
     //Koin
     implementation(DI.koinAndroid)
     implementation(DI.koinCore)

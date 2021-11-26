@@ -14,4 +14,5 @@ dependencies {
     implementation(project(Features.imagePosting))
     implementation(project(Features.textPosting))
     implementation(project(Features.feed))
+    implementation(project(Features.search))
 }

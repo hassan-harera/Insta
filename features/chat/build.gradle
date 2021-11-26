@@ -2,6 +2,7 @@ apply from: "$rootDir/feature-library-build.gradle"
 
 dependencies {
     implementation(project(Core.common))
+    implementation(project(Core.time))
     implementation(project(Core.repository))
     implementation(project(Core.components))
     implementation(Compose.composeNavigation)
