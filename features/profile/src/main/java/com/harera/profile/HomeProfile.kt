@@ -20,6 +20,8 @@ import androidx.compose.ui.Alignment.Companion.BottomEnd
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -33,19 +35,21 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
-import coil.request.ImageRequest
 import com.harera.base.DummyDate
 import com.harera.base.base.LocalStoreViewModel
+import com.harera.base.coil.CoilLoader
+import com.harera.base.coil.CoilUtils.createRequest
 import com.harera.base.state.BaseState
-import com.harera.base.theme.Orange158
-import com.harera.base.theme.Orange166
+import com.harera.base.theme.InstaTheme
+import com.harera.base.theme.White
+import com.harera.compose.LoadingPostListShimmer
 import com.harera.compose.Toast
 import com.harera.model.model.User
 import com.harera.model.response.PostResponse
 import com.harera.post.PostListView
-import io.ktor.http.*
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.get
 import org.koin.androidx.compose.getViewModel
 
 private const val TAG = "HomeProfile"
@@ -57,10 +61,12 @@ fun HomeProfile(
     navController: NavHostController,
 ) {
     var profile by remember { mutableStateOf<User?>(null) }
+    var loading by remember { mutableStateOf<Boolean>(true) }
     var posts by remember { mutableStateOf<List<PostResponse>>(emptyList()) }
 
     LaunchedEffect(true) {
         homeProfileViewModel.intent.send(HomeProfileIntent.GetProfile)
+        delay(600)
         homeProfileViewModel.intent.send(HomeProfileIntent.GetPosts)
     }
 
@@ -68,36 +74,47 @@ fun HomeProfile(
 
     when (state) {
         is BaseState.Loading -> {
-            Shimmer()
+            loading = true
+            Log.d(TAG, "HomeProfile: $state")
         }
 
         is BaseState.Error -> {
+            loading = false
             Toast(message = state.data.toString())
+            Log.d(TAG, "HomeProfile: $state")
         }
 
         is HomeProfileState.PostsFetched -> {
+            loading = false
             posts = state.postList
+            Log.d(TAG, "HomeProfile: $state")
         }
 
         is HomeProfileState.ProfilePrepared -> {
+            loading = false
             profile = state.user
-            Log.d(TAG, "HomeProfile: ${state.user.toString()}")
+            Log.d(TAG, "HomeProfile: $state")
         }
     }
 
-    HomeProfileContent(
-        profile,
-        posts,
-        navController,
-    )
-
-    Log.d(TAG, "posts: ${posts.toMutableList()}")
-    Log.d(TAG, "State: ${state::class.java.name}")
+    if (loading)
+        Shimmer()
+    else
+        HomeProfileContent(
+            profile,
+            posts.sortedByDescending { it.post.time },
+            navController,
+        )
 }
 
 @Composable
 fun Shimmer() {
-    LoadingProfileListShimmer()
+    InstaTheme {
+        LoadingPostListShimmer(
+            imageHeight = 300.dp,
+            padding = 5.dp
+        )
+    }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -116,7 +133,6 @@ fun HomeProfileContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
             .verticalScroll(scrollState),
     ) {
         user?.let {
@@ -129,7 +145,8 @@ fun HomeProfileContent(
                 posts = posts,
             )
 
-            if (scrollState.value > 0) {
+//            TODO handle pop to up floating action button
+            if (scrollState.isScrollInProgress) {
                 Box(
                     modifier = Modifier
                         .align(BottomEnd)
@@ -141,13 +158,13 @@ fun HomeProfileContent(
                                 scrollState.scrollTo(0)
                             }
                         },
-                        backgroundColor = Orange158,
+                        backgroundColor = MaterialTheme.colors.background,
                     ) {
                         Icon(
                             modifier = Modifier.size(30.dp),
                             imageVector = Icons.Default.KeyboardArrowUp,
                             contentDescription = null,
-                            tint = Color.White
+                            tint = MaterialTheme.colors.primary
                         )
                     }
                 }
@@ -168,6 +185,7 @@ fun ProfileHeaderPreview() {
 fun ProfileHeader(
     user: User,
     localStoreViewModel: LocalStoreViewModel = getViewModel(),
+    coilLoader: CoilLoader = get(),
 ) {
     val context = LocalContext.current
 
@@ -175,23 +193,16 @@ fun ProfileHeader(
         modifier = Modifier
             .fillMaxWidth()
             .height(150.dp)
-            .background(Orange166)
+            .background(MaterialTheme.colors.secondaryVariant)
             .padding(top = 10.dp, start = 10.dp),
     ) {
         Image(
-            painter = rememberImagePainter(
-                request = ImageRequest.Builder(context)
-                    .data(user.userImageUrl)
-                    .crossfade(true)
-                    .dispatcher(Dispatchers.IO)
-                    .addHeader(HttpHeaders.Authorization, "Bearer ${localStoreViewModel.token}")
-                    .build()
-            ),
+            painter = rememberImagePainter(coilLoader.imageRequest(user.userImageUrl)),
             contentDescription = null,
             Modifier
-                .clip(CircleShape)
                 .fillMaxHeight(0.8f)
                 .fillMaxWidth(0.3f)
+                .clip(CircleShape)
         )
 
         Spacer(modifier = Modifier.size(10.dp))
@@ -238,8 +249,8 @@ fun ProfileTopBar() {
 
     TopAppBar(
         modifier = Modifier.padding(0.dp),
-        backgroundColor = Orange158,
-        contentColor = Orange158,
+        backgroundColor = White,
+        contentColor = White,
         title = {
             TextField(
                 value = searchWord,

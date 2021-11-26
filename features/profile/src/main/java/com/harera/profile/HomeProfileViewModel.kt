@@ -58,7 +58,7 @@ class HomeProfileViewModel constructor(
         profileRepository
             .getProfile(token!!)
             .onSuccess {
-                state = HomeProfileState.ProfilePrepared(it)
+                state = HomeProfileState.ProfilePrepared(user = it)
             }
             .onFailure {
                 state = BaseState.Error(it.message)

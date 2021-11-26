@@ -4,11 +4,11 @@ import android.widget.Toast
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,7 +23,9 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.harera.base.navigation.home.HomeNavigationRouting
+import com.harera.base.state.BaseState
 import com.harera.base.state.FeedState
+import com.harera.compose.LoadingPostListShimmer
 import com.harera.model.response.PostResponse
 import com.harera.post.PostListView
 import org.koin.androidx.compose.getViewModel
@@ -33,28 +35,59 @@ private const val TAG = "HomeFeed"
 @ExperimentalAnimationApi
 @ExperimentalCoilApi
 @Composable
+@Stable
 fun HomeFeed(
     feedViewModel: FeedViewModel = getViewModel(),
     navController: NavHostController,
 ) {
     val state = feedViewModel.state
-    val scope = rememberCoroutineScope()
 
     LaunchedEffect(key1 = true) {
         feedViewModel.intent.send(FeedIntent.FetchPosts)
     }
 
+    Column {
+        TopFeedBar(
+            onImagePostClicked = {
+                navController.navigate(HomeNavigationRouting.ImagePosting) {
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            },
+            onTextPostClicked = {
+                navController.navigate(HomeNavigationRouting.TextPosting) {
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            }
+        )
+
+        ViewAdapter(
+            state = state,
+            navController = navController
+        )
+    }
+}
+
+@ExperimentalCoilApi
+@ExperimentalAnimationApi
+@Composable
+private fun ViewAdapter(
+    state: BaseState,
+    navController: NavHostController,
+) {
+
     when (state) {
-        is FeedState.Error -> {
+        is BaseState.Error -> {
             Toast.makeText(
                 LocalContext.current,
-                state.message ?: "Some thing went wrong",
+                state.data.toString(),
                 Toast.LENGTH_SHORT
             ).show()
         }
 
         is FeedState.LoadingMore -> {
-            LoadingRecipeListShimmer(
+            LoadingPostListShimmer(
                 imageHeight = 300.dp,
                 padding = 5.dp
             )
@@ -62,13 +95,13 @@ fun HomeFeed(
 
         is FeedState.Posts -> {
             HomeFeedContent(
-                posts = state.posts,
+                posts = state.posts.sortedByDescending { it.post.time },
                 navController = navController
             )
         }
 
-        is FeedState.Loading -> {
-            LoadingRecipeListShimmer(
+        is BaseState.Loading -> {
+            LoadingPostListShimmer(
                 imageHeight = 300.dp,
                 padding = 5.dp
             )
@@ -77,7 +110,7 @@ fun HomeFeed(
 }
 
 @Composable
-@Preview
+@Preview(showBackground = true)
 fun TopFeedBarPreview() {
     TopFeedBar(
         {
@@ -94,60 +127,61 @@ fun TopFeedBar(
     onImagePostClicked: () -> Unit,
 ) {
     val topBar = rememberScrollState()
-    Row(
+    Card(
         modifier = Modifier
-            .horizontalScroll(topBar)
             .fillMaxWidth()
-            .fillMaxHeight(0.3f),
-
+            .background(MaterialTheme.colors.background)
+            .horizontalScroll(topBar)
+            .height(42.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .padding(5.dp)
-                .fillMaxHeight()
-                .clickable {
-
-                },
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
+        Row {
+            Row(
                 modifier = Modifier
-                    .size(32.dp),
-                painter = painterResource(id = R.drawable.add_image),
-                contentDescription = null
-            )
+                    .padding(8.dp)
+                    .fillMaxHeight()
+                    .clickable {
+                        onImagePostClicked()
+                    },
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    modifier = Modifier.size(32.dp),
+                    painter = painterResource(id = R.drawable.add_image),
+                    contentDescription = null
+                )
+
+                Spacer(modifier = Modifier.width(10.dp))
+
+                Text(text = "Image Post")
+            }
 
             Spacer(modifier = Modifier.width(10.dp))
 
-            Text(text = "Image Post")
-        }
-
-        Spacer(modifier = Modifier.width(10.dp))
-
-        Row(
-            modifier = Modifier
-                .padding(5.dp)
-                .fillMaxHeight()
-                .clickable {
-
-                },
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
+            Row(
                 modifier = Modifier
-                    .size(32.dp),
-                painter = painterResource(id = R.drawable.write),
-                contentDescription = null
-            )
+                    .padding(8.dp)
+                    .fillMaxHeight()
+                    .clickable {
+                        onTextPostClicked()
+                    },
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    modifier = Modifier
+                        .size(32.dp),
+                    painter = painterResource(id = R.drawable.write),
+                    contentDescription = null
+                )
 
-            Spacer(modifier = Modifier.width(10.dp))
+                Spacer(modifier = Modifier.width(10.dp))
 
-            Text(text = "Text Post")
+                Text(text = "Text Post")
+            }
         }
-
     }
 }
 
+@ExperimentalMaterialApi
 @ExperimentalAnimationApi
 @ExperimentalCoilApi
 @Composable
@@ -157,66 +191,68 @@ fun HomeFeedContent(
     navController: NavHostController,
 ) {
     val scrollState = rememberScrollState()
+    val modalBottomSheetState = rememberModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden
+    )
 
-    Column(
-        Modifier
-            .fillMaxSize()
-            .background(Color.White)
-            .verticalScroll(scrollState)
+    ModalBottomSheetLayout(
+        sheetState = modalBottomSheetState,
+        sheetContent = {
+            SearchBottomSheet()
+        }
     ) {
-        TopFeedBar(
-            onImagePostClicked = {
-                navController.navigate(HomeNavigationRouting.AddPost) {
-                    launchSingleTop = true
-                    restoreState = true
+        Column(
+            Modifier
+                .fillMaxSize()
+                .verticalScroll(scrollState)
+        ) {
+
+            PostListView(
+                posts = posts,
+                navController = navController
+            )
+
+            if (loadingMore) {
+                val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loading))
+                val progress by animateLottieCompositionAsState(composition)
+
+                Box {
+                    LottieAnimation(
+                        composition = composition,
+                        progress = progress,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight(0.1f)
+                    )
                 }
-            },
-            onTextPostClicked = {
-
-            }
-        )
-
-//        OutlinedTextField(
-//            value = "",
-//            onValueChange = {},
-//            placeholder = {
-//                Text(text = "write what you want")
-//            },
-//            modifier = Modifier
-//                .background(Color.White)
-//                .padding(2.dp)
-//                .fillMaxWidth()
-//                .clickable {
-//                    navController.navigate(HomeNavigationRouting.AddPost) {
-//                        launchSingleTop = true
-//                        restoreState = true
-//                    }
-//                },
-//            colors = TextFieldDefaults.outlinedTextFieldColors(
-//                focusedBorderColor = Color.Black,
-//                unfocusedBorderColor = Color.Black,
-//            ),
-//            enabled = false,
-//        )
-
-        PostListView(
-            posts = posts,
-            navController = navController
-        )
-
-        if (loadingMore) {
-            val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loading))
-            val progress by animateLottieCompositionAsState(composition)
-
-            Box {
-                LottieAnimation(
-                    composition = composition,
-                    progress = progress,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(0.1f)
-                )
             }
         }
     }
+}
+
+@Composable
+fun SearchBottomSheet() {
+    OutlinedTextField(
+        value = "",
+        onValueChange = {},
+        placeholder = {
+            Text(text = "write what you want")
+        },
+        modifier = Modifier
+            .background(Color.White)
+            .padding(2.dp)
+            .fillMaxWidth()
+            .clickable {},
+        colors = TextFieldDefaults.textFieldColors(
+            backgroundColor = MaterialTheme.colors.background,
+            focusedLabelColor = MaterialTheme.colors.background,
+            focusedIndicatorColor = MaterialTheme.colors.background,
+            unfocusedLabelColor = MaterialTheme.colors.background,
+            unfocusedIndicatorColor = MaterialTheme.colors.background,
+            textColor = MaterialTheme.colors.primary,
+            cursorColor = MaterialTheme.colors.secondary,
+        ),
+        enabled = false,
+    )
+
 }

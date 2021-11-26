@@ -7,5 +7,6 @@ object HomeNavigationRouting {
     const val HomeNotifications = "HomeNotifications"
     const val VisitProfile = "VisitProfile"
     const val PostScreen = "PostScreen"
-    const val AddPost = "AddPost"
+    const val ImagePosting = "AddPost"
+    const val TextPosting = "TextPosting"
 }
