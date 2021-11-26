@@ -64,7 +64,7 @@ class ChatViewModel constructor(
                 token = token!!,
             )
             .onSuccess {
-
+                getMessages(connection = connection)
             }
             .onFailure {
                 handleFailure(it)

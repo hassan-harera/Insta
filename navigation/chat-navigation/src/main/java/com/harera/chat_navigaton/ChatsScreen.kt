@@ -2,6 +2,7 @@ package com.harera.chat_navigaton
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -15,7 +16,7 @@ import com.harera.mychats.MyChats
 @ExperimentalComposeUiApi
 @ExperimentalCoilApi
 @Composable
-fun HomeChats() {
+fun HomeChats(navController: NavHostController) {
     val navController = rememberNavController()
 
     NavHost(
