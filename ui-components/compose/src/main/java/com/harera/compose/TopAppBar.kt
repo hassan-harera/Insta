@@ -1,6 +1,5 @@
 package com.harera.compose
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
@@ -13,12 +12,11 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.harera.base.theme.Orange158
+import com.harera.base.theme.White
 
 @Preview
 @Composable
@@ -59,8 +57,8 @@ fun TopBar(
     TopAppBar(
         elevation = 0.dp,
         modifier = Modifier.padding(0.dp),
-        backgroundColor = Orange158,
-        contentColor = Orange158,
+        backgroundColor = White,
+        contentColor = White,
         title =
         if (searchField) {
             {
@@ -103,28 +101,5 @@ fun TopBar(
         },
         actions = actions,
         navigationIcon = if (setNavigationButton) navigation else null,
-    )
-}
-
-@Preview
-@Composable
-fun HomeTopBar() {
-    TopBar(
-
-        searchField = true,
-        setNavigationButton = true,
-        title = {
-            Text(text = "Insta", color = Color.White)
-        },
-        actions = {
-            Icon(
-                painter = painterResource(id = R.drawable.menu),
-                contentDescription = null,
-                modifier = Modifier
-                    .clickable {}
-                    .padding(8.dp),
-                tint = Color.White
-            )
-        }
     )
 }

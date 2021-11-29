@@ -1,6 +1,7 @@
 package com.harera.visit_profile
 
 import android.util.Log
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -13,11 +14,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment.Companion.BottomEnd
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.annotation.ExperimentalCoilApi
-import com.harera.base.state.ProfileState
-import com.harera.base.theme.Orange158
+import com.harera.base.theme.White
 import com.harera.compose.Toast
 import com.harera.compose.VisitProfileHeader
 import com.harera.model.model.User
@@ -44,14 +46,14 @@ fun VisitProfile(
 
     val state = visitProfileViewModel.state
     when (state) {
-        is ProfileState.Loading -> {
+        is VisitProfileState.Loading -> {
         }
 
-        is ProfileState.Error -> {
+        is VisitProfileState.Error -> {
             Toast(message = state.message)
         }
 
-        is ProfileState.PostsFetched -> {
+        is VisitProfileState.PostsFetched -> {
             posts = state.postList
             VisitProfileContent(
                 profile,
@@ -62,7 +64,7 @@ fun VisitProfile(
             }
         }
 
-        is ProfileState.ProfilePrepared -> {
+        is VisitProfileState.ProfilePrepared -> {
             profile = state.user
             VisitProfileContent(
                 profile,
@@ -75,6 +77,7 @@ fun VisitProfile(
     }
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @ExperimentalCoilApi
 @Composable
 fun VisitProfileContent(
@@ -119,7 +122,7 @@ fun VisitProfileContent(
                                 scrollState.scrollTo(0)
                             }
                         },
-                        backgroundColor = Orange158,
+                        backgroundColor = White,
                     ) {
                         Icon(
                             modifier = Modifier.size(30.dp),

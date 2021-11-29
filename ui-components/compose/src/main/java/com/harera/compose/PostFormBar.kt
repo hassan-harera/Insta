@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.harera.base.theme.Orange158
+import com.harera.base.theme.White
 
 @Composable
 @Preview
@@ -20,7 +20,7 @@ private fun FormBottomBar() {
     ) {
         Row(
             Modifier
-                .background(Orange158)
+                .background(White)
                 .padding(8.dp)
         ) {
             Spacer(modifier = Modifier.weight(0.8f))

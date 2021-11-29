@@ -3,8 +3,7 @@ package com.harera.visit_profile
 import androidx.lifecycle.viewModelScope
 import com.harera.base.base.BaseViewModel
 import com.harera.base.datastore.LocalStore
-import com.harera.base.state.ProfileState
-import com.harera.base.state.State
+import com.harera.base.state.BaseState
 import com.harera.repository.PostRepository
 import com.harera.repository.ProfileRepository
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +16,7 @@ class VisitProfileViewModel constructor(
     private val profileRepository: ProfileRepository,
     private val postRepository: PostRepository,
     userSharedPreferences: LocalStore,
-) : BaseViewModel<ProfileState>(userSharedPreferences) {
+) : BaseViewModel<VisitProfileState>(userSharedPreferences) {
 
     private lateinit var uid: String
     fun setUid(uid: String) {
@@ -50,21 +49,21 @@ class VisitProfileViewModel constructor(
         postRepository
             .getUserPosts(username = uid, token!!)
             .onSuccess {
-                state = ProfileState.PostsFetched(it)
+                state = VisitProfileState.PostsFetched(it)
             }
             .onFailure {
-                state = State.Error(it.message)
+                state = BaseState.Error(it.message)
                 handleFailure(it)
             }
     }
 
     private suspend fun getProfile() {
-        state = ProfileState.Loading()
+        state = VisitProfileState.Loading()
 
         profileRepository
             .getProfile(uid)
             .onSuccess {
-                state = ProfileState.ProfilePrepared(it)
+                state = VisitProfileState.ProfilePrepared(it)
             }
             .onFailure {
                 handleFailure(it)

@@ -1,22 +1,18 @@
 package com.harera.compose
 
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Icon
 import androidx.compose.material.LeadingIconTab
 import androidx.compose.material.TabRow
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
 import com.harera.base.navigation.home.HomeBottomNavigation
-import com.harera.base.theme.Orange158
+import com.harera.base.theme.White
 import kotlinx.coroutines.launch
 
 
@@ -27,7 +23,7 @@ fun Tabs(tabs: List<HomeBottomNavigation>, pagerState: PagerState) {
     TabRow(
         modifier = Modifier.fillMaxWidth(),
         selectedTabIndex = pagerState.currentPage,
-        backgroundColor = Orange158,
+        backgroundColor = White,
         contentColor = Color.Unspecified,
     ) {
         tabs.forEachIndexed { index, tab ->
@@ -35,11 +31,7 @@ fun Tabs(tabs: List<HomeBottomNavigation>, pagerState: PagerState) {
                 selectedContentColor = Color.Unspecified,
                 unselectedContentColor = Color.Unspecified,
                 icon = {
-                    Icon(
-                        modifier = Modifier.padding(8.dp),
-                        painter = painterResource(id = tab.icon),
-                        contentDescription = null
-                    )
+                    tab.painter
                 },
                 text = {},
                 selected = pagerState.currentPage == index,

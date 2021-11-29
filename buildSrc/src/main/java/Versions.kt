@@ -32,7 +32,7 @@ object Versions {
     const val HILT_VERSION = "2.37"
     const val NAV_VERSION = "2.3.1"
     const val COROUTINES_VERSION = "1.5.0"
-    const val GRADLE_TOOLS_VERSION = "7.0.2"
+    const val GRADLE_TOOLS_VERSION = "7.0.1"
     const val GMS_GOOGLE_SERVICES = "4.3.10"
     const val Jvm_TARGET = "4.3.10"
 

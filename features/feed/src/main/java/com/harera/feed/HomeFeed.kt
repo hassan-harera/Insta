@@ -5,10 +5,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.Stable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,6 +25,8 @@ import com.harera.base.state.FeedState
 import com.harera.compose.LoadingPostListShimmer
 import com.harera.model.response.PostResponse
 import com.harera.post.PostListView
+import com.zj.refreshlayout.SwipeRefreshLayout
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 
 private const val TAG = "HomeFeed"
@@ -40,7 +39,9 @@ fun HomeFeed(
     feedViewModel: FeedViewModel = getViewModel(),
     navController: NavHostController,
 ) {
+    var isRefreshing by remember { mutableStateOf(false) }
     val state = feedViewModel.state
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(key1 = true) {
         feedViewModel.intent.send(FeedIntent.FetchPosts)
@@ -62,10 +63,25 @@ fun HomeFeed(
             }
         )
 
-        ViewAdapter(
-            state = state,
-            navController = navController
-        )
+        SwipeRefreshLayout(
+            isRefreshing = isRefreshing,
+            onRefresh = {
+                scope.launch {
+                    feedViewModel.intent.send(FeedIntent.FetchPosts)
+                }
+                isRefreshing = false
+            },
+        ) {
+            ViewAdapter(
+                state = state,
+                navController = navController,
+                onReachMax = {
+                    scope.launch {
+                        feedViewModel.intent.send(FeedIntent.LoadMorePosts)
+                    }
+                }
+            )
+        }
     }
 }
 
@@ -75,13 +91,15 @@ fun HomeFeed(
 private fun ViewAdapter(
     state: BaseState,
     navController: NavHostController,
+    onReachMax: () -> Unit,
 ) {
+    var posts by remember { mutableStateOf<List<PostResponse>>(emptyList()) }
 
     when (state) {
         is BaseState.Error -> {
             Toast.makeText(
                 LocalContext.current,
-                state.data.toString(),
+                "Something went wrong",
                 Toast.LENGTH_SHORT
             ).show()
         }
@@ -94,9 +112,20 @@ private fun ViewAdapter(
         }
 
         is FeedState.Posts -> {
+            posts = state.posts.sortedByDescending { it.post.time }
             HomeFeedContent(
-                posts = state.posts.sortedByDescending { it.post.time },
-                navController = navController
+                posts = posts,
+                navController = navController,
+                onReachMax = onReachMax
+            )
+        }
+
+        is FeedState.MorePosts -> {
+            posts = posts.plus(state.posts.sortedByDescending { it.post.time })
+            HomeFeedContent(
+                posts = posts,
+                navController = navController,
+                onReachMax = onReachMax
             )
         }
 
@@ -189,6 +218,7 @@ fun HomeFeedContent(
     posts: List<PostResponse>,
     loadingMore: Boolean = true,
     navController: NavHostController,
+    onReachMax: () -> Unit,
 ) {
     val scrollState = rememberScrollState()
     val modalBottomSheetState = rememberModalBottomSheetState(

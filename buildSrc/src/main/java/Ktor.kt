@@ -1,5 +1,5 @@
 object Ktor {
-    private const val ktor_version = "1.6.4"
+    private const val ktor_version = "1.5.0"
     const val ktorAuthClientGson = "io.ktor:ktor-client-auth:$ktor_version"
     const val ktorClient = ("io.ktor:ktor-client-core:$ktor_version")
     const val ktorCio = ("io.ktor:ktor-client-cio:$ktor_version")

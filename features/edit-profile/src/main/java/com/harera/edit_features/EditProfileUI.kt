@@ -14,7 +14,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.harera.base.theme.Orange158
+import com.harera.base.theme.White
 import com.harera.compose.TopBar
 import com.vanpra.composematerialdialogs.MaterialDialog
 
@@ -94,11 +94,11 @@ fun EditProfileForm() {
                 Text(text = "Name...")
             },
             colors = TextFieldDefaults.textFieldColors(
-                cursorColor = Orange158,
-                focusedLabelColor = Orange158,
+                cursorColor = White,
+                focusedLabelColor = White,
                 textColor = Color.Black,
                 backgroundColor = Color.Unspecified,
-                focusedIndicatorColor = Orange158
+                focusedIndicatorColor = White
             ),
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Done
@@ -119,11 +119,11 @@ fun EditProfileForm() {
                 Text(text = "Bio...")
             },
             colors = TextFieldDefaults.textFieldColors(
-                cursorColor = Orange158,
-                focusedLabelColor = Orange158,
+                cursorColor = White,
+                focusedLabelColor = White,
                 textColor = Color.Black,
                 backgroundColor = Color.Unspecified,
-                focusedIndicatorColor = Orange158
+                focusedIndicatorColor = White
             ),
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Done,
@@ -141,7 +141,7 @@ fun EditProfileForm() {
             modifier = Modifier
                 .fillMaxWidth(),
         ) {
-            Text(text = "Date of birth", color = Orange158)
+            Text(text = "Date of birth", color = White)
         }
 
         val dialog = MaterialDialog() {

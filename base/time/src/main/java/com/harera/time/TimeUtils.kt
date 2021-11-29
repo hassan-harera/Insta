@@ -9,7 +9,6 @@ import java.util.*
 class TimeUtils {
 
     companion object {
-        private const val TAG = "TimeUtils"
 
         fun timeFromNow(timestamp: Timestamp): String {
             val seconds = Timestamp.now().seconds - timestamp.seconds
@@ -83,7 +82,6 @@ class TimeUtils {
 
         fun timeFromNow(time: String) = runBlocking {
             val now = DateTime()
-            Log.d(TAG, "timeFromNow: $time")
             val dateTime = TimeFormatter.stringToDateTime(time = time)
             return@runBlocking timeFromNow((now.millis  - dateTime.millis) / 1000)
         }

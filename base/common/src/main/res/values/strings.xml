@@ -15,4 +15,9 @@
     <string name="name">Name</string>
     <string name="name_error">Empty Name</string>
     <string name="messages_channel">MesssageService</string>
+    <string name="google_client_id">970060145548-7590lcrpha9vjq54p0l568ppqsj2sk10.apps.googleusercontent.com</string>
+    <string name="facebook_app_id">301957628190140</string>
+    <string name="fb_client_token">144679f7ba7022056112f8578391b46f</string>
+    <string name="fb_login_protocol_scheme">fb301957628190140</string>
+    <string name="insta_server_base_url">http://192.168.1.15:5000</string>
 </resources>

@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
-import com.harera.base.theme.Orange166
+import com.harera.base.theme.Blue130
 import com.harera.model.model.User
 
 @ExperimentalCoilApi
@@ -28,7 +28,7 @@ fun HomeProfileHeader(user: User) {
         modifier = Modifier
             .fillMaxWidth()
             .height(150.dp)
-            .background(Orange166)
+            .background(Blue130)
             .padding(top = 10.dp, start = 10.dp),
     ) {
         Image(

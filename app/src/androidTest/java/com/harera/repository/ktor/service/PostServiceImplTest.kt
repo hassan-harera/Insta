@@ -1,6 +1,7 @@
 package com.harera.repository.ktor.service
 
 import com.harera.insta.di.ServiceModule
+import com.harera.insta.di.serviceModule
 import com.harera.remote.service.PostService
 import io.ktor.util.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi

@@ -82,7 +82,7 @@ class PostViewModel constructor(
 
     private suspend fun addComment(comment: String, postId: Int) {
         postRepository
-            .insertPost(
+            .insertComment(
                 postId = postId,
                 comment = comment,
                 token = token!!

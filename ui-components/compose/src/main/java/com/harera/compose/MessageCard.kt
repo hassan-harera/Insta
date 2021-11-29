@@ -17,7 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
 import com.harera.base.DummyDate
-import com.harera.base.theme.Orange166
+import com.harera.base.theme.Blue130
 import com.harera.model.model.Message
 
 @ExperimentalCoilApi
@@ -56,7 +56,7 @@ fun MessageCard(message: Message, chatOwnerId: String) {
                     color =
                     if (message.sender == chatOwnerId)
                         Color(0xE0579CE2)
-                    else Orange166,
+                    else Blue130,
                     shape = RoundedCornerShape(CornerSize(8.dp)),
                 )
                 .padding(8.dp),

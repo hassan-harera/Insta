@@ -9,7 +9,7 @@ import java.io.File
 
 interface PostRepository {
 
-    suspend fun getFeedPosts(token: String,): Result<List<PostResponse>>
+    suspend fun getFeedPosts(token: String, page: Int): Result<List<PostResponse>>
     suspend fun getPostLikes(token: String, postId: Int): Result<List<Like>>
     suspend fun getPostComments(token: String, postId: Int): Result<List<Comment>>
     suspend fun updatePost(post: Post): Result<Boolean>
@@ -19,7 +19,8 @@ interface PostRepository {
     suspend fun checkPostLike(postId: Int, uid: String): Result<Boolean>
     suspend fun getUserPosts(username: String, token: String): Result<List<PostResponse>>
     suspend fun getPost(token: String, postId: Int): Result<PostResponse>
-    suspend fun insertPost(token: String, caption: String, image: File): Result<String>
-    suspend  fun getProfilePosts(token: String): Result<List<PostResponse>>
-    suspend fun insertPost(postId: Int, comment: String, token: String): Result<String>
+    suspend fun insertImagePost(token: String, caption: String, image: File): Result<String>
+    suspend fun getProfilePosts(token: String): Result<List<PostResponse>>
+    suspend fun insertComment(postId: Int, comment: String, token: String): Result<String>
+    suspend fun insertTextPost(token: String, caption: String, image: File): Result<String>
 }

@@ -37,6 +37,7 @@ android {
                 "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
                 "-Xuse-experimental=androidx.compose.material.ExperimentalMaterialApi",
                 "-Xuse-experimental=androidx.compose.ui.unit.ExperimentalUnitApi",
+                "-Xuse-experimental=androidx.compose.ui.ExperimentalComposeUiApi",
                 "-Xuse-experimental=kotlinx.coroutines.ObsoleteCoroutinesApi"]
     }
 }
@@ -53,6 +54,8 @@ dependencies {
     implementation(Compose.accompanist)
     implementation(Compose.composJUnitTest)
 
+    implementation(Libs.appcompat)
+
     implementation project(Core.common)
     implementation project(Core.components)
     implementation project(Core.repository)
@@ -60,6 +63,8 @@ dependencies {
 
     implementation(Ktor.ktorClientSerialization)
     implementation(Ktor.ktorClientGson)
+
+    implementation(Compose.composeRefresh)
 
     //Koin
     implementation(DI.koinCore)

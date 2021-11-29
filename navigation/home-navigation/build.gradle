@@ -15,4 +15,6 @@ dependencies {
     implementation(project(Features.textPosting))
     implementation(project(Features.feed))
     implementation(project(Features.search))
+
+    implementation(project(Navigation.chatNav))
 }

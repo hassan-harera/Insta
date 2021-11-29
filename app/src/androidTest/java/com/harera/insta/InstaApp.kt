@@ -1,7 +1,6 @@
 package com.harera.insta
 
 import android.app.Application
-import com.harera.base.notifications.createMessagesNotificationChannel
 import com.harera.insta.di.*
 import io.ktor.util.*
 import org.koin.android.ext.koin.androidContext
@@ -24,7 +23,6 @@ class InstaApp : Application() {
                 ServiceModule,
                 dataStoreModule,
             )
-
         }
     }
 

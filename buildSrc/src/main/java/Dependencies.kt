@@ -45,7 +45,7 @@ object Libs {
     const val googleServices = "com.google.gms:google-services:${Versions.GMS_GOOGLE_SERVICES}"
     const val playServicesTasks =
         "com.google.android.gms:play-services-tasks:${Versions.PLAY_SERVICE_TASKS}"
-    const val playServicesAuth =
+    const val googleAuth =
         "com.google.android.gms:play-services-auth:${Versions.GOOGLE_AUTH_VERSION}"
 
     const val playServicesAuthPhone =

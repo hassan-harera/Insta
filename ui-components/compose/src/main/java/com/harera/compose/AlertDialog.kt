@@ -65,9 +65,14 @@ fun AlertDialog() {
                             imeAction = ImeAction.Done,
                             keyboardType = KeyboardType.Text
                         ),
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            focusedBorderColor = Color.Black,
-                            unfocusedBorderColor = Color.Black,
+                        colors = TextFieldDefaults.textFieldColors(
+                            backgroundColor = MaterialTheme.colors.background,
+                            focusedLabelColor = MaterialTheme.colors.background,
+                            focusedIndicatorColor = MaterialTheme.colors.background,
+                            unfocusedLabelColor = MaterialTheme.colors.background,
+                            unfocusedIndicatorColor = MaterialTheme.colors.background,
+                            textColor = MaterialTheme.colors.primary,
+                            cursorColor = MaterialTheme.colors.secondary,
                         ),
                         keyboardActions = KeyboardActions(
                             onDone = {

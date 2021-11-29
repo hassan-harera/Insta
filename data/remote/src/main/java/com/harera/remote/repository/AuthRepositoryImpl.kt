@@ -8,24 +8,26 @@ import com.harera.model.request.signup.SignupByEmailRequest
 import com.harera.model.request.signup.SignupByFacebookRequest
 import com.harera.model.request.signup.SignupByGoogleRequest
 import com.harera.model.response.Token
-import com.harera.remote.service.AuthService
+import com.harera.remote.service.AuthenticationService
 import com.harera.repository.AuthManager
 
 class AuthRepositoryImpl(
-    private val authService: AuthService,
+    private val authService: AuthenticationService,
 ) : AuthManager {
 
     override suspend fun loginWithEmail(request: LoginByEmailRequest): Result<Token> =
         kotlin.runCatching {
             authService.loginWithEmail(request)
-//            .let {
-//                Gson().fromJson(it, Token::class.java)
-//            }
         }
 
     override suspend fun loginWithFacebook(request: LoginByFacebookRequest): Result<String> {
         TODO("Not yet implemented")
     }
+
+    override suspend fun loginWithFacebook(token: String) =
+        runCatching<String> {
+            authService.loginWithFacebook(token)
+        }
 
     override suspend fun loginWithGoogle(request: LoginByGoogleRequest): Result<String> {
         TODO("Not yet implemented")

@@ -11,6 +11,7 @@ data class Post(
     val postId: Int,
     val caption: String,
     val username: String,
+    val type: Int,
     var postImageUrl: String,
     val time: String,
 )

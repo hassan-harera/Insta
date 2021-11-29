@@ -27,8 +27,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.harera.base.theme.Blue255
-import com.harera.base.theme.Orange158
+import com.harera.base.theme.Blue230
+import com.harera.base.theme.White
 import com.harera.model.model.Post
 import com.harera.model.model.User
 
@@ -78,7 +78,7 @@ fun FollowRequestCard() {
                 modifier = Modifier
                     .size(50.dp)
                     .clip(CircleShape)
-                    .border(1.dp, color = Orange158),
+                    .border(1.dp, color = White),
                 alignment = Alignment.TopCenter
             )
 
@@ -103,7 +103,7 @@ fun FollowRequestCard() {
                     style = TextStyle(
                         fontFamily = FontFamily.Serif,
                         fontSize = 12.sp,
-                        color = Orange158,
+                        color = White,
                         fontStyle = FontStyle.Italic,
                     ),
                 )
@@ -121,7 +121,7 @@ fun FollowRequestCard() {
 
                         },
                         colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Blue255
+                            backgroundColor = Blue230
                         )
                     ) {
                         Text(
@@ -145,8 +145,8 @@ fun FollowRequestCard() {
 
                         },
                         colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Orange158,
-                            contentColor = Orange158,
+                            backgroundColor = White,
+                            contentColor = White,
                         ),
 
                         ) {

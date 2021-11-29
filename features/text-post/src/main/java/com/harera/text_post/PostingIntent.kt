@@ -1,8 +1,8 @@
 package com.harera.text_post
 
-import android.net.Uri
+import android.graphics.Bitmap
 
 sealed class PostingIntent {
-    data class Post(val caption: String, val imageUri: Uri) : PostingIntent()
+    data class Post(val caption: String, val image: Bitmap) : PostingIntent()
     object None : PostingIntent()
 }

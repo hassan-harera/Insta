@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.harera.base.theme.Orange158
+import com.harera.base.theme.White
 
 @Composable
 @Preview
@@ -26,7 +26,7 @@ fun ButtonToRegister(isEnabled: Boolean, onClick: () -> Unit) {
         enabled = isEnabled,
         modifier = Modifier
             .fillMaxWidth()
-            .background(Orange158),
+            .background(White),
         contentPadding = PaddingValues(vertical = 16.dp, horizontal = 16.dp)
     ) {
         Text(text = "Register")

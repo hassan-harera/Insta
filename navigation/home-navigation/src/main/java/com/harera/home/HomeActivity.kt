@@ -23,6 +23,7 @@ import com.harera.base.navigation.home.HomeNavigationRouting.HomeChats
 import com.harera.base.navigation.home.HomeNavigationRouting.ImagePosting
 import com.harera.base.navigation.home.HomeNavigationRouting.TextPosting
 import com.harera.base.theme.InstaTheme
+import com.harera.chat_navigaton.MessagesService
 import com.harera.search.SearchActivity
 
 
@@ -34,6 +35,8 @@ class HomeActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+
+        val componentName = startService(Intent(this, MessagesService::class.java))
 
         setContent {
             InstaTheme {

@@ -26,6 +26,5 @@ class NotificationsServiceImpl(private val client: HttpClient) : NotificationsSe
         client.get(
             URL.BASE_URL.plus(Routing.NOTIFICATIONS)
         ) {
-            header(HttpHeaders.Authorization, "Bearer ".plus(token))
         }
 }

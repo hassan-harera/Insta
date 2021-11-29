@@ -18,8 +18,8 @@ val ServiceModule = module {
         }
     }
 
-    single<AuthService> {
-        AuthServiceImpl(get())
+    single<AuthenticationService> {
+        AuthenticationServiceImpl(get())
     }
 
     single<PostService> {

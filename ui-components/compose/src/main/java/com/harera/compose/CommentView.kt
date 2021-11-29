@@ -5,90 +5,116 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Card
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment.Companion.CenterEnd
 import androidx.compose.ui.Alignment.Companion.Top
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
-import com.harera.base.DummyDate.POST
-import com.harera.base.theme.Orange158
+import com.harera.base.coil.CoilLoader
 import com.harera.base.theme.timeSize
 import com.harera.model.model.Comment
 import com.harera.time.TimeUtils
+import org.koin.androidx.compose.get
 
+@ExperimentalCoilApi
 @Composable
-fun CommentView(comment: Comment) {
-    Row(
+fun CommentView(
+    comment: Comment,
+    coilLoader: CoilLoader = get(),
+) {
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.White)
-            .padding(bottom = 15.dp),
+            .padding(top = 3.dp, bottom = 3.dp),
+        elevation = 3.dp
     ) {
-        Image(
-            painter = rememberImagePainter(POST.postImageUrl),
-            contentDescription = null,
-            modifier = Modifier
-                .size(45.dp)
-                .padding(start = 4.dp, top = 4.dp, bottom = 4.dp, end = 4.dp)
-                .clip(CircleShape)
-                .clickable {
-                    //TODO Not Implemented
+        Box(
+            modifier = Modifier.padding(6.dp)
+                .fillMaxWidth()
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(0.9f)
+                    .padding(bottom = 15.dp),
+            ) {
+                Image(
+                    painter = rememberImagePainter(coilLoader.imageRequest(comment.userImageUrl)),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(45.dp)
+                        .padding(4.dp)
+                        .clip(CircleShape)
+                        .clickable {
+                            //TODO Not Implemented
+                        }
+                        .align(Top),
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Column(
+                    modifier = Modifier
+                        .padding(top = 6.dp)
+                        .background(MaterialTheme.colors.secondaryVariant,
+                            shape = RoundedCornerShape(30))
+                ) {
+                    Text(
+                        text = comment.profileName,
+                        style = TextStyle(
+                            fontFamily = FontFamily.Default,
+                            fontSize = 16.sp,
+                            color = MaterialTheme.colors.primary,
+                            fontStyle = FontStyle.Normal,
+                        ),
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 4,
+                        modifier = Modifier
+                            .padding(start = 12.dp, top = 4.dp, end = 8.dp),
+                        textAlign = TextAlign.Center,
+                    )
+
+                    Text(
+                        text = comment.comment,
+                        style = TextStyle(
+                            fontFamily = FontFamily.Default,
+                            fontSize = 14.sp,
+                            color = MaterialTheme.colors.primaryVariant,
+                            fontStyle = FontStyle.Normal,
+                        ),
+                        modifier = Modifier
+                            .padding(start = 12.dp, top = 2.dp, end = 8.dp, bottom = 6.dp),
+                        textAlign = TextAlign.Start,
+                        maxLines = 2,
+                    )
                 }
-                .align(Top),
-        )
-
-        Column {
-            Text(
-                //TODO change text value
-                text = comment.username,
-                style = TextStyle(
-                    fontFamily = FontFamily.Default,
-                    fontSize = 14.sp,
-                    color = Color.Black,
-                    fontStyle = FontStyle.Normal,
-                ),
-                fontWeight = FontWeight.Bold,
-                maxLines = 4
-            )
+            }
 
             Text(
-                //TODO change text value
-                text = comment.comment,
-                style = TextStyle(
-                    fontFamily = FontFamily.Default,
-                    fontSize = 14.sp,
-                    color = Color.Black,
-                    fontStyle = FontStyle.Normal,
-                ),
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Text(
-                //TODO change text value
                 text = TimeUtils.timeFromNow(comment.time),
                 style = TextStyle(
                     fontFamily = FontFamily.Default,
                     fontSize = timeSize,
-                    color = Orange158,
+                    color = MaterialTheme.colors.primaryVariant,
                     fontStyle = FontStyle.Normal,
                 ),
+                textAlign = TextAlign.End,
+                modifier = Modifier
+                    .align(CenterEnd)
+                    .fillMaxWidth(0.1f),
             )
         }
     }
-}
-
-@Preview
-@Composable
-fun CommentPreview() {
-//    TODO
-//    CommentView(comment = COMMENT_DETAILS)
 }

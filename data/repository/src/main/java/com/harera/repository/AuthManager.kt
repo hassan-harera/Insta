@@ -19,4 +19,5 @@ interface AuthManager {
     suspend fun signupWithGoogle(request: SignupByGoogleRequest): Result<String>
 
     suspend fun signOut()
+    suspend fun loginWithFacebook(token: String): Result<String>
 }

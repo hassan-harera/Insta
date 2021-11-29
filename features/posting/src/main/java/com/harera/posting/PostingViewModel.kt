@@ -1,23 +1,23 @@
 package com.harera.posting
 
-import android.net.Uri
+import android.graphics.Bitmap
 import androidx.lifecycle.viewModelScope
 import com.harera.base.base.BaseViewModel
 import com.harera.base.datastore.LocalStore
+import com.harera.base.utils.ImageUtils.Companion.convertBitmapToFile
 import com.harera.repository.PostRepository
-import com.harera.repository.ProfileRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.launch
-import java.io.File
 
-class PostingViewModel constructor(
+class ImagePosting constructor(
     private val postRepository: PostRepository,
-    private val profileRepository: ProfileRepository,
     userSharedPreferences: LocalStore,
 ) : BaseViewModel<PostingState>(userSharedPreferences) {
+
+    private val TAG = "PostingViewModel"
 
     private val intent = Channel<PostingIntent>()
     suspend fun sendIntent(intent: PostingIntent) {
@@ -33,18 +33,18 @@ class PostingViewModel constructor(
             intent.consumeAsFlow().collect {
                 when (it) {
                     is PostingIntent.Post -> {
-                        addPost(it.caption, it.imageUri)
+                        addPost(it.caption, it.image)
                     }
                 }
             }
         }
     }
 
-    private suspend fun addPost(caption: String, imageUri: Uri) {
-        postRepository.insertPost(
+    private suspend fun addPost(caption: String, image: Bitmap) {
+        postRepository.insertImagePost(
             token = token!!,
             caption = caption,
-            image = File(imageUri.path!!)
+            image = convertBitmapToFile(image),
         ).onSuccess {
 //            state = PostingState.PostingCompleted(postId = postId.toInt())
         }.onFailure {

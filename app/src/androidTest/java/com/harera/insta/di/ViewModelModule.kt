@@ -9,7 +9,7 @@ import com.harera.login.LoginViewModel
 import com.harera.login.SignupViewModel
 import com.harera.mychats.MyChatsViewModel
 import com.harera.notifications.NotificationsViewModel
-import com.harera.posting.PostingViewModel
+import com.harera.posting.ImagePosting
 import com.harera.profile.HomeProfileViewModel
 import com.harera.psot.PostViewModel
 import com.harera.visit_profile.VisitProfileViewModel
@@ -36,11 +36,11 @@ val ViewModel = module {
     }
 
     viewModel {
-        com.harera.post.PostViewModel(get(), get(), get())
+        com.harera.post.ImagePostViewModel(get(), get(), get())
     }
 
-    viewModel<PostingViewModel> {
-        PostingViewModel(get(), get(), get())
+    viewModel<ImagePosting> {
+        ImagePosting(get(), get(), get())
     }
 
     viewModel<PostViewModel> {
@@ -61,7 +61,7 @@ val ViewModel = module {
     }
 
     viewModel<NotificationsViewModel> {
-        NotificationsViewModel(get(), get(), get())
+        NotificationsViewModel(get(), get())
     }
 
     viewModel<ChatViewModel> {

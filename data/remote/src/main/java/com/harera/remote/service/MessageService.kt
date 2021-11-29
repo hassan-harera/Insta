@@ -22,7 +22,6 @@ class MessageServiceImpl(private val client: HttpClient) : MessageService {
     override suspend fun insertMessage(token: String, request: MessageInsertRequest) =
         client.post<String> {
             url(Routing.INSERT_MESSAGE)
-            header(HttpHeaders.Authorization, "Bearer $token")
             contentType(ContentType.Application.Json)
             body = request
         }
@@ -30,24 +29,20 @@ class MessageServiceImpl(private val client: HttpClient) : MessageService {
     override suspend fun deleteMessage(token: String, messageId: Int) =
         client.delete<String> {
             url(URL.BASE_URL.plus("/message/$messageId"))
-            header(HttpHeaders.Authorization, "Bearer $token")
         }
 
     override suspend fun getMessage(token: String, messageId: Int): MessageResponse =
         client.get<MessageResponse> {
             url(URL.BASE_URL.plus("/message/$messageId"))
-            header(HttpHeaders.Authorization, "Bearer $token")
         }
 
     override suspend fun getMessages(token: String, username: String): List<MessageResponse> =
         client.get<List<MessageResponse>> {
             url(URL.BASE_URL.plus("/chat/$username"))
-            header(HttpHeaders.Authorization, "Bearer $token")
         }
 
     override suspend fun getChats(token: String): List<ChatResponse> =
         client.get<List<ChatResponse>> {
             url(URL.BASE_URL.plus("/chats"))
-            header(HttpHeaders.Authorization, "Bearer $token")
         }
 }

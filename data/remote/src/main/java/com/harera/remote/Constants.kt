@@ -8,6 +8,7 @@ object Routing {
     const val SIGNUP = "/signup"
     const val LOGIN = "/login"
     const val USER = "/User"
+    const val NOTIFICATIONS = "/notifications"
     const val FEED = "/feed"
     const val GET_PROFILE = "${URL.BASE_URL}/profile"
 }
@@ -16,6 +17,7 @@ object Parameters {
     const val ACCESS_TOKEN: String = "access_token"
     const val UID: String = "uid"
     const val Login_Method = "method"
+    const val TOKEN = "token"
     const val Signup_Method = "method"
     const val USERNAME = "username"
     const val IMAGE_NAME = "image_name"
@@ -38,5 +40,5 @@ object Constants {
 }
 
 object URL {
-    const val BASE_URL = "http://192.168.1.15:8080/"
+    const val BASE_URL = "http://192.168.1.15:5000/"
 }

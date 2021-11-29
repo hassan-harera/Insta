@@ -65,6 +65,7 @@ dependencies {
     implementation(project(Features.imagePosting))
     implementation(project(Features.textPosting))
     implementation(project(Features.feed))
+    implementation(project(Features.search))
 
     implementation(project(UiComponents.post))
 
@@ -75,12 +76,14 @@ dependencies {
     implementation(Libs.playServicesTasks)
 
     implementation(Compose.composeMaterial)
+    implementation(Compose.composeRefresh)
     implementation(Compose.composUiTooling)
     implementation(Compose.composeDialog)
 
     /* Testing */
     implementation(Libs.truth)
-    implementation(Libs.playServicesAuth)
+
+    implementation(SocialLogin.facebookLogin)
 
     implementation(Libs.accompanistPager)
     implementation(Libs.coilCompose)

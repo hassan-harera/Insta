@@ -10,15 +10,8 @@ object DummyDate {
         caption = "Caption",
         username = "uid",
         postImageUrl = "",
-        postId = 1223
-    )
-
-    val COMMENT: Comment = Comment(
-        time = "",
-        username = "",
-        postId = 123,
-        comment = "fhskfjhksafhs",
-        commentId = 123
+        postId = 1223,
+        type = 1,
     )
 
     val MESSAGE: Message = Message(
@@ -26,10 +19,6 @@ object DummyDate {
         sender = "senderUID",
         receiver = "receiverUID",
         message = "handledMessage",
-    )
-
-    val CHAT: Chat = Chat(
-
     )
 
     val USER = User(

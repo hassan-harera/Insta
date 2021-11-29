@@ -8,7 +8,6 @@ import coil.annotation.ExperimentalCoilApi
 import com.harera.base.navigation.home.HomeNavigationRouting
 import com.harera.base.navigation.home.HomeNavigationRouting.PostScreen
 import com.harera.model.response.PostResponse
-import com.harera.post.PostCard as PostCard
 
 
 @ExperimentalCoilApi
@@ -20,15 +19,31 @@ fun PostListView(
 ) {
     Column {
         posts.toList().forEach { post ->
-            PostCard(
-                postResponse = post,
-                onPostClicked = { postId ->
-                    viewPost(navController, postId)
-                },
-                onProfileClicked = { uid ->
-                    viewProfile(navController, uid)
-                },
-            )
+            when (post.post.type) {
+                1 -> {
+                    ImagePostCard(
+                        postResponse = post,
+                        onPostClicked = { postId ->
+                            viewPost(navController, postId)
+                        },
+                        onProfileClicked = { uid ->
+                            viewProfile(navController, uid)
+                        },
+                    )
+                }
+
+                2 -> {
+                    TextPostCard(
+                        postResponse = post,
+                        onPostClicked = { postId ->
+                            viewPost(navController, postId)
+                        },
+                        onProfileClicked = { uid ->
+                            viewProfile(navController, uid)
+                        },
+                    )
+                }
+            }
         }
     }
 }

@@ -1,4 +1,4 @@
-//package fr.tguerin.websocket.maze.service
+//package com.harera.chat_navigaton
 //
 //import android.app.Service
 //import android.content.Intent

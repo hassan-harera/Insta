@@ -14,14 +14,19 @@ class PostRepositoryImpl(
     private val postService: PostService,
 ) : PostRepository {
 
-    override suspend fun getFeedPosts(token: String): Result<List<PostResponse>> =
+    override suspend fun getFeedPosts(token: String, page: Int): Result<List<PostResponse>> =
         kotlin.runCatching {
-            postService.getFeedPosts(token)
+            postService.getFeedPosts(token, page)
         }
 
-    override suspend fun insertPost(token: String, caption: String, image: File) =
+    override suspend fun insertImagePost(token: String, caption: String, image: File) =
         kotlin.runCatching {
-            postService.addPost(token = token, caption, image)
+            postService.insertImagePost(token = token, caption, image)
+        }
+
+    override suspend fun insertTextPost(token: String, caption: String, image: File) =
+        kotlin.runCatching {
+            postService.insertTextPost(token = token, caption, image)
         }
 
     override suspend fun getProfilePosts(token: String): Result<List<PostResponse>> =
@@ -33,9 +38,10 @@ class PostRepositoryImpl(
         postService.getPost(token, postId)
     }
 
-    override suspend fun getPostLikes(token: String, postId: Int): Result<List<Like>> = kotlin.runCatching {
-        postService.getPostLikes(postId = postId, token = token)
-    }
+    override suspend fun getPostLikes(token: String, postId: Int): Result<List<Like>> =
+        kotlin.runCatching {
+            postService.getPostLikes(postId = postId, token = token)
+        }
 
     override suspend fun getPostComments(token: String, postId: Int): Result<List<Comment>> =
         kotlin.runCatching {
@@ -63,7 +69,7 @@ class PostRepositoryImpl(
         TODO("Not yet implemented")
     }
 
-    override suspend fun insertPost(postId: Int, comment: String, token: String): Result<String> =
+    override suspend fun insertComment(postId: Int, comment: String, token: String): Result<String> =
         kotlin.runCatching {
             postService.insertComment(
                 CommentRequest(

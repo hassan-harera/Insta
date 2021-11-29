@@ -15,11 +15,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import coil.annotation.ExperimentalCoilApi
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.harera.base.navigation.chat.ChatsNavigation.ALL_CHATS
+import com.harera.base.navigation.chat.ChatsNavigation.CHAT
+import com.harera.base.theme.InstaTheme
 import com.harera.compose.ChatCard
 import com.harera.model.response.ChatResponse
 import org.koin.androidx.compose.getViewModel
@@ -47,11 +49,15 @@ fun MyChats(
         }
     }
 
-    Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(
-                modifier = Modifier.fillMaxWidth(0.15f),
-                onClick = {
+    InstaTheme {
+        Scaffold(
+            topBar = {
+                MyChatsTopBar {
+                    navController.popBackStack()
+                }
+            },
+            floatingActionButton = {
+                AddFloatingActionButton {
                     navController.navigate(ALL_CHATS) {
                         popUpTo(navController.graph.findStartDestination().id) {
                             saveState = true
@@ -59,34 +65,32 @@ fun MyChats(
                         launchSingleTop = true
                         restoreState = true
                     }
-                },
-                shape = CircleShape,
-                backgroundColor = Color.White,
-                contentColor = Color.Unspecified
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.plus),
-                    contentDescription = null,
-                    tint = Color.Unspecified,
-                )
+                }
+            },
+            floatingActionButtonPosition = FabPosition.End,
+        ) {
+            MyChatsContent(chats = chats) {
+                navController.navigate("$CHAT/$it") {
+                    popUpTo(navController.graph.findStartDestination().id) {
+                        saveState = true
+                    }
+                    launchSingleTop = true
+                    restoreState = true
+                }
             }
-        },
-        floatingActionButtonPosition = FabPosition.End
-    ) {
-
-        MyChatsContent(
-            chats = chats
-        )
+        }
     }
 }
 
 @ExperimentalCoilApi
 @Composable
-fun MyChatsContent(chats: List<ChatResponse>) {
+fun MyChatsContent(
+    chats: List<ChatResponse>,
+    onChatClicked: (String) -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White),
     ) {
         LazyColumn(
             verticalArrangement = Arrangement.Top
@@ -96,7 +100,7 @@ fun MyChatsContent(chats: List<ChatResponse>) {
                     ChatCard(
                         chat = chat,
                         onChatClicked = {
-
+                            onChatClicked(it)
                         }
                     )
                 }
@@ -104,10 +108,3 @@ fun MyChatsContent(chats: List<ChatResponse>) {
         }
     }
 }
-
-
-@Composable
-@Preview
-fun MyChatsPreview() {
-}
-

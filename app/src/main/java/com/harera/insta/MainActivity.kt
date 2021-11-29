@@ -2,13 +2,14 @@ package com.harera.insta
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
@@ -25,7 +26,8 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.harera.base.base.BaseViewModel
 import com.harera.base.datastore.LocalStore
-import com.harera.base.state.State
+import com.harera.base.state.BaseState
+import com.harera.base.theme.InstaTheme
 import com.harera.home.HomeActivity
 import com.harera.login.LoginActivity
 import io.ktor.client.*
@@ -37,6 +39,7 @@ import io.ktor.http.cio.websocket.*
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 
+@ExperimentalAnimationApi
 @ExperimentalPagerApi
 @ExperimentalMaterialApi
 @ExperimentalCoilApi
@@ -48,10 +51,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        Toast.makeText(this, "service starting", Toast.LENGTH_SHORT).show()
-
         setContent {
-            SplashScreen()
+            InstaTheme {
+                SplashScreen()
+            }
         }
     }
 
@@ -59,16 +62,16 @@ class MainActivity : AppCompatActivity() {
     fun SplashScreen(
         mainViewModel: MainViewModel = getViewModel(),
     ) {
-        val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.splash))
-        val progress by animateLottieCompositionAsState(composition)
-        val token = mainViewModel.token
-
         Box(
-            Modifier.background(
-                MaterialTheme.colors.background
-            )
+            Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colors.background),
         ) {
-            LottieAnimation(composition, progress)
+            val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.splash))
+            val progress by animateLottieCompositionAsState(composition)
+            val token = mainViewModel.token
+
+            LottieAnimation(composition, progress, Modifier.background(MaterialTheme.colors.background))
 
             Text(
                 text = "Skip intro",
@@ -76,15 +79,18 @@ class MainActivity : AppCompatActivity() {
                     .padding(20.dp)
                     .clickable {
                         checkUser(token)
-                    }
+                    },
+                color = MaterialTheme.colors.primary
             )
 
-            if (progress >= 0.9) {
+            if (progress >= 0.99) {
                 checkUser(token)
+                finish()
             }
         }
     }
 
+    @ExperimentalAnimationApi
     private fun checkUser(token: String?) {
         if (token.isNullOrBlank()) {
             startActivity(
@@ -93,7 +99,6 @@ class MainActivity : AppCompatActivity() {
                     LoginActivity::class.java
                 )
             )
-            finish()
         } else {
             startActivity(
                 Intent(
@@ -101,11 +106,10 @@ class MainActivity : AppCompatActivity() {
                     HomeActivity::class.java
                 )
             )
-            finish()
         }
     }
 }
 
 class MainViewModel constructor(
     userPreferences: LocalStore,
-) : BaseViewModel<State>(userSharedPreferences = userPreferences)
+) : BaseViewModel<BaseState>(userSharedPreferences = userPreferences)

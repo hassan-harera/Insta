@@ -15,17 +15,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import coil.annotation.ExperimentalCoilApi
-import com.harera.model.response.Notification
-import com.harera.compose.CommentCard
-import com.harera.compose.LikeCard
+import com.harera.base.navigation.home.HomeNavigationRouting.PostScreen
+import com.harera.compose.CommentNotificationCard
+import com.harera.compose.LikeNotificationCard
 import com.harera.model.model.Like
+import com.harera.model.response.Notification
 import org.koin.androidx.compose.getViewModel
 
 @ExperimentalCoilApi
 @Composable
 fun HomeNotifications(
     notificationsViewModel: NotificationsViewModel = getViewModel(),
+    navController: NavHostController,
 ) {
     var notifications by remember { mutableStateOf<List<Notification>>(emptyList()) }
     val scrollState = rememberScrollState()
@@ -50,11 +53,27 @@ fun HomeNotifications(
             when (it.type) {
 
                 1 -> {
-                    LikeCard(likeNotification = it, onNotificationClicked = {})
+                    LikeNotificationCard(
+                        likeNotification = it,
+                        onNotificationClicked = {
+                            navController.navigate("${PostScreen}/$it") {
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
+                    )
                 }
 
                 2 -> {
-                    CommentCard(commentNotification = it, onNotificationClicked = {})
+                    CommentNotificationCard(
+                        commentNotification = it,
+                        onNotificationClicked = {
+                            navController.navigate("${PostScreen}/$it") {
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
+                    )
                 }
 
             }

@@ -2,11 +2,11 @@ package com.harera.login
 
 import android.app.Activity
 import android.content.Intent
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -18,7 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
 import com.harera.base.state.LoginState
-import com.harera.base.state.State
+import com.harera.base.state.BaseState
 import com.harera.base.validity.LoginFormValidity
 import com.harera.compose.ButtonToLogin
 import com.harera.compose.FacebookRegisterButton
@@ -28,6 +28,8 @@ import com.harera.home.HomeActivity
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 
+@ExperimentalMaterialApi
+@OptIn(ExperimentalAnimationApi::class)
 @ExperimentalCoilApi
 @ExperimentalComposeUiApi
 @Composable
@@ -53,17 +55,17 @@ fun LoginScreen(
             (context as Activity).finish()
         }
 
-        is State.Error -> {
+        is BaseState.Error -> {
             Toast(state.data.toString())
         }
 
-        is State.Loading -> {
+        is BaseState.Loading -> {
             CircularProgressIndicator()
         }
     }
 
     Column(
-        Modifier.padding(15.dp),
+        Modifier.padding(15.dp).background(MaterialTheme.colors.background),
     ) {
         OutlinedTextField(
             value = email,
@@ -71,6 +73,9 @@ fun LoginScreen(
             onValueChange = {
                 loginViewModel.setEmail(it)
             },
+            colors = TextFieldDefaults.textFieldColors(
+                textColor = MaterialTheme.colors.primary,
+            ),
             label = { Text(text = "Email") },
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email,
@@ -91,6 +96,9 @@ fun LoginScreen(
                 keyboardType = KeyboardType.Password,
                 imeAction = ImeAction.Done
             ),
+            colors = TextFieldDefaults.textFieldColors(
+                textColor = MaterialTheme.colors.primary,
+            ),
         )
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -98,23 +106,6 @@ fun LoginScreen(
         ButtonToLogin(isEnabled = formValidity.isValid) {
             scope.launch {
                 loginViewModel.login()
-            }
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            FacebookRegisterButton {
-
-            }
-
-            Spacer(modifier = Modifier.width(20.dp))
-
-            GoogleRegisterButton {
-
             }
         }
     }

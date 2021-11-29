@@ -24,7 +24,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.annotation.ExperimentalCoilApi
-import com.harera.base.theme.Orange158
+import com.harera.base.theme.White
 import com.harera.model.model.User
 
 
@@ -93,7 +93,7 @@ fun VisitProfileHeader(
                         onFollowClicked(user.username)
                     },
                     colors = ButtonDefaults.buttonColors(
-                        backgroundColor = Orange158,
+                        backgroundColor = White,
                     ),
                     modifier = Modifier
                         .fillMaxWidth(0.5f)

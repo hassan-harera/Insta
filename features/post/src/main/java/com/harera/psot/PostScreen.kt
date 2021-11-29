@@ -1,6 +1,5 @@
 package com.harera.psot
 
-import android.util.Log
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.rememberScrollState
@@ -15,17 +14,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import coil.annotation.ExperimentalCoilApi
 import com.harera.base.navigation.home.HomeNavigationRouting
 import com.harera.base.state.PostState
-import com.harera.base.theme.Orange158
+import com.harera.base.theme.White
 import com.harera.compose.CommentView
 import com.harera.model.model.Comment
 import com.harera.model.response.PostResponse
-import com.harera.post.PostCard
-import kotlinx.coroutines.launch
+import com.harera.post.ImagePostCard
+import com.harera.post.TextPostCard
 import org.koin.androidx.compose.getViewModel
 
 
@@ -38,7 +36,6 @@ fun PostScreen(
     navController: NavHostController,
 ) {
     var post = remember<PostResponse?> { null }
-    val scope = rememberCoroutineScope()
     val state = postViewModel.state
 
     LaunchedEffect(true) {
@@ -69,21 +66,6 @@ fun PostScreen(
                     restoreState = true
                 }
             },
-            onLikeClicked = {
-                scope.launch {
-                    postViewModel.sendIntent(PostIntent.LikePost(postId))
-                }
-            },
-            onCommentSubmitted = { comment ->
-                scope.launch {
-                    postViewModel.sendIntent(
-                        PostIntent.CommentToPost(
-                            comment = comment,
-                            postId = postId
-                        )
-                    )
-                }
-            }
         )
     }
 }
@@ -95,40 +77,34 @@ fun PostView(
     post: PostResponse,
     comments: List<Comment>,
     onProfileClicked: (String) -> Unit,
-    onLikeClicked: () -> Unit,
-    onCommentSubmitted: (String) -> Unit,
 ) {
-    var commentFieldState by remember { mutableStateOf(false) }
-    var expand by remember { mutableStateOf(false) }
-    var comment by remember { mutableStateOf("") }
     val scrollState = rememberScrollState()
 
     Column(
         modifier = Modifier.verticalScroll(state = scrollState)
     ) {
-        PostCard(
-            postResponse = post,
-            onProfileClicked = onProfileClicked,
-            onPostClicked = {}
-        )
+        when (post.post.type) {
+            1 -> {
+                ImagePostCard(
+                    postResponse = post,
+                    onProfileClicked = onProfileClicked,
+                    onPostClicked = {}
+                )
+            }
 
-        comments.forEach {
+            2 -> {
+                TextPostCard(
+                    postResponse = post,
+                    onProfileClicked = onProfileClicked,
+                    onPostClicked = {}
+                )
+            }
+        }
+
+        comments.sortedByDescending { it.time }.forEach {
             CommentView(comment = it)
         }
     }
-}
-
-@ExperimentalCoilApi
-@Preview(showBackground = true)
-@Composable
-fun PostViewPreview() {
-//    PostView(
-//        DummyDate.POST,
-//        emptyList(),
-//        onProfileClicked = {},
-//        onLikeClicked = {},
-//        onCommentSubmitted = {}
-//    )
 }
 
 @Composable
@@ -136,8 +112,8 @@ private fun PostTopBar(postViewModel: PostViewModel) {
     var searchWord by remember { mutableStateOf("") }
 
     TopAppBar(
-        backgroundColor = Orange158,
-        contentColor = Orange158,
+        backgroundColor = White,
+        contentColor = White,
         title = {},
         navigationIcon = {
             IconButton(onClick = { /*TODO*/ }) {
@@ -163,7 +139,7 @@ private fun PostTopBar(postViewModel: PostViewModel) {
                     )
                 },
                 colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = Orange158,
+                    backgroundColor = White,
                     cursorColor = Color.Black,
                     focusedLabelColor = Color.Black,
                     textColor = Color.White,
@@ -171,8 +147,6 @@ private fun PostTopBar(postViewModel: PostViewModel) {
                 ),
                 keyboardActions = KeyboardActions(
                     onDone = {
-//                        TODO Adding search feature
-//                        postViewModel.search()
                     }
                 ),
                 keyboardOptions = KeyboardOptions(

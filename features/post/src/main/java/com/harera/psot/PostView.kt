@@ -71,7 +71,7 @@ private fun Body() {
                 modifier = Modifier
                     .size(40.dp)
                     .clip(CircleShape)
-                    .border(3.dp, color = Orange158)
+                    .border(3.dp, color = White)
             )
 
             Spacer(modifier = Modifier.size(15.dp))
@@ -205,7 +205,7 @@ private fun Body() {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(2.dp)
-                .border(width = 1.dp, color = Orange158)
+                .border(width = 1.dp, color = White)
         )
 
         Spacer(
@@ -297,8 +297,8 @@ private fun PostTopBar() {
 
     TopAppBar(
         modifier = Modifier.padding(0.dp),
-        backgroundColor = Orange158,
-        contentColor = Orange158,
+        backgroundColor = White,
+        contentColor = White,
         navigationIcon = {
             IconButton(onClick = { /*TODO*/ }) {
                 Icon(

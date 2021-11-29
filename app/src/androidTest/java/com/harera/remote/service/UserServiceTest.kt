@@ -1,16 +1,12 @@
 package com.harera.remote.service
 
 import com.google.common.truth.Truth
-import com.harera.insta.di.ServiceModule
-import com.harera.remote.request.MessageInsertRequest
 import io.ktor.util.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Test
-import org.koin.core.context.loadKoinModules
-import org.koin.core.context.startKoin
 import org.koin.test.KoinTest
 import org.koin.test.inject
 

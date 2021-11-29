@@ -2,12 +2,9 @@ package com.harera.compose
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Colors
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -23,11 +20,14 @@ fun GoogleRegisterButtonPreview() {
 }
 
 @Composable
-fun GoogleRegisterButton(function: () -> Unit) {
-    Button(onClick = { /*TODO*/ },
+fun GoogleRegisterButton(
+    onClickAction: () -> Unit,
+) {
+    Button(
+        onClick = onClickAction,
         contentPadding = PaddingValues(vertical = 2.dp, horizontal = 2.dp),
         elevation = ButtonDefaults.elevation(0.dp),
-        colors =  ButtonDefaults.buttonColors(backgroundColor = Color.Transparent),
+        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent),
         shape = Shapes.large
     ) {
         Image(

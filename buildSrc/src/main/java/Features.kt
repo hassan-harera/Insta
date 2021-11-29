@@ -6,8 +6,10 @@ object Features {
     const val profile = ":features:profile"
     const val editProfile = ":features:edit-profile"
     const val feed = ":features:feed"
-    const val posting = ":features:posting"
+    const val imagePosting = ":features:posting"
     const val post = ":features:post"
     const val login = ":features:login"
     const val visitProfile = ":features:visit-profile"
+    const val textPosting = ":features:text-post"
+    const val search = ":features:search"
 }

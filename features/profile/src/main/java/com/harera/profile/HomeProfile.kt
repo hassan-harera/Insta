@@ -20,8 +20,6 @@ import androidx.compose.ui.Alignment.Companion.BottomEnd
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -38,7 +36,6 @@ import coil.compose.rememberImagePainter
 import com.harera.base.DummyDate
 import com.harera.base.base.LocalStoreViewModel
 import com.harera.base.coil.CoilLoader
-import com.harera.base.coil.CoilUtils.createRequest
 import com.harera.base.state.BaseState
 import com.harera.base.theme.InstaTheme
 import com.harera.base.theme.White

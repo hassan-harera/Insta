@@ -1,19 +1,28 @@
 package com.harera.add_chat
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.harera.base.navigation.chat.ChatsNavigation
 import com.harera.base.state.NewChatState
+import com.harera.base.theme.InstaTheme
 import com.harera.compose.ProfileCard
 import com.harera.model.response.Connection
 import org.koin.androidx.compose.getViewModel
@@ -42,10 +51,12 @@ fun NewChat(
         }
     }
 
-    AllChatsContent(
-        navController = navController,
-        connections = connections
-    )
+    InstaTheme {
+        AllChatsContent(
+            navController = navController,
+            connections = connections
+        )
+    }
 }
 
 @Composable
@@ -53,7 +64,12 @@ fun AllChatsContent(
     connections: List<Connection>,
     navController: NavHostController,
 ) {
-    Box(
+    Scaffold(
+        topBar = {
+            ConnectionsTopBar {
+                navController.popBackStack()
+            }
+        },
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White),
@@ -83,26 +99,36 @@ fun AllChatsContent(
 }
 
 @Composable
-@Preview
-fun AllChatsPreview() {
-//    arrayListOf(
-//        DummyDate.USER,
-//        DummyDate.USER,
-//        DummyDate.USER,
-//        DummyDate.USER,
-//        DummyDate.USER,
-//    ).let {
-//        LazyColumn(
-//            verticalArrangement = Arrangement.Top
-//        ) {
-//            it.forEach {
-//                item {
-//                    ProfileCard(
-//                        user = it
-//                    ) {}
-//                }
-//            }
-//        }
-//    }
-}
+fun ConnectionsTopBar(
+    onBackClicked: () -> Unit,
+) {
+    TopAppBar(
+        backgroundColor = MaterialTheme.colors.background,
+        contentPadding = PaddingValues(5.dp),
 
+        ) {
+
+        Icon(
+            tint = MaterialTheme.colors.primary,
+            imageVector = Icons.Default.ArrowBack,
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxHeight()
+                .width(35.dp)
+                .padding(5.dp)
+                .clickable {
+                    onBackClicked()
+                },
+        )
+
+        Text(
+            text = "Connections",
+            color = MaterialTheme.colors.primary,
+            fontStyle = FontStyle.Normal,
+            fontFamily = FontFamily.SansSerif,
+            fontWeight = FontWeight.ExtraBold,
+            fontSize = 28.sp,
+            modifier = Modifier.padding(8.dp),
+        )
+    }
+}

@@ -9,73 +9,112 @@ import com.harera.remote.Routing
 import com.harera.remote.URL
 import io.ktor.client.*
 import io.ktor.client.request.*
-import io.ktor.client.request.forms.*
 import io.ktor.http.*
 import io.ktor.http.ContentType.Application.Json
 import io.ktor.util.*
+import okhttp3.*
 import java.io.File
+import java.lang.Exception
+
 
 interface PostService {
-    suspend fun getFeedPosts(token: String): List<PostResponse>
+    suspend fun getFeedPosts(token: String, page: Int): List<PostResponse>
     suspend fun getPost(token: String, postId: Int): PostResponse
-    suspend fun addPost(token: String, caption: String, image: File): String
+    suspend fun insertImagePost(token: String, caption: String, image: File): String
     suspend fun getProfilePosts(token: String): List<PostResponse>
     suspend fun getUserPosts(username: String, token: String): List<PostResponse>
     suspend fun insertComment(commentRequest: CommentRequest, token: String): String
     suspend fun insertLike(likeRequest: LikeRequest, token: String): String
     suspend fun getPostComments(postId: Int, token: String): List<Comment>
     suspend fun getPostLikes(postId: Int, token: String): List<Like>
+    suspend fun insertTextPost(token: String, caption: String, image: File): String
 }
 
 @InternalAPI
 class PostServiceImpl(private val client: HttpClient) : PostService {
 
-    override suspend fun getFeedPosts(token: String) =
+    private val TAG = "PostService"
+
+    override suspend fun getFeedPosts(token: String, page: Int) =
         client.get<List<PostResponse>>(URL.BASE_URL.plus(Routing.FEED)) {
-            header(HttpHeaders.Authorization, "Bearer ".plus(token))
+            parameter("page", page)
         }
 
     override suspend fun getPost(token: String, postId: Int) =
-        client.get<PostResponse>(URL.BASE_URL.plus(Routing.POST).plus(postId)) {
-            header(HttpHeaders.Authorization, "Bearer ".plus(token))
-        }
+        client.get<PostResponse>(URL.BASE_URL.plus(Routing.POST).plus(postId))
 
-    override suspend fun addPost(token: String, caption: String, image: File) =
-        client.post<String>(URL.BASE_URL.plus("post")) {
-            header(HttpHeaders.Authorization, "Bearer ".plus(token))
-            formData {
-                append("image", image, Headers.build {
-                    append(HttpHeaders.ContentType, "multipart/form-data; boundary=something")
-                })
+    override suspend fun insertImagePost(token: String, caption: String, image: File): String {
+        val client: OkHttpClient = OkHttpClient().newBuilder().build()
 
-                append(
-                    FormPart(key = "caption", value = caption),
-                )
+        val body = MultipartBody
+            .Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart(
+                "image",
+                "image.png",
+                RequestBody.create(MediaType.parse("application/octet-stream"), image)
+            )
+            .addFormDataPart("caption", caption)
+            .addFormDataPart("type", "1")
+            .build()
 
-                append(
-                    FormPart(key = "image", value = image),
-                )
-            }.let {
-                body = MultiPartFormDataContent(it)
-            }
-        }
+        val request: Request = Request.Builder()
+            .url(URL.BASE_URL.plus("/post"))
+            .post(body)
+            .addHeader(
+                "Authorization",
+                "Bearer $token"
+            )
+            .build()
+
+        val response = client.newCall(request).execute()
+        return response.body()?.string() ?: throw Exception()
+    }
+
+    override suspend fun insertTextPost(token: String, caption: String, image: File): String {
+        val client: OkHttpClient = OkHttpClient().newBuilder().build()
+
+        val body = MultipartBody
+            .Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart(
+                "image",
+                "image.png",
+                RequestBody.create(MediaType.parse("application/octet-stream"), image)
+            )
+            .addFormDataPart("caption", caption)
+            .addFormDataPart("type", "2")
+            .build()
+
+        val request: Request = Request.Builder()
+            .url(URL.BASE_URL.plus("/post"))
+            .post(body)
+            .addHeader(
+                "Authorization",
+                "Bearer $token"
+            )
+            .build()
+
+        val response = client.newCall(request).execute()
+        return response.body()?.string() ?: throw Exception()
+    }
 
     override suspend fun getProfilePosts(token: String): List<PostResponse> =
         client.get<List<PostResponse>> {
             url(Routing.GET_PROFILE_POSTS)
-            header(HttpHeaders.Authorization, "Bearer ".plus(token))
+            
         }
 
     override suspend fun getUserPosts(username: String, token: String): List<PostResponse> =
         client.get<List<PostResponse>> {
             url(URL.BASE_URL.plus("user/$username/posts"))
-            header(HttpHeaders.Authorization, "Bearer ".plus(token))
+            
         }
 
     override suspend fun insertComment(commentRequest: CommentRequest, token: String) =
         client.post<String> {
             url(URL.BASE_URL.plus("/comment"))
-            header(HttpHeaders.Authorization, "Bearer ".plus(token))
+            
             contentType(Json)
             body = commentRequest
         }
@@ -83,7 +122,7 @@ class PostServiceImpl(private val client: HttpClient) : PostService {
     override suspend fun insertLike(likeRequest: LikeRequest, token: String): String =
         client.post<String> {
             url(URL.BASE_URL.plus("/like"))
-            header(HttpHeaders.Authorization, "Bearer ".plus(token))
+            
             contentType(Json)
             body = likeRequest
         }
@@ -91,13 +130,13 @@ class PostServiceImpl(private val client: HttpClient) : PostService {
     override suspend fun getPostComments(postId: Int, token: String): List<Comment> =
         client.get<List<Comment>> {
             url(URL.BASE_URL.plus("posts/$postId/comments"))
-            header(HttpHeaders.Authorization, "Bearer ".plus(token))
+            
             contentType(Json)
         }
 
     override suspend fun getPostLikes(postId: Int, token: String): List<Like> =
         client.get<List<Like>> {
             url(URL.BASE_URL.plus("posts/$postId/likes"))
-            header(HttpHeaders.Authorization, "Bearer ".plus(token))
+            
         }
 }
