@@ -2,8 +2,7 @@
 Insta is a social network App provids most of the features that popular social media APPs provide like Facebook, Twitter, LinkedIn
 
 
-![GitHub Cards Preview](https://github.com/hassan0shaban/Insta/blob/master/out/screenshots_group.png?raw=true)
-
+<!-- ![GitHub Cards Preview](https://github.com/hassan0shaban/Insta/blob/master/out/screenshots_group.png?raw=true) -->
 
 
 ### Tech Stack 🚀
