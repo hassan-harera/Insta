@@ -130,7 +130,7 @@ class LoginActivity : AppCompatActivity() {
         val callbackManager = CallbackManager.Factory.create()
 
         LoginManager.getInstance().registerCallback(callbackManager,
-            object : FacebookCallback<LoginResult?> {
+            object : FacebookCallback<LoginResult> {
                 override fun onCancel() {
 
                 }
@@ -140,9 +140,9 @@ class LoginActivity : AppCompatActivity() {
                     Toast.makeText(this@LoginActivity, "Something went wrong", Toast.LENGTH_SHORT).show()
                 }
 
-                override fun onSuccess(result: LoginResult?) {
+                override fun onSuccess(result: LoginResult) {
                     lifecycleScope.launch {
-                        result?.let {
+                        result.let {
                             socialLoginViewModel
                                 .intent
                                 .send(SocialLoginIntent.FacebookLogin(result.accessToken.token))
